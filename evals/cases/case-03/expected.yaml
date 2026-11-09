@@ -10,10 +10,11 @@ fix_should_build: true        # raise the heap (e.g. -Xmx512m) or remove the cap
 
 by_log:
   gradle.log:
-    status: possible_cause
+    # The real job log shows an explicit OOM in :test (line 543) before the job hung
+    # and was cancelled (line 550), so this is a confident diagnosis, not a hedge.
     evidence_sources: ["log", "build.gradle"]
     key_facts:
-      - "job was cancelled/timed out while :test was running, with no OutOfMemoryError in the log"
-      - "build.gradle caps the test JVM at maxHeapSize = '32m', so tests likely stalled in GC"
+      - "test JVM heap is capped at maxHeapSize = '32m' (maxParallelForks = 2) in build.gradle"
+      - "Spring context loading in PetClinicIntegrationTests fails with OutOfMemoryError during :test"
+      - "the build then hung after the OOM until the job was cancelled; the cancellation is a symptom, not the cause"
       - "passes locally because tests run with the default heap, not the CI-configured limit"
-    expected_confidence: [0.4, 0.7]

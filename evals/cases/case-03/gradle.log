@@ -1,317 +1,572 @@
-2026-11-08T13:32:15.9308998Z Current runner version: '2.338.2'
-2026-11-08T13:32:15.9327527Z ##[group]Runner Image Provisioner
-2026-11-08T13:32:15.9328304Z Hosted Compute Agent
-2026-11-08T13:32:15.9328759Z Version: 20261028.624
-2026-11-08T13:32:15.9329211Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
-2026-11-08T13:32:15.9329704Z Build Date: 2026-10-28T21:51:42Z
-2026-11-08T13:32:15.9330235Z Worker ID: {4ef40165-c54e-484d-a3d7-1ce070e9bcbe}
-2026-11-08T13:32:15.9330733Z Region: centralus
-2026-11-08T13:32:15.9331129Z Cloud: Azure
-2026-11-08T13:32:15.9331745Z ##[endgroup]
-2026-11-08T13:32:15.9332793Z ##[group]Operating System
-2026-11-08T13:32:15.9333270Z Ubuntu
-2026-11-08T13:32:15.9333634Z 26.04.1
-2026-11-08T13:32:15.9333995Z LTS
-2026-11-08T13:32:15.9334373Z ##[endgroup]
-2026-11-08T13:32:15.9334752Z ##[group]Runner Image
-2026-11-08T13:32:15.9335195Z Image: ubuntu-26.04
-2026-11-08T13:32:15.9335580Z Version: 20261101.186.1
-2026-11-08T13:32:15.9336493Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261101.186/images/ubuntu/Ubuntu2604-Readme.md
-2026-11-08T13:32:15.9337562Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261101.186
-2026-11-08T13:32:15.9338233Z ##[endgroup]
-2026-11-08T13:32:15.9339057Z ##[group]GITHUB_TOKEN Permissions
-2026-11-08T13:32:15.9340533Z Contents: read
-2026-11-08T13:32:15.9340926Z Metadata: read
-2026-11-08T13:32:15.9341362Z Packages: read
-2026-11-08T13:32:15.9341993Z ##[endgroup]
-2026-11-08T13:32:15.9343489Z Secret source: Actions
-2026-11-08T13:32:15.9344106Z Cache mode: write
-2026-11-08T13:32:15.9344590Z Prepare workflow directory
-2026-11-08T13:32:15.9596690Z Prepare all required actions
-2026-11-08T13:32:15.9630787Z Getting action download info
-2026-11-08T13:32:16.1749258Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
-2026-11-08T13:32:16.2877257Z Download action repository 'actions/setup-java@v4' (SHA:cf277c60eb25467037889841efdb72551f06f6c3)
-2026-11-08T13:32:16.6983613Z Download action repository 'gradle/actions@v4' (SHA:ed408507eac070d1f99cc633dbcf757c94c7933a)
-2026-11-08T13:32:17.8480570Z Complete job name: build (17)
-2026-11-08T13:32:17.8984922Z ##[group]Run actions/checkout@v4
-2026-11-08T13:32:17.8985516Z with:
-2026-11-08T13:32:17.8985920Z   repository: pathmanabanptech/petclinic-ci-failures
-2026-11-08T13:32:17.8988071Z   token: ***
-2026-11-08T13:32:17.8988406Z   ssh-strict: true
-2026-11-08T13:32:17.8988720Z   ssh-user: git
-2026-11-08T13:32:17.8989047Z   persist-credentials: true
-2026-11-08T13:32:17.8989444Z   clean: true
-2026-11-08T13:32:17.8989749Z   sparse-checkout-cone-mode: true
-2026-11-08T13:32:17.8990110Z   fetch-depth: 1
-2026-11-08T13:32:17.8990418Z   fetch-tags: false
-2026-11-08T13:32:17.8990731Z   show-progress: true
-2026-11-08T13:32:17.8991068Z   lfs: false
-2026-11-08T13:32:17.8991374Z   submodules: false
-2026-11-08T13:32:17.8991897Z   set-safe-directory: true
-2026-11-08T13:32:17.8992247Z   allow-unsafe-pr-checkout: false
-2026-11-08T13:32:17.8992770Z ##[endgroup]
-2026-11-08T13:32:18.1121133Z Syncing repository: pathmanabanptech/petclinic-ci-failures
-2026-11-08T13:32:18.1123494Z ##[group]Getting Git version info
-2026-11-08T13:32:18.1124244Z Working directory is '/home/runner/work/petclinic-ci-failures/petclinic-ci-failures'
-2026-11-08T13:32:18.1125374Z [command]/usr/bin/git version
-2026-11-08T13:32:18.1181006Z git version 2.56.0
-2026-11-08T13:32:18.1225397Z ##[endgroup]
-2026-11-08T13:32:18.1230353Z Temporarily overriding HOME='/home/runner/work/_temp/6e76c63c-2f7b-4694-9065-b15216c3bc3b' before making global git config changes
-2026-11-08T13:32:18.1231566Z Adding repository directory to the temporary git global config as a safe directory
-2026-11-08T13:32:18.1232813Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/petclinic-ci-failures/petclinic-ci-failures
-2026-11-08T13:32:18.1239552Z Deleting the contents of '/home/runner/work/petclinic-ci-failures/petclinic-ci-failures'
-2026-11-08T13:32:18.1245042Z ##[group]Initializing the repository
-2026-11-08T13:32:18.1249439Z [command]/usr/bin/git init /home/runner/work/petclinic-ci-failures/petclinic-ci-failures
-2026-11-08T13:32:18.1334943Z hint: Using 'master' as the name for the initial branch. This default branch name
-2026-11-08T13:32:18.1335461Z hint: will change to "main" in Git 3.0. To configure the initial branch name
-2026-11-08T13:32:18.1335979Z hint: to use in all of your new repositories, which will suppress this warning,
-2026-11-08T13:32:18.1336461Z hint: call:
-2026-11-08T13:32:18.1336700Z hint:
-2026-11-08T13:32:18.1337049Z hint: 	git config --global init.defaultBranch <name>
-2026-11-08T13:32:18.1337366Z hint:
-2026-11-08T13:32:18.1337684Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
-2026-11-08T13:32:18.1338132Z hint: 'development'. The just-created branch can be renamed via this command:
-2026-11-08T13:32:18.1338593Z hint:
-2026-11-08T13:32:18.1338854Z hint: 	git branch -m <name>
-2026-11-08T13:32:18.1339122Z hint:
-2026-11-08T13:32:18.1339445Z hint: Disable this message with "git config set advice.defaultBranchName false"
-2026-11-08T13:32:18.1346243Z Initialized empty Git repository in /home/runner/work/petclinic-ci-failures/petclinic-ci-failures/.git/
-2026-11-08T13:32:18.1355287Z [command]/usr/bin/git remote add origin https://github.com/pathmanabanptech/petclinic-ci-failures
-2026-11-08T13:32:18.1397370Z ##[endgroup]
-2026-11-08T13:32:18.1397965Z ##[group]Disabling automatic garbage collection
-2026-11-08T13:32:18.1401383Z [command]/usr/bin/git config --local gc.auto 0
-2026-11-08T13:32:18.1428898Z ##[endgroup]
-2026-11-08T13:32:18.1429434Z ##[group]Setting up auth
-2026-11-08T13:32:18.1435443Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
-2026-11-08T13:32:18.1461933Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-2026-11-08T13:32:18.1832366Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-2026-11-08T13:32:18.1855669Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-2026-11-08T13:32:18.2029071Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
-2026-11-08T13:32:18.2052041Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
-2026-11-08T13:32:18.2219258Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
-2026-11-08T13:32:18.2253965Z ##[endgroup]
-2026-11-08T13:32:18.2254466Z ##[group]Fetching the repository
-2026-11-08T13:32:18.2260753Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +0b5a2fb64e780abc506895127e7d9dfc5756ac2c:refs/remotes/pull/3/merge
-2026-11-08T13:32:18.7285538Z From https://github.com/pathmanabanptech/petclinic-ci-failures
-2026-11-08T13:32:18.7286725Z  * [new ref]         0b5a2fb64e780abc506895127e7d9dfc5756ac2c -> pull/3/merge
-2026-11-08T13:32:18.7289168Z ##[endgroup]
-2026-11-08T13:32:18.7289670Z ##[group]Determining the checkout info
-2026-11-08T13:32:18.7291921Z ##[endgroup]
-2026-11-08T13:32:18.7297740Z [command]/usr/bin/git sparse-checkout disable
-2026-11-08T13:32:18.7344064Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
-2026-11-08T13:32:18.7373831Z ##[group]Checking out the ref
-2026-11-08T13:32:18.7376703Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/3/merge
-2026-11-08T13:32:18.7472558Z Note: switching to 'refs/remotes/pull/3/merge'.
-2026-11-08T13:32:18.7472961Z 
-2026-11-08T13:32:18.7473206Z You are in 'detached HEAD' state. You can look around, make experimental
-2026-11-08T13:32:18.7473788Z changes and commit them, and you can discard any commits you make in this
-2026-11-08T13:32:18.7474278Z state without impacting any branches by switching back to a branch.
-2026-11-08T13:32:18.7474827Z 
-2026-11-08T13:32:18.7475095Z If you want to create a new branch to retain commits you create, you may
-2026-11-08T13:32:18.7475558Z do so (now or later) by using -c with the switch command. Example:
-2026-11-08T13:32:18.7475812Z 
-2026-11-08T13:32:18.7475953Z   git switch -c <new-branch-name>
-2026-11-08T13:32:18.7476140Z 
-2026-11-08T13:32:18.7476263Z Or undo this operation with:
-2026-11-08T13:32:18.7476403Z 
-2026-11-08T13:32:18.7476494Z   git switch -
-2026-11-08T13:32:18.7476626Z 
-2026-11-08T13:32:18.7476811Z Turn off this advice by setting config variable advice.detachedHead to false
-2026-11-08T13:32:18.7477050Z 
-2026-11-08T13:32:18.7477337Z HEAD is now at 0b5a2fb Merge c9d5394f2b069c2b80fc6d1fb18340accfc6f069 into afab46b773c6b540fad0e470685afff76f7363a3
-2026-11-08T13:32:18.7479791Z ##[endgroup]
-2026-11-08T13:32:18.7509733Z [command]/usr/bin/git log -1 --format=%H
-2026-11-08T13:32:18.7525904Z 0b5a2fb64e780abc506895127e7d9dfc5756ac2c
-2026-11-08T13:32:18.7763969Z ##[group]Run actions/setup-java@v4
-2026-11-08T13:32:18.7764232Z with:
-2026-11-08T13:32:18.7764417Z   java-version: 17
-2026-11-08T13:32:18.7764612Z   distribution: adopt
-2026-11-08T13:32:18.7764803Z   cache: maven
-2026-11-08T13:32:18.7764992Z   java-package: jdk
-2026-11-08T13:32:18.7765188Z   check-latest: false
-2026-11-08T13:32:18.7765379Z   server-id: github
-2026-11-08T13:32:18.7765626Z   server-username: GITHUB_ACTOR
-2026-11-08T13:32:18.7765849Z   server-password: GITHUB_TOKEN
-2026-11-08T13:32:18.7766066Z   overwrite-settings: true
-2026-11-08T13:32:18.7766268Z   job-status: success
-2026-11-08T13:32:18.7768072Z   token: ***
-2026-11-08T13:32:18.7768259Z ##[endgroup]
-2026-11-08T13:32:18.8987217Z ##[warning]setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
-2026-11-08T13:32:18.8993749Z ##[group]Installed distributions
-2026-11-08T13:32:18.8995065Z ##[warning]The 'adopt' legacy AdoptOpenJDK distribution is deprecated and will be removed in setup-java v6. Please migrate to the 'temurin' distribution.
-2026-11-08T13:32:18.8996063Z Trying to resolve the latest version from remote
-2026-11-08T13:32:18.9087822Z (node:2200) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
-2026-11-08T13:32:18.9088519Z (Use `node --trace-deprecation ...` to show where the warning was created)
-2026-11-08T13:32:19.7724772Z Resolved latest version as 17.0.21+9
-2026-11-08T13:32:19.7725201Z Trying to download...
-2026-11-08T13:32:19.7726078Z Downloading Java 17.0.21+9 (Adopt-Hotspot) from https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21%2B9/OpenJDK17U-jdk_x64_linux_hotspot_17.0.21_9.tar.gz ...
-2026-11-08T13:32:20.6731998Z Extracting Java archive...
-2026-11-08T13:32:20.6833315Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/505754c2-e847-4463-80ce-d7280a7f7e40 -f /home/runner/work/_temp/1358c3ec-ebb3-4bf2-9e1a-d2cb1c493061
-2026-11-08T13:32:23.6590774Z Java 17.0.21+9 was downloaded
-2026-11-08T13:32:23.6591302Z Setting Java 17.0.21+9 as the default
-2026-11-08T13:32:23.6596064Z Creating toolchains.xml for JDK version 17 from adopt
-2026-11-08T13:32:23.6646959Z Writing to /home/runner/.m2/toolchains.xml
-2026-11-08T13:32:23.6647264Z 
-2026-11-08T13:32:23.6647360Z Java configuration:
-2026-11-08T13:32:23.6647597Z   Distribution: adopt
-2026-11-08T13:32:23.6647851Z   Version: 17.0.21+9
-2026-11-08T13:32:23.6648141Z   Path: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
-2026-11-08T13:32:23.6648395Z 
-2026-11-08T13:32:23.6652795Z ##[endgroup]
-2026-11-08T13:32:23.6673767Z Creating settings.xml with server-id: github
-2026-11-08T13:32:23.6674209Z Writing to /home/runner/.m2/settings.xml
-2026-11-08T13:32:23.8067763Z Cache hit for: setup-java-Linux-x64-maven-e79accbe84fa5cac04038c7c41f28e92f24d31a453b8bd78678c2c832c29488d
-2026-11-08T13:32:23.8152077Z (node:2200) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
-2026-11-08T13:32:24.9275595Z Received 134217728 of 174679782 (76.8%), 127.9 MBs/sec
-2026-11-08T13:32:25.1297841Z Received 174679782 of 174679782 (100.0%), 138.5 MBs/sec
-2026-11-08T13:32:25.1298305Z Cache Size: ~167 MB (174679782 B)
-2026-11-08T13:32:25.1329416Z [command]/usr/bin/tar -xf /home/runner/work/_temp/322e9fa5-6276-423a-855a-af01246d9a7c/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
-2026-11-08T13:32:25.3529351Z Cache restored successfully
-2026-11-08T13:32:25.3587527Z Cache restored from key: setup-java-Linux-x64-maven-e79accbe84fa5cac04038c7c41f28e92f24d31a453b8bd78678c2c832c29488d
-2026-11-08T13:32:25.3881677Z ##[group]Run gradle/actions/setup-gradle@v4
-2026-11-08T13:32:25.3881939Z with:
-2026-11-08T13:32:25.3882105Z   cache-disabled: false
-2026-11-08T13:32:25.3882347Z   cache-read-only: true
-2026-11-08T13:32:25.3882595Z   cache-write-only: false
-2026-11-08T13:32:25.3882817Z   cache-overwrite-existing: false
-2026-11-08T13:32:25.3883202Z   cache-cleanup: on-success
-2026-11-08T13:32:25.3883579Z   gradle-home-cache-includes: caches
+﻿2026-11-07T23:36:20.6181564Z Current runner version: '2.338.2'
+2026-11-07T23:36:20.6203270Z ##[group]Runner Image Provisioner
+2026-11-07T23:36:20.6204120Z Hosted Compute Agent
+2026-11-07T23:36:20.6204701Z Version: 20261028.624
+2026-11-07T23:36:20.6205214Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-07T23:36:20.6205863Z Build Date: 2026-10-28T21:51:42Z
+2026-11-07T23:36:20.6206438Z Worker ID: {522407ba-9124-4bf2-b16f-d596da1b41f1}
+2026-11-07T23:36:20.6207010Z Region: centralus
+2026-11-07T23:36:20.6207503Z Cloud: Azure
+2026-11-07T23:36:20.6207941Z ##[endgroup]
+2026-11-07T23:36:20.6209294Z ##[group]Operating System
+2026-11-07T23:36:20.6209879Z Ubuntu
+2026-11-07T23:36:20.6210416Z 26.04.1
+2026-11-07T23:36:20.6211059Z LTS
+2026-11-07T23:36:20.6211644Z ##[endgroup]
+2026-11-07T23:36:20.6212332Z ##[group]Runner Image
+2026-11-07T23:36:20.6213162Z Image: ubuntu-26.04
+2026-11-07T23:36:20.6214001Z Version: 20261101.186.1
+2026-11-07T23:36:20.6215669Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261101.186/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-07T23:36:20.6217669Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261101.186
+2026-11-07T23:36:20.6219027Z ##[endgroup]
+2026-11-07T23:36:20.6220410Z ##[group]GITHUB_TOKEN Permissions
+2026-11-07T23:36:20.6222865Z Contents: read
+2026-11-07T23:36:20.6223397Z Metadata: read
+2026-11-07T23:36:20.6224157Z Packages: read
+2026-11-07T23:36:20.6224765Z ##[endgroup]
+2026-11-07T23:36:20.6226877Z Secret source: Actions
+2026-11-07T23:36:20.6227754Z Cache mode: write
+2026-11-07T23:36:20.6228345Z Prepare workflow directory
+2026-11-07T23:36:20.6501477Z Prepare all required actions
+2026-11-07T23:36:20.6540894Z Getting action download info
+2026-11-07T23:36:20.8656293Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-07T23:36:20.9620029Z Download action repository 'actions/setup-java@v4' (SHA:cf277c60eb25467037889841efdb72551f06f6c3)
+2026-11-07T23:36:21.5164813Z Download action repository 'gradle/actions@v4' (SHA:ed408507eac070d1f99cc633dbcf757c94c7933a)
+2026-11-07T23:36:22.5740930Z Complete job name: build (17)
+2026-11-07T23:36:22.6430411Z ##[group]Run actions/checkout@v4
+2026-11-07T23:36:22.6430922Z with:
+2026-11-07T23:36:22.6431193Z   repository: pathmanabanptech/petclinic-ci-failures
+2026-11-07T23:36:22.6433981Z   token: ***
+2026-11-07T23:36:22.6434206Z   ssh-strict: true
+2026-11-07T23:36:22.6434421Z   ssh-user: git
+2026-11-07T23:36:22.6434654Z   persist-credentials: true
+2026-11-07T23:36:22.6434901Z   clean: true
+2026-11-07T23:36:22.6435130Z   sparse-checkout-cone-mode: true
+2026-11-07T23:36:22.6435391Z   fetch-depth: 1
+2026-11-07T23:36:22.6435604Z   fetch-tags: false
+2026-11-07T23:36:22.6435825Z   show-progress: true
+2026-11-07T23:36:22.6436057Z   lfs: false
+2026-11-07T23:36:22.6436273Z   submodules: false
+2026-11-07T23:36:22.6436498Z   set-safe-directory: true
+2026-11-07T23:36:22.6436741Z   allow-unsafe-pr-checkout: false
+2026-11-07T23:36:22.6437197Z ##[endgroup]
+2026-11-07T23:36:22.8441269Z Syncing repository: pathmanabanptech/petclinic-ci-failures
+2026-11-07T23:36:22.8443105Z ##[group]Getting Git version info
+2026-11-07T23:36:22.8443755Z Working directory is '/home/runner/work/petclinic-ci-failures/petclinic-ci-failures'
+2026-11-07T23:36:22.8444537Z [command]/usr/bin/git version
+2026-11-07T23:36:22.8444925Z git version 2.56.0
+2026-11-07T23:36:22.8454372Z ##[endgroup]
+2026-11-07T23:36:22.8467088Z Temporarily overriding HOME='/home/runner/work/_temp/d18d7a56-3bb6-465d-b2c1-6c75065e2471' before making global git config changes
+2026-11-07T23:36:22.8468302Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-07T23:36:22.8471927Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/petclinic-ci-failures/petclinic-ci-failures
+2026-11-07T23:36:22.8530429Z Deleting the contents of '/home/runner/work/petclinic-ci-failures/petclinic-ci-failures'
+2026-11-07T23:36:22.8534301Z ##[group]Initializing the repository
+2026-11-07T23:36:22.8539783Z [command]/usr/bin/git init /home/runner/work/petclinic-ci-failures/petclinic-ci-failures
+2026-11-07T23:36:22.8631567Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-07T23:36:22.8632181Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-07T23:36:22.8632744Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-07T23:36:22.8633184Z hint: call:
+2026-11-07T23:36:22.8633396Z hint:
+2026-11-07T23:36:22.8633908Z hint: 	git config --global init.defaultBranch <name>
+2026-11-07T23:36:22.8634325Z hint:
+2026-11-07T23:36:22.8634616Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-07T23:36:22.8635069Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-07T23:36:22.8635623Z hint:
+2026-11-07T23:36:22.8635940Z hint: 	git branch -m <name>
+2026-11-07T23:36:22.8636281Z hint:
+2026-11-07T23:36:22.8636744Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-07T23:36:22.8637836Z Initialized empty Git repository in /home/runner/work/petclinic-ci-failures/petclinic-ci-failures/.git/
+2026-11-07T23:36:22.8651012Z [command]/usr/bin/git remote add origin https://github.com/pathmanabanptech/petclinic-ci-failures
+2026-11-07T23:36:22.8699883Z ##[endgroup]
+2026-11-07T23:36:22.8700505Z ##[group]Disabling automatic garbage collection
+2026-11-07T23:36:22.8703984Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-07T23:36:22.8736370Z ##[endgroup]
+2026-11-07T23:36:22.8736941Z ##[group]Setting up auth
+2026-11-07T23:36:22.8743388Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-07T23:36:22.8773896Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-07T23:36:22.9169688Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-07T23:36:22.9200280Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-07T23:36:22.9445343Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-07T23:36:22.9477267Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-07T23:36:22.9721312Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-07T23:36:22.9758553Z ##[endgroup]
+2026-11-07T23:36:22.9759201Z ##[group]Fetching the repository
+2026-11-07T23:36:22.9767091Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +259023cc03681eaaae64039c9e7ea1244520e403:refs/remotes/origin/case/03
+2026-11-07T23:36:23.3683019Z From https://github.com/pathmanabanptech/petclinic-ci-failures
+2026-11-07T23:36:23.3684264Z  * [new ref]         259023cc03681eaaae64039c9e7ea1244520e403 -> origin/case/03
+2026-11-07T23:36:23.3689034Z ##[endgroup]
+2026-11-07T23:36:23.3691326Z ##[group]Determining the checkout info
+2026-11-07T23:36:23.3691960Z ##[endgroup]
+2026-11-07T23:36:23.3696972Z [command]/usr/bin/git sparse-checkout disable
+2026-11-07T23:36:23.3746325Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-07T23:36:23.3775203Z ##[group]Checking out the ref
+2026-11-07T23:36:23.3778562Z [command]/usr/bin/git checkout --progress --force -B case/03 refs/remotes/origin/case/03
+2026-11-07T23:36:23.3935208Z Switched to a new branch 'case/03'
+2026-11-07T23:36:23.3936404Z branch 'case/03' set up to track 'origin/case/03'.
+2026-11-07T23:36:23.3943301Z ##[endgroup]
+2026-11-07T23:36:23.3983157Z [command]/usr/bin/git log -1 --format=%H
+2026-11-07T23:36:23.4008929Z 259023cc03681eaaae64039c9e7ea1244520e403
+2026-11-07T23:36:23.4340973Z ##[group]Run actions/setup-java@v4
+2026-11-07T23:36:23.4341414Z with:
+2026-11-07T23:36:23.4341597Z   java-version: 17
+2026-11-07T23:36:23.4341777Z   distribution: adopt
+2026-11-07T23:36:23.4341958Z   cache: maven
+2026-11-07T23:36:23.4342130Z   java-package: jdk
+2026-11-07T23:36:23.4342306Z   check-latest: false
+2026-11-07T23:36:23.4342489Z   server-id: github
+2026-11-07T23:36:23.4342672Z   server-username: GITHUB_ACTOR
+2026-11-07T23:36:23.4342882Z   server-password: GITHUB_TOKEN
+2026-11-07T23:36:23.4343089Z   overwrite-settings: true
+2026-11-07T23:36:23.4343285Z   job-status: success
+2026-11-07T23:36:23.4345595Z   token: ***
+2026-11-07T23:36:23.4345777Z ##[endgroup]
+2026-11-07T23:36:23.5790863Z ##[warning]setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
+2026-11-07T23:36:23.5797862Z ##[group]Installed distributions
+2026-11-07T23:36:23.5799328Z ##[warning]The 'adopt' legacy AdoptOpenJDK distribution is deprecated and will be removed in setup-java v6. Please migrate to the 'temurin' distribution.
+2026-11-07T23:36:23.5800262Z Trying to resolve the latest version from remote
+2026-11-07T23:36:23.5899428Z (node:2201) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-07T23:36:23.5900292Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-07T23:36:24.5605499Z Resolved latest version as 17.0.21+9
+2026-11-07T23:36:24.5624312Z Trying to download...
+2026-11-07T23:36:24.5637134Z Downloading Java 17.0.21+9 (Adopt-Hotspot) from https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21%2B9/OpenJDK17U-jdk_x64_linux_hotspot_17.0.21_9.tar.gz ...
+2026-11-07T23:36:25.4263921Z Extracting Java archive...
+2026-11-07T23:36:25.4390525Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/a999bec3-9f13-451e-8e65-74a82ac21687 -f /home/runner/work/_temp/0f33ad9e-6635-44c6-b9f5-5834281d85e6
+2026-11-07T23:36:28.1500753Z Java 17.0.21+9 was downloaded
+2026-11-07T23:36:28.1504687Z Setting Java 17.0.21+9 as the default
+2026-11-07T23:36:28.1507798Z Creating toolchains.xml for JDK version 17 from adopt
+2026-11-07T23:36:28.1563337Z Writing to /home/runner/.m2/toolchains.xml
+2026-11-07T23:36:28.1563736Z 
+2026-11-07T23:36:28.1564001Z Java configuration:
+2026-11-07T23:36:28.1564384Z   Distribution: adopt
+2026-11-07T23:36:28.1564737Z   Version: 17.0.21+9
+2026-11-07T23:36:28.1565150Z   Path: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
+2026-11-07T23:36:28.1565514Z 
+2026-11-07T23:36:28.1565989Z ##[endgroup]
+2026-11-07T23:36:28.1580213Z Creating settings.xml with server-id: github
+2026-11-07T23:36:28.1580698Z Writing to /home/runner/.m2/settings.xml
+2026-11-07T23:36:28.3214899Z maven cache is not found
+2026-11-07T23:36:28.3532822Z ##[group]Run gradle/actions/setup-gradle@v4
+2026-11-07T23:36:28.3533095Z with:
+2026-11-07T23:36:28.3533286Z   cache-disabled: false
+2026-11-07T23:36:28.3533486Z   cache-read-only: true
+2026-11-07T23:36:28.3533946Z   cache-write-only: false
+2026-11-07T23:36:28.3534180Z   cache-overwrite-existing: false
+2026-11-07T23:36:28.3534403Z   cache-cleanup: on-success
+2026-11-07T23:36:28.3534653Z   gradle-home-cache-includes: caches
 notifications
 
-2026-11-08T13:32:25.3883899Z   add-job-summary: always
-2026-11-08T13:32:25.3884119Z   add-job-summary-as-pr-comment: never
-2026-11-08T13:32:25.3884340Z   dependency-graph: disabled
-2026-11-08T13:32:25.3884591Z   dependency-graph-report-dir: dependency-graph-reports
-2026-11-08T13:32:25.3884872Z   dependency-graph-continue-on-failure: true
-2026-11-08T13:32:25.3885112Z   build-scan-publish: false
-2026-11-08T13:32:25.3885380Z   validate-wrappers: true
-2026-11-08T13:32:25.3885771Z   allow-snapshot-wrappers: false
-2026-11-08T13:32:25.3886154Z   gradle-home-cache-strict-match: false
-2026-11-08T13:32:25.3886486Z   workflow-job-context: {
+2026-11-07T23:36:28.3534940Z   add-job-summary: always
+2026-11-07T23:36:28.3535152Z   add-job-summary-as-pr-comment: never
+2026-11-07T23:36:28.3535416Z   dependency-graph: disabled
+2026-11-07T23:36:28.3535685Z   dependency-graph-report-dir: dependency-graph-reports
+2026-11-07T23:36:28.3535983Z   dependency-graph-continue-on-failure: true
+2026-11-07T23:36:28.3536270Z   build-scan-publish: false
+2026-11-07T23:36:28.3536475Z   validate-wrappers: true
+2026-11-07T23:36:28.3536681Z   allow-snapshot-wrappers: false
+2026-11-07T23:36:28.3536969Z   gradle-home-cache-strict-match: false
+2026-11-07T23:36:28.3537218Z   workflow-job-context: {
   "java": "17"
 }
-2026-11-08T13:32:25.3888510Z   github-token: ***
-2026-11-08T13:32:25.3888787Z env:
-2026-11-08T13:32:25.3889070Z   JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
-2026-11-08T13:32:25.3889479Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
-2026-11-08T13:32:25.3889811Z ##[endgroup]
-2026-11-08T13:32:25.6255852Z Merged default JDK locations into /home/runner/.m2/toolchains.xml
-2026-11-08T13:32:25.6257777Z ##[group]Restore Gradle state from cache
-2026-11-08T13:32:25.7425012Z Cache hit for restore-key: gradle-home-v1|Linux-X64|build[08bf202abcfff8f9b3c3889f66d6bd9e]-32cb980cb8903a864f5209fbd5deea342e055d37
-2026-11-08T13:32:26.4567202Z Received 6824494 of 6824494 (100.0%), 12.1 MBs/sec
-2026-11-08T13:32:26.4568170Z Cache Size: ~7 MB (6824494 B)
-2026-11-08T13:32:26.4592748Z [command]/usr/bin/tar -xf /home/runner/work/_temp/0604fdf7-d1cc-472d-9279-7b488afcf097/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
-2026-11-08T13:32:26.5332596Z Cache restored successfully
-2026-11-08T13:32:26.5338222Z Restored cache entry with key gradle-home-v1|Linux-X64|build[08bf202abcfff8f9b3c3889f66d6bd9e]-0b5a2fb64e780abc506895127e7d9dfc5756ac2c to /home/runner/.gradle/caches,/home/runner/.gradle/notifications,/home/runner/.gradle/.setup-gradle in 907ms
-2026-11-08T13:32:26.6579452Z Cache hit for: gradle-wrapper-zips-v1-32a3a100d181ec75e824fde1164fcedd
-2026-11-08T13:32:26.6660372Z Cache hit for: gradle-dependencies-v1-5ebb1281a7cb20a4e3d496bca87cb675
-2026-11-08T13:32:26.6756865Z Cache hit for: gradle-groovy-dsl-v1-439b7db45417da9dd21bad2710c26bcb
-2026-11-08T13:32:26.6833542Z Cache hit for: gradle-instrumented-jars-v1-336fac4487a3b415fc6c728ca5ee45a5
-2026-11-08T13:32:26.6852041Z Cache hit for: gradle-transforms-v1-7a77682d0c1954de23e039e66b6413c2
-2026-11-08T13:32:26.8989470Z Received 121033 of 121033 (100.0%), 1.5 MBs/sec
-2026-11-08T13:32:26.8990088Z Cache Size: ~0 MB (121033 B)
-2026-11-08T13:32:26.9031189Z [command]/usr/bin/tar -xf /home/runner/work/_temp/cce68b5f-59df-4bb8-9878-1220fab97fb8/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
-2026-11-08T13:32:26.9263219Z Cache restored successfully
-2026-11-08T13:32:26.9299617Z Restored cache entry with key gradle-groovy-dsl-v1-439b7db45417da9dd21bad2710c26bcb to /home/runner/.gradle/caches/*/groovy-dsl/*/ in 395ms
-2026-11-08T13:32:27.0672083Z Received 75928 of 75928 (100.0%), 0.3 MBs/sec
-2026-11-08T13:32:27.0672611Z Cache Size: ~0 MB (75928 B)
-2026-11-08T13:32:27.0692276Z [command]/usr/bin/tar -xf /home/runner/work/_temp/9706d5f6-8831-4ab4-9e80-42767505d2e9/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
-2026-11-08T13:32:27.0774134Z Cache restored successfully
-2026-11-08T13:32:27.0777396Z Restored cache entry with key gradle-instrumented-jars-v1-336fac4487a3b415fc6c728ca5ee45a5 to /home/runner/.gradle/caches/jars-*/*/ in 543ms
-2026-11-08T13:32:27.4947183Z Received 34151285 of 34151285 (100.0%), 47.9 MBs/sec
-2026-11-08T13:32:27.4947862Z Cache Size: ~33 MB (34151285 B)
-2026-11-08T13:32:27.5288266Z [command]/usr/bin/tar -xf /home/runner/work/_temp/d47c47eb-163d-47c8-8202-d9d3af87f106/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
-2026-11-08T13:32:27.7436909Z Cache restored successfully
-2026-11-08T13:32:27.7493254Z Restored cache entry with key gradle-transforms-v1-7a77682d0c1954de23e039e66b6413c2 to /home/runner/.gradle/caches/transforms-4/*/,/home/runner/.gradle/caches/*/transforms/*/ in 1211ms
-2026-11-08T13:32:27.7967618Z Received 92274688 of 139556796 (66.1%), 87.5 MBs/sec
-2026-11-08T13:32:27.8077441Z Received 83886080 of 151056364 (55.5%), 80.0 MBs/sec
-2026-11-08T13:32:28.1995605Z Received 139556796 of 139556796 (100.0%), 94.5 MBs/sec
-2026-11-08T13:32:28.1997719Z Cache Size: ~133 MB (139556796 B)
-2026-11-08T13:32:28.2175935Z [command]/usr/bin/tar -xf /home/runner/work/_temp/e91b9a17-7c1c-40f2-a185-7684d5635cc0/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
-2026-11-08T13:32:28.3102637Z Received 151056364 of 151056364 (100.0%), 95.9 MBs/sec
-2026-11-08T13:32:28.3124245Z Cache Size: ~144 MB (151056364 B)
-2026-11-08T13:32:28.3258866Z [command]/usr/bin/tar -xf /home/runner/work/_temp/560006ef-4352-4e0a-8edf-147ab0927a12/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
-2026-11-08T13:32:28.3816875Z Cache restored successfully
-2026-11-08T13:32:28.3866107Z Restored cache entry with key gradle-wrapper-zips-v1-32a3a100d181ec75e824fde1164fcedd to /home/runner/.gradle/wrapper/dists/gradle-9.5.1-bin/iq79hdu3mqx29lgffhp8bfmx in 1852ms
-2026-11-08T13:32:28.5046519Z Cache restored successfully
-2026-11-08T13:32:28.5090340Z Restored cache entry with key gradle-dependencies-v1-5ebb1281a7cb20a4e3d496bca87cb675 to /home/runner/.gradle/caches/modules-*/files-*/*/*/*/* in 1974ms
-2026-11-08T13:32:28.5142451Z ##[endgroup]
-2026-11-08T13:32:28.5198630Z ##[group]All Gradle Wrapper jars are valid
-2026-11-08T13:32:28.5199732Z ✓ Found known Gradle Wrapper JAR files:
-2026-11-08T13:32:28.5200416Z   497c8c2a7e5031f6aa847f88104aa80a93532ec32ee17bdb8d1d2f67a194a9c7 gradle/wrapper/gradle-wrapper.jar
-2026-11-08T13:32:28.5201379Z ##[endgroup]
-2026-11-08T13:32:28.5319866Z ##[group]Run ./gradlew build
-2026-11-08T13:32:28.5320239Z [36;1m./gradlew build[0m
-2026-11-08T13:32:28.5350682Z shell: /usr/bin/bash -e {0}
-2026-11-08T13:32:28.5351044Z env:
-2026-11-08T13:32:28.5351563Z   JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
-2026-11-08T13:32:28.5352062Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
-2026-11-08T13:32:28.5352477Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
-2026-11-08T13:32:28.5352815Z   GRADLE_USER_HOME: /home/runner/.gradle
-2026-11-08T13:32:28.5353154Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
-2026-11-08T13:32:28.5353498Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
-2026-11-08T13:32:28.5353986Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
-2026-11-08T13:32:28.5354462Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
-2026-11-08T13:32:28.5355002Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
-2026-11-08T13:32:28.5355315Z ##[endgroup]
-2026-11-08T13:32:29.0613245Z Starting a Gradle Daemon (subsequent builds will be faster)
-2026-11-08T13:32:36.6581298Z 
-2026-11-08T13:32:36.6604012Z /home/runner/work/petclinic-ci-failures/petclinic-ci-failures/src/main/java/org/springframework/samples/petclinic/owner/Owner.java:194: error: no suitable method found for getPet(String,boolean)
-2026-11-08T13:32:36.6604993Z > Task :compileJava FAILED
-2026-11-08T13:32:36.6618775Z gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1794144750817.json
-2026-11-08T13:32:36.6619443Z 
-2026-11-08T13:32:36.6620126Z [Incubating] Problems report is available at: file:///home/runner/work/petclinic-ci-failures/petclinic-ci-failures/build/reports/problems/problems-report.html
-2026-11-08T13:32:36.6621110Z 1 actionable task: 1 executed
-2026-11-08T13:32:36.6650360Z 		return getPet(name, true) != null;
-2026-11-08T13:32:36.6662333Z 		       ^
-2026-11-08T13:32:36.6670039Z     method Owner.getPet(String) is not applicable
-2026-11-08T13:32:36.6670866Z       (actual and formal argument lists differ in length)
-2026-11-08T13:32:36.6671682Z     method Owner.getPet(Integer) is not applicable
-2026-11-08T13:32:36.6672627Z       (actual and formal argument lists differ in length)
-2026-11-08T13:32:36.6673158Z 1 error
-2026-11-08T13:32:36.6673447Z 
-2026-11-08T13:32:36.6673739Z FAILURE: Build failed with an exception.
-2026-11-08T13:32:36.6674061Z 
-2026-11-08T13:32:36.6674295Z * What went wrong:
-2026-11-08T13:32:36.6674971Z Execution failed for task ':compileJava' (registered by plugin class 'org.gradle.api.plugins.JavaBasePlugin').
-2026-11-08T13:32:36.6675724Z > Compilation failed; see the compiler output below.
-2026-11-08T13:32:36.6676764Z   /home/runner/work/petclinic-ci-failures/petclinic-ci-failures/src/main/java/org/springframework/samples/petclinic/owner/Owner.java:194: error: no suitable method found for getPet(String,boolean)
-2026-11-08T13:32:36.6677908Z   		return getPet(name, true) != null;
-2026-11-08T13:32:36.6678404Z   		       ^
-2026-11-08T13:32:36.6678907Z       method Owner.getPet(String) is not applicable
-2026-11-08T13:32:36.6679456Z         (actual and formal argument lists differ in length)
-2026-11-08T13:32:36.6680036Z       method Owner.getPet(Integer) is not applicable
-2026-11-08T13:32:36.6680567Z         (actual and formal argument lists differ in length)
-2026-11-08T13:32:36.6681064Z   1 error
-2026-11-08T13:32:36.6681307Z 
-2026-11-08T13:32:36.6681688Z * Try:
-2026-11-08T13:32:36.6682220Z > Check your code and dependencies to fix the compilation error(s)
-2026-11-08T13:32:36.6682870Z > Run with --scan to get full insights from a Build Scan (powered by Develocity).
-2026-11-08T13:32:36.6683325Z 
-2026-11-08T13:32:36.6683555Z BUILD FAILED in 8s
-2026-11-08T13:32:37.0533718Z ##[error]Process completed with exit code 1.
-2026-11-08T13:32:37.0662797Z Post job cleanup.
-2026-11-08T13:32:37.2341928Z In post-action step
-2026-11-08T13:32:37.2348558Z Cache is read-only: will not save state for use in subsequent builds.
-2026-11-08T13:32:37.2352963Z Generating Job Summary
-2026-11-08T13:32:37.2366399Z Completed post-action step
-2026-11-08T13:32:37.2484389Z Post job cleanup.
-2026-11-08T13:32:37.3493281Z (node:2502) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
-2026-11-08T13:32:37.3494176Z (Use `node --trace-deprecation ...` to show where the warning was created)
-2026-11-08T13:32:37.3637288Z Post job cleanup.
-2026-11-08T13:32:37.4260072Z [command]/usr/bin/git version
-2026-11-08T13:32:37.4295645Z git version 2.56.0
-2026-11-08T13:32:37.4334371Z Temporarily overriding HOME='/home/runner/work/_temp/3c7980e2-e5b1-453a-ac05-db9d56850da5' before making global git config changes
-2026-11-08T13:32:37.4335461Z Adding repository directory to the temporary git global config as a safe directory
-2026-11-08T13:32:37.4338716Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/petclinic-ci-failures/petclinic-ci-failures
-2026-11-08T13:32:37.4369576Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
-2026-11-08T13:32:37.4394496Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-2026-11-08T13:32:37.4592260Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-2026-11-08T13:32:37.4608771Z http.https://github.com/.extraheader
-2026-11-08T13:32:37.4617005Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
-2026-11-08T13:32:37.4644663Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-2026-11-08T13:32:37.4838422Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
-2026-11-08T13:32:37.4881103Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
-2026-11-08T13:32:37.5177789Z Cleaning up orphan processes
-2026-11-08T13:32:37.5374166Z Terminate orphan process: pid (2335) (java)
-2026-11-08T13:32:37.5442598Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-java@v4, gradle/actions/setup-gradle@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+2026-11-07T23:36:28.3539440Z   github-token: ***
+2026-11-07T23:36:28.3539633Z env:
+2026-11-07T23:36:28.3539864Z   JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
+2026-11-07T23:36:28.3540402Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
+2026-11-07T23:36:28.3540690Z ##[endgroup]
+2026-11-07T23:36:28.6581436Z Merged default JDK locations into /home/runner/.m2/toolchains.xml
+2026-11-07T23:36:28.6583294Z ##[group]Restore Gradle state from cache
+2026-11-07T23:36:28.7973461Z Cache hit for restore-key: gradle-home-v1|Linux-X64|build[08bf202abcfff8f9b3c3889f66d6bd9e]-d92adb84056f8595ef69f9610ce6e2170fea61cc
+2026-11-07T23:36:29.4909684Z Received 6820062 of 6820062 (100.0%), 11.7 MBs/sec
+2026-11-07T23:36:29.4910723Z Cache Size: ~7 MB (6820062 B)
+2026-11-07T23:36:29.4935357Z [command]/usr/bin/tar -xf /home/runner/work/_temp/6666d0f8-f91c-4b31-8e90-bf07667d81f5/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
+2026-11-07T23:36:29.6217407Z Cache restored successfully
+2026-11-07T23:36:29.6224726Z Restored cache entry with key gradle-home-v1|Linux-X64|build[08bf202abcfff8f9b3c3889f66d6bd9e]-259023cc03681eaaae64039c9e7ea1244520e403 to /home/runner/.gradle/caches,/home/runner/.gradle/notifications,/home/runner/.gradle/.setup-gradle in 963ms
+2026-11-07T23:36:29.7473353Z Cache hit for: gradle-transforms-v1-7a77682d0c1954de23e039e66b6413c2
+2026-11-07T23:36:29.7563638Z Cache hit for: gradle-instrumented-jars-v1-aeaaece141514a937a587dd8b606fca3
+2026-11-07T23:36:29.7594333Z Cache hit for: gradle-wrapper-zips-v1-32a3a100d181ec75e824fde1164fcedd
+2026-11-07T23:36:29.7608756Z Cache hit for: gradle-dependencies-v1-5ebb1281a7cb20a4e3d496bca87cb675
+2026-11-07T23:36:29.7685908Z Cache hit for: gradle-groovy-dsl-v1-189b3057e77483c8567e0c4a2cc5db13
+2026-11-07T23:36:29.9814030Z Received 75925 of 75925 (100.0%), 0.8 MBs/sec
+2026-11-07T23:36:29.9814624Z Cache Size: ~0 MB (75925 B)
+2026-11-07T23:36:29.9849349Z [command]/usr/bin/tar -xf /home/runner/work/_temp/90220f42-6d4b-446e-9bb6-7eee368bd11a/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
+2026-11-07T23:36:30.0787613Z Cache restored successfully
+2026-11-07T23:36:30.0788927Z Restored cache entry with key gradle-instrumented-jars-v1-aeaaece141514a937a587dd8b606fca3 to /home/runner/.gradle/caches/jars-*/*/ in 455ms
+2026-11-07T23:36:30.1240241Z Received 123204 of 123204 (100.0%), 0.5 MBs/sec
+2026-11-07T23:36:30.1240632Z Cache Size: ~0 MB (123204 B)
+2026-11-07T23:36:30.1256830Z [command]/usr/bin/tar -xf /home/runner/work/_temp/fac2bc86-a340-476a-a3ea-052204780fb4/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
+2026-11-07T23:36:30.1480606Z Cache restored successfully
+2026-11-07T23:36:30.1482056Z Restored cache entry with key gradle-groovy-dsl-v1-189b3057e77483c8567e0c4a2cc5db13 to /home/runner/.gradle/caches/*/groovy-dsl/*/ in 525ms
+2026-11-07T23:36:30.6928433Z Received 34151285 of 34151285 (100.0%), 39.1 MBs/sec
+2026-11-07T23:36:30.6931388Z Cache Size: ~33 MB (34151285 B)
+2026-11-07T23:36:30.7306356Z [command]/usr/bin/tar -xf /home/runner/work/_temp/41ff855b-1b13-45aa-b45e-f2a07a4b732b/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
+2026-11-07T23:36:30.8837889Z Received 88080384 of 139556796 (63.1%), 83.9 MBs/sec
+2026-11-07T23:36:30.9053921Z Received 104857600 of 151056364 (69.4%), 98.7 MBs/sec
+2026-11-07T23:36:31.0841527Z Cache restored successfully
+2026-11-07T23:36:31.0860746Z Restored cache entry with key gradle-transforms-v1-7a77682d0c1954de23e039e66b6413c2 to /home/runner/.gradle/caches/transforms-4/*/,/home/runner/.gradle/caches/*/transforms/*/ in 1462ms
+2026-11-07T23:36:31.1941352Z Received 151056364 of 151056364 (100.0%), 110.7 MBs/sec
+2026-11-07T23:36:31.2004593Z Cache Size: ~144 MB (151056364 B)
+2026-11-07T23:36:31.2059710Z [command]/usr/bin/tar -xf /home/runner/work/_temp/abfdc96a-52cf-47bf-bb3f-27d8dae86b77/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
+2026-11-07T23:36:31.2745605Z Received 139556796 of 139556796 (100.0%), 95.7 MBs/sec
+2026-11-07T23:36:31.2784549Z Cache Size: ~133 MB (139556796 B)
+2026-11-07T23:36:31.2937099Z [command]/usr/bin/tar -xf /home/runner/work/_temp/0bd2ec2f-82d7-4832-a5c0-4e38466d3605/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
+2026-11-07T23:36:31.5237459Z Cache restored successfully
+2026-11-07T23:36:31.5305162Z Restored cache entry with key gradle-wrapper-zips-v1-32a3a100d181ec75e824fde1164fcedd to /home/runner/.gradle/wrapper/dists/gradle-9.5.1-bin/iq79hdu3mqx29lgffhp8bfmx in 1908ms
+2026-11-07T23:36:31.5361462Z Cache restored successfully
+2026-11-07T23:36:31.5421012Z Restored cache entry with key gradle-dependencies-v1-5ebb1281a7cb20a4e3d496bca87cb675 to /home/runner/.gradle/caches/modules-*/files-*/*/*/*/* in 1918ms
+2026-11-07T23:36:31.5480038Z ##[endgroup]
+2026-11-07T23:36:31.5548523Z ##[group]All Gradle Wrapper jars are valid
+2026-11-07T23:36:31.5549580Z ✓ Found known Gradle Wrapper JAR files:
+2026-11-07T23:36:31.5550244Z   497c8c2a7e5031f6aa847f88104aa80a93532ec32ee17bdb8d1d2f67a194a9c7 gradle/wrapper/gradle-wrapper.jar
+2026-11-07T23:36:31.5551190Z ##[endgroup]
+2026-11-07T23:36:31.5759716Z ##[group]Run ./gradlew build
+2026-11-07T23:36:31.5760054Z [36;1m./gradlew build[0m
+2026-11-07T23:36:31.5808836Z shell: /usr/bin/bash -e {0}
+2026-11-07T23:36:31.5809091Z env:
+2026-11-07T23:36:31.5809365Z   JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
+2026-11-07T23:36:31.5809753Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
+2026-11-07T23:36:31.5810092Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-11-07T23:36:31.5810382Z   GRADLE_USER_HOME: /home/runner/.gradle
+2026-11-07T23:36:31.5810653Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-11-07T23:36:31.5810930Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+2026-11-07T23:36:31.5811314Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-11-07T23:36:31.5811723Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-11-07T23:36:31.5812033Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-11-07T23:36:31.5812293Z ##[endgroup]
+2026-11-07T23:36:32.1697599Z Starting a Gradle Daemon (subsequent builds will be faster)
+2026-11-07T23:36:45.9695199Z > Task :compileJava
+2026-11-07T23:36:47.9701522Z 
+2026-11-07T23:36:47.9738589Z > Task :cyclonedxDirectBom
+2026-11-07T23:36:47.9765199Z Unknown keyword meta:enum - you should define your own Meta Schema. If the keyword is irrelevant for validation, just use a NonValidationKeyword or if it should generate annotations AnnotationKeyword
+2026-11-07T23:36:47.9767220Z Unknown keyword deprecated - you should define your own Meta Schema. If the keyword is irrelevant for validation, just use a NonValidationKeyword or if it should generate annotations AnnotationKeyword
+2026-11-07T23:36:48.8692539Z 
+2026-11-07T23:36:48.8694485Z > Task :cyclonedxBom
+2026-11-07T23:36:48.8695114Z > Task :processResources
+2026-11-07T23:36:48.8695666Z > Task :classes
+2026-11-07T23:36:48.9681360Z > Task :resolveMainClassName
+2026-11-07T23:36:50.8694135Z 
+2026-11-07T23:36:50.8724533Z > Task :processAot
+2026-11-07T23:36:50.8734295Z 
+2026-11-07T23:36:50.8734469Z 
+2026-11-07T23:36:50.8734952Z               |\      _,,,--,,_
+2026-11-07T23:36:50.8735534Z              /,`.-'`'   ._  \-;;,_
+2026-11-07T23:36:50.8736081Z   _______ __|,4-  ) )_   .;.(__`'-'__     ___ __    _ ___ _______
+2026-11-07T23:36:50.8736677Z  |       | '---''(_/._)-'(_\_)   |   |   |   |  |  | |   |       |
+2026-11-07T23:36:50.8737262Z  |    _  |    ___|_     _|       |   |   |   |   |_| |   |       | __ _ _
+2026-11-07T23:36:50.8737858Z  |   |_| |   |___  |   | |       |   |   |   |       |   |       | \ \ \ \
+2026-11-07T23:36:50.8738455Z  |    ___|    ___| |   | |      _|   |___|   |  _    |   |      _|  \ \ \ \
+2026-11-07T23:36:50.8739045Z  |   |   |   |___  |   | |     |_|       |   | | |   |   |     |_    ) ) ) )
+2026-11-07T23:36:50.8739642Z  |___|   |_______| |___| |_______|_______|___|_|  |__|___|_______|  / / / /
+2026-11-07T23:36:50.8740238Z  ==================================================================/_/_/_/
+2026-11-07T23:36:50.8741104Z 
+2026-11-07T23:36:50.8741455Z :: Built with Spring Boot :: 4.1.0
+2026-11-07T23:36:50.8741820Z 
+2026-11-07T23:36:50.8741960Z 
+2026-11-07T23:36:50.8743394Z 2026-11-07T23:36:49.556Z  INFO 2485 --- [           main] o.s.s.petclinic.PetClinicApplication     : Starting PetClinicApplication using Java 17.0.21 with PID 2485 (/home/runner/work/petclinic-ci-failures/petclinic-ci-failures/build/classes/java/main started by runner in /home/runner/work/petclinic-ci-failures/petclinic-ci-failures)
+2026-11-07T23:36:50.8745700Z 2026-11-07T23:36:49.560Z  INFO 2485 --- [           main] o.s.s.petclinic.PetClinicApplication     : No active profile set, falling back to 1 default profile: "default"
+2026-11-07T23:36:50.8747555Z 2026-11-07T23:36:50.334Z  INFO 2485 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-07T23:36:50.8749530Z 2026-11-07T23:36:50.384Z  INFO 2485 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 38 ms. Found 3 JPA repository interfaces.
+2026-11-07T23:36:51.7691141Z 2026-11-07T23:36:51.661Z  INFO 2485 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: AotMetamodel]
+2026-11-07T23:36:51.7694098Z 2026-11-07T23:36:51.700Z  INFO 2485 --- [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-11-07T23:36:52.0681271Z 2026-11-07T23:36:52.006Z  INFO 2485 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-07T23:36:52.0690370Z 2026-11-07T23:36:52.029Z  INFO 2485 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-11-07T23:36:52.0691431Z 	Database JDBC URL [undefined/unknown]
+2026-11-07T23:36:52.0691971Z 	Database driver: undefined/unknown
+2026-11-07T23:36:52.0692560Z 	Database dialect: SpringDataJpaAotDialect
+2026-11-07T23:36:52.0693106Z 	Database version: 0.0
+2026-11-07T23:36:52.0693749Z 	Default catalog/schema: unknown/unknown
+2026-11-07T23:36:52.0694276Z 	Autocommit mode: undefined/unknown
+2026-11-07T23:36:52.0694771Z 	Isolation level: <unknown>
+2026-11-07T23:36:52.0695253Z 	JDBC fetch size: undefined/unknown
+2026-11-07T23:36:52.0695747Z 	Pool: undefined/unknown
+2026-11-07T23:36:52.0696214Z 	Minimum pool size: undefined/unknown
+2026-11-07T23:36:52.0696742Z 	Maximum pool size: undefined/unknown
+2026-11-07T23:36:52.9688234Z 2026-11-07T23:36:52.872Z  INFO 2485 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-07T23:36:53.4681186Z 2026-11-07T23:36:53.457Z  INFO 2485 --- [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-11-07T23:36:56.1714846Z Note: Some input files use unchecked or unsafe operations.
+2026-11-07T23:36:56.1715272Z 
+2026-11-07T23:36:56.1715420Z > Task :compileAotJava
+2026-11-07T23:36:56.1715606Z 
+2026-11-07T23:36:56.1715752Z > Task :processAotResources
+2026-11-07T23:36:56.1716079Z > Task :aotClasses
+2026-11-07T23:36:56.1726096Z Note: Recompile with -Xlint:unchecked for details.
+2026-11-07T23:36:57.3704753Z > Task :collectReachabilityMetadata
+2026-11-07T23:36:57.8680266Z > Task :bootJar
+2026-11-07T23:36:57.9683146Z > Task :jar
+2026-11-07T23:36:57.9683950Z > Task :assemble
+2026-11-07T23:36:58.4682923Z > Task :checkFormatMain
+2026-11-07T23:36:58.5684664Z > Task :checkFormatTest
+2026-11-07T23:36:58.5704206Z > Task :checkFormat
+2026-11-07T23:36:58.5724455Z > Task :checkstyleAot SKIPPED
+2026-11-07T23:36:59.4685695Z > Task :compileTestJava
+2026-11-07T23:36:59.4710539Z > Task :processTestResources NO-SOURCE
+2026-11-07T23:36:59.4724569Z > Task :testClasses
+2026-11-07T23:37:01.4684836Z 
+2026-11-07T23:37:01.4724624Z > Task :processTestAot
+2026-11-07T23:37:01.4727017Z 23:36:59.767 [main] INFO org.springframework.test.context.aot.TestClassScanner -- Scanning for Spring test classes in all packages in classpath roots [/home/runner/work/petclinic-ci-failures/petclinic-ci-failures/build/classes/java/test]
+2026-11-07T23:37:01.4755907Z 23:37:00.248 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.MySqlIntegrationTests]: MySqlIntegrationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.4784981Z 23:37:00.275 [main] INFO org.testcontainers.images.PullPolicy -- Image pull policy will be performed by: DefaultPullPolicy()
+2026-11-07T23:37:01.4815351Z 23:37:00.277 [main] INFO org.testcontainers.utility.ImageNameSubstitutor -- Image name substitution will be performed by: DefaultImageNameSubstitutor (composite of 'ConfigurationFileImageNameSubstitutor' and 'PrefixingImageNameSubstitutor')
+2026-11-07T23:37:01.4818458Z 23:37:00.369 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.MySqlIntegrationTests
+2026-11-07T23:37:01.4821549Z 23:37:00.422 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.MySqlIntegrationTests]: MySqlIntegrationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.4824822Z 23:37:00.425 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.MySqlIntegrationTests
+2026-11-07T23:37:01.4828193Z 23:37:00.431 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.PetClinicConcurrencyTests]: PetClinicConcurrencyTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.4895771Z 23:37:00.435 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.PetClinicConcurrencyTests
+2026-11-07T23:37:01.4899480Z 23:37:00.436 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.PetClinicConcurrencyTests]: PetClinicConcurrencyTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.4915417Z 23:37:00.439 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.PetClinicConcurrencyTests
+2026-11-07T23:37:01.4918971Z 23:37:00.443 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.PetClinicIntegrationTests]: PetClinicIntegrationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.4929130Z 23:37:00.445 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.PetClinicIntegrationTests
+2026-11-07T23:37:01.4947618Z 23:37:00.446 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.PetClinicIntegrationTests]: PetClinicIntegrationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.4951163Z 23:37:00.448 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.PetClinicIntegrationTests
+2026-11-07T23:37:01.4954897Z 23:37:00.451 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.PostgresIntegrationTests]: PostgresIntegrationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.4958809Z 23:37:00.454 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.PostgresIntegrationTests
+2026-11-07T23:37:01.4962426Z 23:37:00.455 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.PostgresIntegrationTests]: PostgresIntegrationTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.4965843Z 23:37:00.457 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.PostgresIntegrationTests
+2026-11-07T23:37:01.4969095Z 23:37:00.461 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.owner.OwnerControllerTests]: OwnerControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.4972418Z 23:37:00.509 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.owner.OwnerControllerTests
+2026-11-07T23:37:01.4975957Z 23:37:00.511 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.owner.OwnerControllerTests]: OwnerControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.4979367Z 23:37:00.521 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.owner.OwnerControllerTests
+2026-11-07T23:37:01.4982648Z 23:37:00.525 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.owner.PetControllerTests]: PetControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.4985968Z 23:37:00.532 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.owner.PetControllerTests
+2026-11-07T23:37:01.4989538Z 23:37:00.533 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.owner.PetControllerTests]: PetControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.4993108Z 23:37:00.541 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.owner.PetControllerTests
+2026-11-07T23:37:01.5007080Z 23:37:00.545 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.owner.PetControllerTests$ProcessCreationFormHasErrors]: ProcessCreationFormHasErrors does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.5011251Z 23:37:00.553 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.owner.PetControllerTests$ProcessCreationFormHasErrors
+2026-11-07T23:37:01.5015196Z 23:37:00.554 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.owner.PetControllerTests$ProcessCreationFormHasErrors]: ProcessCreationFormHasErrors does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.5019098Z 23:37:00.555 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.owner.PetControllerTests]: PetControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.5022632Z 23:37:00.564 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.owner.PetControllerTests$ProcessCreationFormHasErrors
+2026-11-07T23:37:01.5026465Z 23:37:00.568 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.owner.PetControllerTests$ProcessUpdateFormHasErrors]: ProcessUpdateFormHasErrors does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.5030348Z 23:37:00.576 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.owner.PetControllerTests$ProcessUpdateFormHasErrors
+2026-11-07T23:37:01.5034193Z 23:37:00.577 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.owner.PetControllerTests$ProcessUpdateFormHasErrors]: ProcessUpdateFormHasErrors does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.5038130Z 23:37:00.577 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.owner.PetControllerTests]: PetControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.5041594Z 23:37:00.590 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.owner.PetControllerTests$ProcessUpdateFormHasErrors
+2026-11-07T23:37:01.5045291Z 23:37:00.593 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.owner.VisitControllerTests]: VisitControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.5049215Z 23:37:00.600 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.owner.VisitControllerTests
+2026-11-07T23:37:01.5052865Z 23:37:00.601 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.owner.VisitControllerTests]: VisitControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.5056487Z 23:37:00.609 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.owner.VisitControllerTests
+2026-11-07T23:37:01.5062102Z 23:37:00.613 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.service.ClinicServiceTests]: ClinicServiceTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.5065677Z 23:37:00.633 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.service.ClinicServiceTests
+2026-11-07T23:37:01.5068976Z 23:37:00.634 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.service.ClinicServiceTests]: ClinicServiceTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.5072305Z 23:37:00.646 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.service.ClinicServiceTests
+2026-11-07T23:37:01.5075719Z 23:37:00.658 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.system.WelcomeControllerTests]: WelcomeControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.5079531Z 23:37:00.669 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.system.CrashControllerIntegrationTests$TestConfiguration for test class org.springframework.samples.petclinic.system.WelcomeControllerTests
+2026-11-07T23:37:01.5083282Z 23:37:00.669 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.system.WelcomeControllerTests]: WelcomeControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.5087667Z 23:37:00.677 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.system.CrashControllerIntegrationTests$TestConfiguration for test class org.springframework.samples.petclinic.system.WelcomeControllerTests
+2026-11-07T23:37:01.5091324Z 23:37:00.678 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.vet.VetControllerTests]: VetControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.5094688Z 23:37:00.692 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.vet.VetControllerTests
+2026-11-07T23:37:01.5098232Z 23:37:00.693 [main] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [org.springframework.samples.petclinic.vet.VetControllerTests]: VetControllerTests does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-11-07T23:37:01.5101490Z 23:37:00.698 [main] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration org.springframework.samples.petclinic.PetClinicApplication for test class org.springframework.samples.petclinic.vet.VetControllerTests
+2026-11-07T23:37:01.5104320Z 23:37:00.700 [main] INFO org.springframework.test.context.aot.TestContextAotGenerator -- Skipping AOT processing due to the presence of @DisabledInAotMode for test classes [org.springframework.samples.petclinic.MySqlIntegrationTests]
+2026-11-07T23:37:01.5105696Z 
+2026-11-07T23:37:01.5105824Z 
+2026-11-07T23:37:01.5106092Z               |\      _,,,--,,_
+2026-11-07T23:37:01.5106587Z              /,`.-'`'   ._  \-;;,_
+2026-11-07T23:37:01.5107180Z   _______ __|,4-  ) )_   .;.(__`'-'__     ___ __    _ ___ _______
+2026-11-07T23:37:01.5107798Z  |       | '---''(_/._)-'(_\_)   |   |   |   |  |  | |   |       |
+2026-11-07T23:37:01.5108416Z  |    _  |    ___|_     _|       |   |   |   |   |_| |   |       | __ _ _
+2026-11-07T23:37:01.5109029Z  |   |_| |   |___  |   | |       |   |   |   |       |   |       | \ \ \ \
+2026-11-07T23:37:01.5109651Z  |    ___|    ___| |   | |      _|   |___|   |  _    |   |      _|  \ \ \ \
+2026-11-07T23:37:01.5110261Z  |   |   |   |___  |   | |     |_|       |   | | |   |   |     |_    ) ) ) )
+2026-11-07T23:37:01.5110893Z  |___|   |_______| |___| |_______|_______|___|_|  |__|___|_______|  / / / /
+2026-11-07T23:37:01.5111503Z  ==================================================================/_/_/_/
+2026-11-07T23:37:01.5111996Z 
+2026-11-07T23:37:01.5112341Z :: Built with Spring Boot :: 4.1.0
+2026-11-07T23:37:01.5112849Z 
+2026-11-07T23:37:01.5112988Z 
+2026-11-07T23:37:01.5114711Z 2026-11-07T23:37:00.992Z  INFO 2520 --- [           main] o.s.s.p.PetClinicConcurrencyTests        : Starting PetClinicConcurrencyTests using Java 17.0.21 with PID 2520 (/home/runner/work/petclinic-ci-failures/petclinic-ci-failures/build/classes/java/test started by runner in /home/runner/work/petclinic-ci-failures/petclinic-ci-failures)
+2026-11-07T23:37:01.5117082Z 2026-11-07T23:37:00.994Z  INFO 2520 --- [           main] o.s.s.p.PetClinicConcurrencyTests        : No active profile set, falling back to 1 default profile: "default"
+2026-11-07T23:37:01.7681728Z 2026-11-07T23:37:01.724Z  INFO 2520 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-07T23:37:01.8681311Z 2026-11-07T23:37:01.773Z  INFO 2520 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 42 ms. Found 3 JPA repository interfaces.
+2026-11-07T23:37:02.9680910Z 2026-11-07T23:37:02.899Z  INFO 2520 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: AotMetamodel]
+2026-11-07T23:37:02.9686213Z 2026-11-07T23:37:02.938Z  INFO 2520 --- [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.4.1.Final
+2026-11-07T23:37:03.2683361Z 2026-11-07T23:37:03.173Z  INFO 2520 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-07T23:37:03.2705064Z 2026-11-07T23:37:03.195Z  INFO 2520 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-11-07T23:37:03.2724729Z 	Database JDBC URL [undefined/unknown]
+2026-11-07T23:37:03.2725357Z 	Database driver: undefined/unknown
+2026-11-07T23:37:03.2726013Z 	Database dialect: SpringDataJpaAotDialect
+2026-11-07T23:37:03.2726575Z 	Database version: 0.0
+2026-11-07T23:37:03.2727043Z 	Default catalog/schema: unknown/unknown
+2026-11-07T23:37:03.2727593Z 	Autocommit mode: undefined/unknown
+2026-11-07T23:37:03.2728581Z 	Isolation level: <unknown>
+2026-11-07T23:37:03.2729098Z 	JDBC fetch size: undefined/unknown
+2026-11-07T23:37:03.2729595Z 	Pool: undefined/unknown
+2026-11-07T23:37:03.2730033Z 	Minimum pool size: undefined/unknown
+2026-11-07T23:37:03.2730508Z 	Maximum pool size: undefined/unknown
+2026-11-07T23:37:03.9681206Z 2026-11-07T23:37:03.917Z  INFO 2520 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-07T23:37:04.6680567Z 2026-11-07T23:37:04.577Z  INFO 2520 --- [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-11-07T23:37:05.1716079Z 
+2026-11-07T23:37:05.1724242Z 
+2026-11-07T23:37:05.1743188Z               |\      _,,,--,,_
+2026-11-07T23:37:05.1773998Z              /,`.-'`'   ._  \-;;,_
+2026-11-07T23:37:05.1774603Z   _______ __|,4-  ) )_   .;.(__`'-'__     ___ __    _ ___ _______
+2026-11-07T23:37:05.1809561Z  |       | '---''(_/._)-'(_\_)   |   |   |   |  |  | |   |       |
+2026-11-07T23:37:05.1875724Z  |    _  |    ___|_     _|       |   |   |   |   |_| |   |       | __ _ _
+2026-11-07T23:37:05.1913007Z  |   |_| |   |___  |   | |       |   |   |   |       |   |       | \ \ \ \
+2026-11-07T23:37:05.1954701Z  |    ___|    ___| |   | |      _|   |___|   |  _    |   |      _|  \ \ \ \
+2026-11-07T23:37:05.1965695Z  |   |   |   |___  |   | |     |_|       |   | | |   |   |     |_    ) ) ) )
+2026-11-07T23:37:05.1987337Z  |___|   |_______| |___| |_______|_______|___|_|  |__|___|_______|  / / / /
+2026-11-07T23:37:05.2004466Z  ==================================================================/_/_/_/
+2026-11-07T23:37:05.2044227Z 
+2026-11-07T23:37:05.2054666Z :: Built with Spring Boot :: 4.1.0
+2026-11-07T23:37:05.2055485Z 
+2026-11-07T23:37:05.2055745Z 
+2026-11-07T23:37:05.2057434Z 2026-11-07T23:37:05.143Z  INFO 2520 --- [           main] o.s.s.p.PetClinicIntegrationTests        : Starting PetClinicIntegrationTests using Java 17.0.21 with PID 2520 (/home/runner/work/petclinic-ci-failures/petclinic-ci-failures/build/classes/java/test started by runner in /home/runner/work/petclinic-ci-failures/petclinic-ci-failures)
+2026-11-07T23:37:05.2059956Z 2026-11-07T23:37:05.144Z  INFO 2520 --- [           main] o.s.s.p.PetClinicIntegrationTests        : No active profile set, falling back to 1 default profile: "default"
+2026-11-07T23:37:05.3681122Z 2026-11-07T23:37:05.322Z  INFO 2520 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-07T23:37:05.3683309Z 2026-11-07T23:37:05.332Z  INFO 2520 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 7 ms. Found 3 JPA repository interfaces.
+2026-11-07T23:37:05.5691575Z 2026-11-07T23:37:05.552Z  INFO 2520 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: AotMetamodel]
+2026-11-07T23:37:05.6706486Z 2026-11-07T23:37:05.569Z  INFO 2520 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-07T23:37:05.6725344Z 2026-11-07T23:37:05.571Z  INFO 2520 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-11-07T23:37:05.6762748Z 	Database JDBC URL [undefined/unknown]
+2026-11-07T23:37:05.6784230Z 	Database driver: undefined/unknown
+2026-11-07T23:37:05.6814405Z 	Database dialect: SpringDataJpaAotDialect
+2026-11-07T23:37:05.6834670Z 	Database version: 0.0
+2026-11-07T23:37:05.6835363Z 	Default catalog/schema: unknown/unknown
+2026-11-07T23:37:05.6836017Z 	Autocommit mode: undefined/unknown
+2026-11-07T23:37:05.6836621Z 	Isolation level: <unknown>
+2026-11-07T23:37:05.6837174Z 	JDBC fetch size: undefined/unknown
+2026-11-07T23:37:05.6837755Z 	Pool: undefined/unknown
+2026-11-07T23:37:05.6838349Z 	Minimum pool size: undefined/unknown
+2026-11-07T23:37:05.6838947Z 	Maximum pool size: undefined/unknown
+2026-11-07T23:37:05.6840616Z 2026-11-07T23:37:05.628Z  INFO 2520 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-07T23:37:06.0693023Z 
+2026-11-07T23:37:06.0705399Z 
+2026-11-07T23:37:06.0714696Z               |\      _,,,--,,_
+2026-11-07T23:37:06.0715269Z              /,`.-'`'   ._  \-;;,_
+2026-11-07T23:37:06.0723081Z   _______ __|,4-  ) )_   .;.(__`'-'__     ___ __    _ ___ _______
+2026-11-07T23:37:06.0723992Z  |       | '---''(_/._)-'(_\_)   |   |   |   |  |  | |   |       |
+2026-11-07T23:37:06.0724606Z  |    _  |    ___|_     _|       |   |   |   |   |_| |   |       | __ _ _
+2026-11-07T23:37:06.0725211Z  |   |_| |   |___  |   | |       |   |   |   |       |   |       | \ \ \ \
+2026-11-07T23:37:06.0725809Z  |    ___|    ___| |   | |      _|   |___|   |  _    |   |      _|  \ \ \ \
+2026-11-07T23:37:06.0726446Z  |   |   |   |___  |   | |     |_|       |   | | |   |   |     |_    ) ) ) )
+2026-11-07T23:37:06.0727049Z  |___|   |_______| |___| |_______|_______|___|_|  |__|___|_______|  / / / /
+2026-11-07T23:37:06.0727611Z  ==================================================================/_/_/_/
+2026-11-07T23:37:06.0728048Z 
+2026-11-07T23:37:06.0728412Z :: Built with Spring Boot :: 4.1.0
+2026-11-07T23:37:06.0728833Z 
+2026-11-07T23:37:06.0728973Z 
+2026-11-07T23:37:06.0730582Z 2026-11-07T23:37:06.012Z  INFO 2520 --- [           main] o.s.s.p.PostgresIntegrationTests         : Starting PostgresIntegrationTests using Java 17.0.21 with PID 2520 (/home/runner/work/petclinic-ci-failures/petclinic-ci-failures/build/classes/java/test started by runner in /home/runner/work/petclinic-ci-failures/petclinic-ci-failures)
+2026-11-07T23:37:06.0732885Z 2026-11-07T23:37:06.012Z  INFO 2520 --- [           main] o.s.s.p.PostgresIntegrationTests         : The following 1 profile is active: "postgres"
+2026-11-07T23:37:06.1681478Z 2026-11-07T23:37:06.147Z  INFO 2520 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-07T23:37:06.1683469Z 2026-11-07T23:37:06.156Z  INFO 2520 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 6 ms. Found 3 JPA repository interfaces.
+2026-11-07T23:37:06.3680185Z 2026-11-07T23:37:06.343Z  INFO 2520 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: AotMetamodel]
+2026-11-07T23:37:06.3681934Z 2026-11-07T23:37:06.356Z  INFO 2520 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-07T23:37:06.3683704Z 2026-11-07T23:37:06.358Z  INFO 2520 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-11-07T23:37:06.3684619Z 	Database JDBC URL [undefined/unknown]
+2026-11-07T23:37:06.3685650Z 	Database driver: undefined/unknown
+2026-11-07T23:37:06.3686251Z 	Database dialect: SpringDataJpaAotDialect
+2026-11-07T23:37:06.3686825Z 	Database version: 0.0
+2026-11-07T23:37:06.3687337Z 	Default catalog/schema: unknown/unknown
+2026-11-07T23:37:06.3687901Z 	Autocommit mode: undefined/unknown
+2026-11-07T23:37:06.3688444Z 	Isolation level: <unknown>
+2026-11-07T23:37:06.3688936Z 	JDBC fetch size: undefined/unknown
+2026-11-07T23:37:06.3689450Z 	Pool: undefined/unknown
+2026-11-07T23:37:06.3689960Z 	Minimum pool size: undefined/unknown
+2026-11-07T23:37:06.3690581Z 	Maximum pool size: undefined/unknown
+2026-11-07T23:37:06.4705528Z 2026-11-07T23:37:06.420Z  INFO 2520 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-07T23:37:06.7686453Z 2026-11-07T23:37:06.690Z  INFO 2520 --- [           main] o.s.t.c.aot.TestContextAotGenerator      : Skipping AOT processing due to the presence of @DisabledInAotMode for test classes [org.springframework.samples.petclinic.owner.OwnerControllerTests]
+2026-11-07T23:37:06.7706895Z 2026-11-07T23:37:06.691Z  INFO 2520 --- [           main] o.s.t.c.aot.TestContextAotGenerator      : Skipping AOT processing due to the presence of @DisabledInAotMode for test classes [org.springframework.samples.petclinic.owner.PetControllerTests, org.springframework.samples.petclinic.owner.PetControllerTests$ProcessCreationFormHasErrors, org.springframework.samples.petclinic.owner.PetControllerTests$ProcessUpdateFormHasErrors]
+2026-11-07T23:37:06.7710329Z 2026-11-07T23:37:06.691Z  INFO 2520 --- [           main] o.s.t.c.aot.TestContextAotGenerator      : Skipping AOT processing due to the presence of @DisabledInAotMode for test classes [org.springframework.samples.petclinic.owner.VisitControllerTests]
+2026-11-07T23:37:06.7711925Z 
+2026-11-07T23:37:06.7712152Z 
+2026-11-07T23:37:06.7712458Z               |\      _,,,--,,_
+2026-11-07T23:37:06.7713040Z              /,`.-'`'   ._  \-;;,_
+2026-11-07T23:37:06.7713813Z   _______ __|,4-  ) )_   .;.(__`'-'__     ___ __    _ ___ _______
+2026-11-07T23:37:06.7714497Z  |       | '---''(_/._)-'(_\_)   |   |   |   |  |  | |   |       |
+2026-11-07T23:37:06.7715102Z  |    _  |    ___|_     _|       |   |   |   |   |_| |   |       | __ _ _
+2026-11-07T23:37:06.7715754Z  |   |_| |   |___  |   | |       |   |   |   |       |   |       | \ \ \ \
+2026-11-07T23:37:06.7716385Z  |    ___|    ___| |   | |      _|   |___|   |  _    |   |      _|  \ \ \ \
+2026-11-07T23:37:06.7717041Z  |   |   |   |___  |   | |     |_|       |   | | |   |   |     |_    ) ) ) )
+2026-11-07T23:37:06.7717711Z  |___|   |_______| |___| |_______|_______|___|_|  |__|___|_______|  / / / /
+2026-11-07T23:37:06.7718382Z  ==================================================================/_/_/_/
+2026-11-07T23:37:06.7718853Z 
+2026-11-07T23:37:06.7719212Z :: Built with Spring Boot :: 4.1.0
+2026-11-07T23:37:06.7719620Z 
+2026-11-07T23:37:06.7719776Z 
+2026-11-07T23:37:06.7721377Z 2026-11-07T23:37:06.708Z  INFO 2520 --- [           main] o.s.s.p.service.ClinicServiceTests       : Starting ClinicServiceTests using Java 17.0.21 with PID 2520 (/home/runner/work/petclinic-ci-failures/petclinic-ci-failures/build/classes/java/test started by runner in /home/runner/work/petclinic-ci-failures/petclinic-ci-failures)
+2026-11-07T23:37:06.7723869Z 2026-11-07T23:37:06.708Z  INFO 2520 --- [           main] o.s.s.p.service.ClinicServiceTests       : No active profile set, falling back to 1 default profile: "default"
+2026-11-07T23:37:06.8697197Z 2026-11-07T23:37:06.762Z  INFO 2520 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-11-07T23:37:06.8708304Z 2026-11-07T23:37:06.775Z  INFO 2520 --- [           main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 10 ms. Found 3 JPA repository interfaces.
+2026-11-07T23:37:06.8732905Z 2026-11-07T23:37:06.808Z  INFO 2520 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: AotMetamodel]
+2026-11-07T23:37:06.8760813Z 2026-11-07T23:37:06.827Z  INFO 2520 --- [           main] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-11-07T23:37:06.8794289Z 2026-11-07T23:37:06.828Z  INFO 2520 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+2026-11-07T23:37:06.8804445Z 	Database JDBC URL [undefined/unknown]
+2026-11-07T23:37:06.8806786Z 	Database driver: undefined/unknown
+2026-11-07T23:37:06.8807495Z 	Database dialect: SpringDataJpaAotDialect
+2026-11-07T23:37:06.8817619Z 	Database version: 0.0
+2026-11-07T23:37:06.8819364Z 	Default catalog/schema: unknown/unknown
+2026-11-07T23:37:06.8819967Z 	Autocommit mode: undefined/unknown
+2026-11-07T23:37:06.8820527Z 	Isolation level: <unknown>
+2026-11-07T23:37:06.8821074Z 	JDBC fetch size: undefined/unknown
+2026-11-07T23:37:06.8821687Z 	Pool: undefined/unknown
+2026-11-07T23:37:06.8822270Z 	Minimum pool size: undefined/unknown
+2026-11-07T23:37:06.8825584Z 	Maximum pool size: undefined/unknown
+2026-11-07T23:37:06.9680932Z 2026-11-07T23:37:06.891Z  INFO 2520 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-11-07T23:37:07.0724221Z 
+2026-11-07T23:37:07.0726191Z 
+2026-11-07T23:37:07.0727019Z               |\      _,,,--,,_
+2026-11-07T23:37:07.0732504Z              /,`.-'`'   ._  \-;;,_
+2026-11-07T23:37:07.0734841Z   _______ __|,4-  ) )_   .;.(__`'-'__     ___ __    _ ___ _______
+2026-11-07T23:37:07.0735457Z  |       | '---''(_/._)-'(_\_)   |   |   |   |  |  | |   |       |
+2026-11-07T23:37:07.0736064Z  |    _  |    ___|_     _|       |   |   |   |   |_| |   |       | __ _ _
+2026-11-07T23:37:07.0736710Z  |   |_| |   |___  |   | |       |   |   |   |       |   |       | \ \ \ \
+2026-11-07T23:37:07.0737360Z  |    ___|    ___| |   | |      _|   |___|   |  _    |   |      _|  \ \ \ \
+2026-11-07T23:37:07.0738044Z  |   |   |   |___  |   | |     |_|       |   | | |   |   |     |_    ) ) ) )
+2026-11-07T23:37:07.0738688Z  |___|   |_______| |___| |_______|_______|___|_|  |__|___|_______|  / / / /
+2026-11-07T23:37:07.0739337Z  ==================================================================/_/_/_/
+2026-11-07T23:37:07.0739798Z 
+2026-11-07T23:37:07.0740149Z :: Built with Spring Boot :: 4.1.0
+2026-11-07T23:37:07.0740547Z 
+2026-11-07T23:37:07.0740691Z 
+2026-11-07T23:37:07.0742313Z 2026-11-07T23:37:07.031Z  INFO 2520 --- [           main] .s.s.p.s.CrashControllerIntegrationTests : Starting CrashControllerIntegrationTests using Java 17.0.21 with PID 2520 (/home/runner/work/petclinic-ci-failures/petclinic-ci-failures/build/classes/java/test started by runner in /home/runner/work/petclinic-ci-failures/petclinic-ci-failures)
+2026-11-07T23:37:07.0744998Z 2026-11-07T23:37:07.031Z  INFO 2520 --- [           main] .s.s.p.s.CrashControllerIntegrationTests : No active profile set, falling back to 1 default profile: "default"
+2026-11-07T23:37:07.4681197Z 2026-11-07T23:37:07.358Z  INFO 2520 --- [           main] o.s.t.c.aot.TestContextAotGenerator      : Skipping AOT processing due to the presence of @DisabledInAotMode for test classes [org.springframework.samples.petclinic.system.WelcomeControllerTests]
+2026-11-07T23:37:07.4683304Z 2026-11-07T23:37:07.358Z  INFO 2520 --- [           main] o.s.t.c.aot.TestContextAotGenerator      : Skipping AOT processing due to the presence of @DisabledInAotMode for test classes [org.springframework.samples.petclinic.vet.VetControllerTests]
+2026-11-07T23:37:09.6684899Z 
+2026-11-07T23:37:09.6695160Z warning: unknown enum constant Status.STABLE
+2026-11-07T23:37:09.6695693Z > Task :compileAotTestJava
+2026-11-07T23:37:09.6724676Z   reason: class file for org.apiguardian.api.API$Status not found
+2026-11-07T23:37:10.7679606Z Note: Some input files use unchecked or unsafe operations.
+2026-11-07T23:37:10.7680573Z Note: Recompile with -Xlint:unchecked for details.
+2026-11-07T23:37:10.7681477Z 1 warning
+2026-11-07T23:37:11.0684454Z 
+2026-11-07T23:37:11.0693177Z > Task :processAotTestResources
+2026-11-07T23:37:11.0693968Z > Task :aotTestClasses
+2026-11-07T23:37:11.0694497Z > Task :checkstyleAotTest SKIPPED
+2026-11-07T23:37:16.6681055Z > Task :checkstyleTest
+2026-11-07T23:37:17.0679863Z > Task :checkstyleMain
+2026-11-07T23:37:18.0682937Z > Task :checkstyleNohttp
+2026-11-07T23:37:29.5686523Z 
+2026-11-07T23:37:29.5688956Z > Task :test
+2026-11-07T23:37:29.5704460Z 
+2026-11-07T23:37:29.5705906Z PetClinicIntegrationTests > findAll() FAILED
+2026-11-07T23:37:29.5708231Z     java.lang.IllegalStateException at DefaultCacheAwareContextLoaderDelegate.java:195
+2026-11-07T23:37:29.5709398Z         Caused by: org.springframework.beans.factory.BeanCreationException at AbstractAutowireCapableBeanFactory.java:1815
+2026-11-07T23:37:29.5710463Z             Caused by: java.lang.OutOfMemoryError at Arrays.java:3537
+2026-11-07T23:37:29.5710934Z 
+2026-11-07T23:37:29.5711248Z PetClinicIntegrationTests > ownerList() FAILED
+2026-11-07T23:37:29.5712365Z     java.lang.IllegalStateException at DefaultCacheAwareContextLoaderDelegate.java:157
+2026-11-07T23:37:29.5713047Z 
+2026-11-07T23:37:29.5713346Z PetClinicIntegrationTests > ownerDetails() FAILED
+2026-11-07T23:37:29.5714340Z     java.lang.IllegalStateException at DefaultCacheAwareContextLoaderDelegate.java:157
+2026-11-08T05:36:32.6661137Z ##[error]The operation was canceled.
+2026-11-08T05:36:32.6744144Z Post job cleanup.
+2026-11-08T05:36:32.7855910Z (node:7062) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-08T05:36:32.7869614Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-08T05:36:32.7987236Z Post job cleanup.
+2026-11-08T05:36:32.8874463Z [command]/usr/bin/git version
+2026-11-08T05:36:32.8874943Z git version 2.56.0
+2026-11-08T05:36:32.8877259Z Temporarily overriding HOME='/home/runner/work/_temp/ea370f86-db3d-401c-abaa-6da5cc06f4f9' before making global git config changes
+2026-11-08T05:36:32.8878246Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T05:36:32.8879167Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/petclinic-ci-failures/petclinic-ci-failures
+2026-11-08T05:36:32.8880435Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T05:36:32.8925500Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T05:36:32.9161054Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T05:36:32.9183841Z http.https://github.com/.extraheader
+2026-11-08T05:36:32.9193441Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-08T05:36:32.9224713Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T05:36:32.9488598Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T05:36:32.9513652Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T05:36:32.9911829Z Cleaning up orphan processes
+2026-11-08T05:36:33.0141016Z Terminate orphan process: pid (2296) (java)
+2026-11-08T05:36:33.0180296Z Terminate orphan process: pid (2331) (java)
+2026-11-08T05:36:33.0217059Z Terminate orphan process: pid (2640) (java)
+2026-11-08T05:36:33.0464667Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-java@v4, gradle/actions/setup-gradle@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

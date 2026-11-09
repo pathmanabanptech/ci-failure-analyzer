@@ -77,11 +77,13 @@ def test_case_categories() -> None:
 
 def test_case03_gradle_resolves_by_log_override() -> None:
     gradle = load_answer_key("case-03", "gradle.log")
-    assert gradle.status is Status.possible_cause
     assert gradle.evidence_sources == ["log", "build.gradle"]
-    assert gradle.expected_confidence == (0.4, 0.7)
-    assert any("cancelled" in f for f in gradle.key_facts)
-    # Non-overridden fields fall back to the top-level defaults.
+    assert any("maxHeapSize" in f for f in gradle.key_facts)
+    assert not any("Surefire" in f for f in gradle.key_facts)
+    # Non-overridden fields fall back to the top-level defaults. The real log has an
+    # explicit OOM before the cancel, so status is not overridden (stays diagnosed).
+    assert gradle.status is Status.diagnosed
+    assert gradle.expected_confidence is None
     assert gradle.category is Category.memory and gradle.specialist == "infra"
 
 
@@ -190,6 +192,32 @@ def test_meta_missing_log_file_rejected(tmp_path: Path) -> None:
     cid = _write_case(tmp_path, GOOD_META)
     with pytest.raises(CaseError, match="missing file"):
         load_agent_input(cid, "maven.log", cases_dir=tmp_path)
+
+
+def test_by_log_overrides_status_and_confidence(tmp_path: Path) -> None:
+    meta = (
+        GOOD_META + "  gradle: { run_id: 2, conclusion: cancelled, attempts: 1, log: gradle.log }\n"
+    )
+    expected = """
+category: memory
+specialist: infra
+status: diagnosed
+evidence_sources: [log, pom.xml]
+key_facts: [a]
+by_log:
+  gradle.log:
+    status: possible_cause
+    evidence_sources: [log, build.gradle]
+    expected_confidence: [0.4, 0.7]
+"""
+    cid = _write_case(tmp_path, meta, expected, logs=("maven.log", "gradle.log"))
+    gradle = load_answer_key(cid, "gradle.log", cases_dir=tmp_path)
+    assert gradle.status is Status.possible_cause
+    assert gradle.evidence_sources == ["log", "build.gradle"]
+    assert gradle.expected_confidence == (0.4, 0.7)
+    assert gradle.key_facts == ["a"]  # inherited
+    maven = load_answer_key(cid, "maven.log", cases_dir=tmp_path)
+    assert maven.status is Status.diagnosed and maven.expected_confidence is None
 
 
 def test_by_log_for_unknown_log_rejected(tmp_path: Path) -> None:

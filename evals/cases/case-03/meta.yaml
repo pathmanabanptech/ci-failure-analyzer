@@ -5,4 +5,4 @@ runner_os: ubuntu-latest
 jdk: "17"
 runs:
   maven:  { run_id: 42426005449, job_id: 128564298346, conclusion: failure,   attempts: 1, log: maven.log }
-  gradle: { run_id: 42426005446, job_id: 128564298364, conclusion: failure, attempts: 1, log: gradle.log }
+  gradle: { run_id: 42426005446, job_id: 128564298364, conclusion: cancelled, attempts: 1, log: gradle.log }
