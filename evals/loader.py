@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
 import yaml
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
@@ -60,10 +60,15 @@ class _Strict(BaseModel):
 # --------------------------------------------------------------------- meta.yaml
 
 
+Conclusion = Literal["success", "failure", "cancelled", "timed_out"]
+Event = Literal["push", "pull_request", "workflow_dispatch"]
+Sha = Annotated[str, Field(pattern=r"^[0-9a-f]{40}$")]
+
+
 class RunInfo(_Strict):
     run_id: int
     job_id: int | None = None
-    conclusion: Literal["success", "failure", "cancelled", "timed_out"]
+    conclusion: Conclusion
     attempts: int = Field(ge=1)
     log: str | None = None
 
@@ -75,19 +80,24 @@ class RunInfo(_Strict):
 
 
 class RelatedRun(_Strict):
+    """Another run of the same head_sha (e.g. the branch build that passed)."""
+
+    tool: BuildTool
     run_id: int
-    conclusion: Literal["success", "failure", "cancelled", "timed_out"]
+    event: Event
+    conclusion: Conclusion
+    base_sha: Sha | None = None  # PR runs: the base the merge was built against
 
 
 class CaseMeta(_Strict):
     repo: str
-    event: Literal["push", "pull_request", "workflow_dispatch"]
-    head_sha: str = Field(pattern=r"^[0-9a-f]{40}$")
-    base_sha: str | None = Field(default=None, pattern=r"^[0-9a-f]{40}$")
+    event: Event
+    head_sha: Sha
+    base_sha: Sha | None = None
     runner_os: str
     jdk: str
     runs: dict[BuildTool, RunInfo]
-    related_runs: dict[BuildTool, RelatedRun] | None = None
+    related_runs: list[RelatedRun] = Field(default_factory=list)
 
     @field_validator("repo")
     @classmethod
@@ -156,17 +166,17 @@ def _read_yaml(path: Path) -> dict[str, Any]:
     return data
 
 
-def _find_forbidden_keys(node: object, path: str = "") -> list[str]:
+def find_forbidden_keys(node: object, path: str = "") -> list[str]:
     found: list[str] = []
     if isinstance(node, dict):
         for k, v in node.items():
             here = f"{path}.{k}" if path else str(k)
             if str(k).lower() in FORBIDDEN_META_KEYS:
                 found.append(here)
-            found.extend(_find_forbidden_keys(v, here))
+            found.extend(find_forbidden_keys(v, here))
     elif isinstance(node, list):
         for i, v in enumerate(node):
-            found.extend(_find_forbidden_keys(v, f"{path}[{i}]"))
+            found.extend(find_forbidden_keys(v, f"{path}[{i}]"))
     return found
 
 
@@ -186,7 +196,7 @@ def list_cases(cases_dir: Path = CASES_DIR) -> list[str]:
 def load_meta(case_id: str, cases_dir: Path = CASES_DIR) -> CaseMeta:
     d = _case_dir(case_id, cases_dir)
     raw = _read_yaml(d / "meta.yaml")
-    leaks = _find_forbidden_keys(raw)
+    leaks = find_forbidden_keys(raw)
     if leaks:
         raise CaseError(f"{case_id}/meta.yaml contains label-leaking keys: {leaks}")
     try:
