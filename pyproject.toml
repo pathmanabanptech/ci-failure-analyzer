@@ -6,13 +6,17 @@ readme = "README.md"
 requires-python = ">=3.12"
 # Runtime dependencies are added in the increment that first needs them
 # (pydantic/pyyaml in 1.2, opentelemetry-sdk in 1.7, strands-agents in 1.9, ...).
-dependencies = []
+dependencies = [
+    "pydantic>=2.14.3",
+    "pyyaml>=6.0.3",
+]
 
 [dependency-groups]
 dev = [
     "mypy>=1.13",
     "pytest>=8.3",
     "ruff>=0.8",
+    "types-pyyaml>=6.0.12.20261103",
 ]
 
 [tool.uv]
@@ -34,7 +38,8 @@ addopts = "-ra"
 
 [tool.mypy]
 python_version = "3.12"
-files = ["agent", "guardrails", "adapters", "tests"]
+files = ["agent", "guardrails", "adapters", "evals", "tests"]
+plugins = ["pydantic.mypy"]
 warn_unused_configs = true
 warn_redundant_casts = true
 
