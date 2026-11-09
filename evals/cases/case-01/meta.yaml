@@ -1,0 +1,12 @@
+repo: pathmanabanptech/petclinic-ci-failures/
+event: pull_request
+head_sha: c9d5394f2b069c2b80fc6d1fb18340accfc6f069
+base_sha: afab46b773c6b540fad0e470685afff76f7363a3        # after the refactor PR merged
+runner_os: ubuntu-latest
+jdk: "17"
+runs:
+  maven:  { run_id: 42485422968, job_id: 128746111659, conclusion: failure, attempts: 1, log: maven.log }
+  gradle: { run_id: 42485422968, job_id: 128746111659, conclusion: failure, attempts: 1, log: gradle.log }
+related_runs:                                    # same head_sha, branch alone (push)
+  maven:  { run_id: 42485331266, conclusion: success }
+  gradle: { run_id: 42485331397, conclusion: success }

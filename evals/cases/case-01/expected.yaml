@@ -1,0 +1,11 @@
+category: compile
+specialist: build
+status: diagnosed
+evidence_sources: ["log", "commit", "src/main/java/org/springframework/samples/petclinic/owner/Owner.java"]
+key_facts:
+  - "getPet(String, boolean) was renamed to findPetByName in a commit already merged into the base branch"
+  - "the PR adds Owner.hasPet(), which still calls the old getPet(name, true)"
+  - "the branch build passed on its own; only the PR merge build fails"
+  - "passed locally because each developer built their own branch, never the merged result"
+fix_should_build: true        # call findPetByName(name, true), or rebase and rebuild
+dedupe: true                  # Maven and Gradle fail on the same SHA for the same reason → one alert

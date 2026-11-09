@@ -1,0 +1,12 @@
+category: dependency
+specialist: build
+status: diagnosed
+build_tool: gradle
+evidence_sources: ["log", "pom.xml", "build.gradle"]
+key_facts:
+  - "Guava was added to pom.xml but not to build.gradle"
+  - "Maven build passed; only the Gradle build fails, at compileJava"
+  - "OwnerController imports com.google.common.base.Strings, which is not on the Gradle classpath"
+  - "passed locally because the developer built with Maven; the Gradle build only runs in CI"
+fix_should_build: true        # add the same Guava version to build.gradle
+tags: [secondary]             # dual build files: realistic mainly during a migration

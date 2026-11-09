@@ -1,0 +1,19 @@
+category: memory
+specialist: infra
+status: diagnosed
+evidence_sources: ["log", "pom.xml"]
+key_facts:
+  - "test JVM heap is capped at 32m via the Surefire argLine"
+  - "Spring context loading in tests exceeds that heap, causing OutOfMemoryError"
+  - "passes locally because the IDE/default JVM heap is larger than the CI-configured forks"
+fix_should_build: true        # raise the heap (e.g. -Xmx512m) or remove the cap
+
+by_log:
+  gradle.log:
+    status: possible_cause
+    evidence_sources: ["log", "build.gradle"]
+    key_facts:
+      - "job was cancelled/timed out while :test was running, with no OutOfMemoryError in the log"
+      - "build.gradle caps the test JVM at maxHeapSize = '32m', so tests likely stalled in GC"
+      - "passes locally because tests run with the default heap, not the CI-configured limit"
+    expected_confidence: [0.4, 0.7]

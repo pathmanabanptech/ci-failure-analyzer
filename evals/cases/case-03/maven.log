@@ -1,0 +1,324 @@
+2026-11-08T13:32:15.6732477Z Current runner version: '2.338.2'
+2026-11-08T13:32:15.6758752Z ##[group]Runner Image Provisioner
+2026-11-08T13:32:15.6759578Z Hosted Compute Agent
+2026-11-08T13:32:15.6760174Z Version: 20261028.624
+2026-11-08T13:32:15.6760760Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-08T13:32:15.6761417Z Build Date: 2026-10-28T21:51:42Z
+2026-11-08T13:32:15.6762105Z Worker ID: {c1d6991a-b624-446c-97ef-85b04de05960}
+2026-11-08T13:32:15.6762884Z Region: northcentralus
+2026-11-08T13:32:15.6763474Z Cloud: Azure
+2026-11-08T13:32:15.6763946Z ##[endgroup]
+2026-11-08T13:32:15.6765008Z ##[group]Operating System
+2026-11-08T13:32:15.6765917Z Ubuntu
+2026-11-08T13:32:15.6766420Z 26.04.1
+2026-11-08T13:32:15.6766897Z LTS
+2026-11-08T13:32:15.6767357Z ##[endgroup]
+2026-11-08T13:32:15.6767829Z ##[group]Runner Image
+2026-11-08T13:32:15.6768438Z Image: ubuntu-26.04
+2026-11-08T13:32:15.6768970Z Version: 20261101.186.1
+2026-11-08T13:32:15.6770241Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261101.186/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-08T13:32:15.6771768Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261101.186
+2026-11-08T13:32:15.6772800Z ##[endgroup]
+2026-11-08T13:32:15.6773900Z ##[group]GITHUB_TOKEN Permissions
+2026-11-08T13:32:15.6776067Z Contents: read
+2026-11-08T13:32:15.6776562Z Metadata: read
+2026-11-08T13:32:15.6777015Z Packages: read
+2026-11-08T13:32:15.6777642Z ##[endgroup]
+2026-11-08T13:32:15.6779666Z Secret source: Actions
+2026-11-08T13:32:15.6780475Z Cache mode: write
+2026-11-08T13:32:15.6781361Z Prepare workflow directory
+2026-11-08T13:32:15.7018676Z Prepare all required actions
+2026-11-08T13:32:15.7054336Z Getting action download info
+2026-11-08T13:32:15.8882731Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-08T13:32:15.9984848Z Download action repository 'actions/setup-java@v4' (SHA:cf277c60eb25467037889841efdb72551f06f6c3)
+2026-11-08T13:32:16.4316852Z Complete job name: build (17)
+2026-11-08T13:32:16.4850403Z ##[group]Run actions/checkout@v4
+2026-11-08T13:32:16.4850851Z with:
+2026-11-08T13:32:16.4851157Z   repository: pathmanabanptech/petclinic-ci-failures
+2026-11-08T13:32:16.4853377Z   token: ***
+2026-11-08T13:32:16.4853631Z   ssh-strict: true
+2026-11-08T13:32:16.4853887Z   ssh-user: git
+2026-11-08T13:32:16.4854155Z   persist-credentials: true
+2026-11-08T13:32:16.4854442Z   clean: true
+2026-11-08T13:32:16.4854710Z   sparse-checkout-cone-mode: true
+2026-11-08T13:32:16.4855008Z   fetch-depth: 1
+2026-11-08T13:32:16.4855259Z   fetch-tags: false
+2026-11-08T13:32:16.4855517Z   show-progress: true
+2026-11-08T13:32:16.4855916Z   lfs: false
+2026-11-08T13:32:16.4856160Z   submodules: false
+2026-11-08T13:32:16.4856424Z   set-safe-directory: true
+2026-11-08T13:32:16.4856716Z   allow-unsafe-pr-checkout: false
+2026-11-08T13:32:16.4857095Z ##[endgroup]
+2026-11-08T13:32:16.6801429Z Syncing repository: pathmanabanptech/petclinic-ci-failures
+2026-11-08T13:32:16.6803085Z ##[group]Getting Git version info
+2026-11-08T13:32:16.6803727Z Working directory is '/home/runner/work/petclinic-ci-failures/petclinic-ci-failures'
+2026-11-08T13:32:16.6804719Z [command]/usr/bin/git version
+2026-11-08T13:32:16.6808452Z git version 2.56.0
+2026-11-08T13:32:16.6828254Z ##[endgroup]
+2026-11-08T13:32:16.6837044Z Temporarily overriding HOME='/home/runner/work/_temp/74e62355-a01b-4fb2-bbe5-f0188914c45e' before making global git config changes
+2026-11-08T13:32:16.6838133Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T13:32:16.6841882Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/petclinic-ci-failures/petclinic-ci-failures
+2026-11-08T13:32:16.6906874Z Deleting the contents of '/home/runner/work/petclinic-ci-failures/petclinic-ci-failures'
+2026-11-08T13:32:16.6910612Z ##[group]Initializing the repository
+2026-11-08T13:32:16.6914998Z [command]/usr/bin/git init /home/runner/work/petclinic-ci-failures/petclinic-ci-failures
+2026-11-08T13:32:16.7006155Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-08T13:32:16.7007406Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-08T13:32:16.7008362Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-08T13:32:16.7008966Z hint: call:
+2026-11-08T13:32:16.7009428Z hint:
+2026-11-08T13:32:16.7009938Z hint: 	git config --global init.defaultBranch <name>
+2026-11-08T13:32:16.7010384Z hint:
+2026-11-08T13:32:16.7010875Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-08T13:32:16.7011692Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-08T13:32:16.7012373Z hint:
+2026-11-08T13:32:16.7012772Z hint: 	git branch -m <name>
+2026-11-08T13:32:16.7016287Z hint:
+2026-11-08T13:32:16.7016953Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-08T13:32:16.7018956Z Initialized empty Git repository in /home/runner/work/petclinic-ci-failures/petclinic-ci-failures/.git/
+2026-11-08T13:32:16.7032536Z [command]/usr/bin/git remote add origin https://github.com/pathmanabanptech/petclinic-ci-failures
+2026-11-08T13:32:16.7089486Z ##[endgroup]
+2026-11-08T13:32:16.7090532Z ##[group]Disabling automatic garbage collection
+2026-11-08T13:32:16.7091389Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-08T13:32:16.7125716Z ##[endgroup]
+2026-11-08T13:32:16.7127134Z ##[group]Setting up auth
+2026-11-08T13:32:16.7133774Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T13:32:16.7173364Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T13:32:16.7592661Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T13:32:16.7624571Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T13:32:16.7864664Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T13:32:16.7896125Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T13:32:16.8135962Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-08T13:32:16.8174860Z ##[endgroup]
+2026-11-08T13:32:16.8176078Z ##[group]Fetching the repository
+2026-11-08T13:32:16.8183118Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +0b5a2fb64e780abc506895127e7d9dfc5756ac2c:refs/remotes/pull/3/merge
+2026-11-08T13:32:17.2940649Z From https://github.com/pathmanabanptech/petclinic-ci-failures
+2026-11-08T13:32:17.2942053Z  * [new ref]         0b5a2fb64e780abc506895127e7d9dfc5756ac2c -> pull/3/merge
+2026-11-08T13:32:17.2944576Z ##[endgroup]
+2026-11-08T13:32:17.2945542Z ##[group]Determining the checkout info
+2026-11-08T13:32:17.2946772Z ##[endgroup]
+2026-11-08T13:32:17.2951741Z [command]/usr/bin/git sparse-checkout disable
+2026-11-08T13:32:17.3009750Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-08T13:32:17.3041198Z ##[group]Checking out the ref
+2026-11-08T13:32:17.3044721Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/3/merge
+2026-11-08T13:32:17.3168818Z Note: switching to 'refs/remotes/pull/3/merge'.
+2026-11-08T13:32:17.3170376Z 
+2026-11-08T13:32:17.3171633Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-08T13:32:17.3173143Z changes and commit them, and you can discard any commits you make in this
+2026-11-08T13:32:17.3174567Z state without impacting any branches by switching back to a branch.
+2026-11-08T13:32:17.3175501Z 
+2026-11-08T13:32:17.3176501Z If you want to create a new branch to retain commits you create, you may
+2026-11-08T13:32:17.3178145Z do so (now or later) by using -c with the switch command. Example:
+2026-11-08T13:32:17.3178939Z 
+2026-11-08T13:32:17.3179356Z   git switch -c <new-branch-name>
+2026-11-08T13:32:17.3179928Z 
+2026-11-08T13:32:17.3180242Z Or undo this operation with:
+2026-11-08T13:32:17.3180791Z 
+2026-11-08T13:32:17.3181103Z   git switch -
+2026-11-08T13:32:17.3181637Z 
+2026-11-08T13:32:17.3182386Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-08T13:32:17.3183338Z 
+2026-11-08T13:32:17.3184458Z HEAD is now at 0b5a2fb Merge c9d5394f2b069c2b80fc6d1fb18340accfc6f069 into afab46b773c6b540fad0e470685afff76f7363a3
+2026-11-08T13:32:17.3188207Z ##[endgroup]
+2026-11-08T13:32:17.3221341Z [command]/usr/bin/git log -1 --format=%H
+2026-11-08T13:32:17.3245032Z 0b5a2fb64e780abc506895127e7d9dfc5756ac2c
+2026-11-08T13:32:17.3625880Z ##[group]Run actions/setup-java@v4
+2026-11-08T13:32:17.3626570Z with:
+2026-11-08T13:32:17.3627049Z   java-version: 17
+2026-11-08T13:32:17.3627585Z   distribution: adopt
+2026-11-08T13:32:17.3628101Z   cache: maven
+2026-11-08T13:32:17.3628585Z   java-package: jdk
+2026-11-08T13:32:17.3629095Z   check-latest: false
+2026-11-08T13:32:17.3629645Z   server-id: github
+2026-11-08T13:32:17.3630178Z   server-username: GITHUB_ACTOR
+2026-11-08T13:32:17.3630804Z   server-password: GITHUB_TOKEN
+2026-11-08T13:32:17.3631424Z   overwrite-settings: true
+2026-11-08T13:32:17.3631999Z   job-status: success
+2026-11-08T13:32:17.3637705Z   token: ***
+2026-11-08T13:32:17.3638186Z ##[endgroup]
+2026-11-08T13:32:17.4907829Z ##[warning]setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
+2026-11-08T13:32:17.4915190Z ##[group]Installed distributions
+2026-11-08T13:32:17.4918885Z ##[warning]The 'adopt' legacy AdoptOpenJDK distribution is deprecated and will be removed in setup-java v6. Please migrate to the 'temurin' distribution.
+2026-11-08T13:32:17.4921401Z Trying to resolve the latest version from remote
+2026-11-08T13:32:17.5001914Z (node:2175) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-08T13:32:17.5003568Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-08T13:32:17.8684096Z Resolved latest version as 17.0.21+9
+2026-11-08T13:32:17.8684556Z Trying to download...
+2026-11-08T13:32:17.8685245Z Downloading Java 17.0.21+9 (Adopt-Hotspot) from https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21%2B9/OpenJDK17U-jdk_x64_linux_hotspot_17.0.21_9.tar.gz ...
+2026-11-08T13:32:18.5058259Z Extracting Java archive...
+2026-11-08T13:32:18.5191626Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/587063de-930f-4f05-b8a0-6d8996b18bae -f /home/runner/work/_temp/2eec8363-46e8-4631-ba9c-d95661a786fb
+2026-11-08T13:32:21.2232625Z Java 17.0.21+9 was downloaded
+2026-11-08T13:32:21.2232998Z Setting Java 17.0.21+9 as the default
+2026-11-08T13:32:21.2238165Z Creating toolchains.xml for JDK version 17 from adopt
+2026-11-08T13:32:21.2297296Z Writing to /home/runner/.m2/toolchains.xml
+2026-11-08T13:32:21.2321430Z 
+2026-11-08T13:32:21.2321716Z Java configuration:
+2026-11-08T13:32:21.2323901Z   Distribution: adopt
+2026-11-08T13:32:21.2337647Z   Version: 17.0.21+9
+2026-11-08T13:32:21.2338347Z   Path: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
+2026-11-08T13:32:21.2338723Z 
+2026-11-08T13:32:21.2339242Z ##[endgroup]
+2026-11-08T13:32:21.2353543Z Creating settings.xml with server-id: github
+2026-11-08T13:32:21.2353913Z Writing to /home/runner/.m2/settings.xml
+2026-11-08T13:32:21.3460584Z Cache hit for: setup-java-Linux-x64-maven-e79accbe84fa5cac04038c7c41f28e92f24d31a453b8bd78678c2c832c29488d
+2026-11-08T13:32:21.3535240Z (node:2175) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-08T13:32:22.4007626Z Received 174679782 of 174679782 (100.0%), 175.5 MBs/sec
+2026-11-08T13:32:22.4008729Z Cache Size: ~167 MB (174679782 B)
+2026-11-08T13:32:22.4032151Z [command]/usr/bin/tar -xf /home/runner/work/_temp/a97807ea-dcc3-4f19-ad9d-9aa42334cfbc/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
+2026-11-08T13:32:22.6957039Z Cache restored successfully
+2026-11-08T13:32:22.7033984Z Cache restored from key: setup-java-Linux-x64-maven-e79accbe84fa5cac04038c7c41f28e92f24d31a453b8bd78678c2c832c29488d
+2026-11-08T13:32:22.7340689Z ##[group]Run ./mvnw -B verify
+2026-11-08T13:32:22.7340937Z [36;1m./mvnw -B verify[0m
+2026-11-08T13:32:22.7386979Z shell: /usr/bin/bash -e {0}
+2026-11-08T13:32:22.7387164Z env:
+2026-11-08T13:32:22.7387362Z   JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
+2026-11-08T13:32:22.7387626Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
+2026-11-08T13:32:22.7387841Z ##[endgroup]
+2026-11-08T13:32:24.1686836Z [INFO] Scanning for projects...
+2026-11-08T13:32:24.5555910Z [INFO] 
+2026-11-08T13:32:24.5556566Z [INFO] ------------< org.springframework.samples:spring-petclinic >------------
+2026-11-08T13:32:24.5557138Z [INFO] Building petclinic 4.0.0-SNAPSHOT
+2026-11-08T13:32:24.5557738Z [INFO]   from pom.xml
+2026-11-08T13:32:24.5558450Z [INFO] --------------------------------[ jar ]---------------------------------
+2026-11-08T13:32:24.9008760Z [INFO] 
+2026-11-08T13:32:24.9009631Z [INFO] --- enforcer:3.6.3:enforce (enforce-java) @ spring-petclinic ---
+2026-11-08T13:32:24.9974263Z [INFO] Rule 0: org.apache.maven.enforcer.rules.version.RequireJavaVersion passed
+2026-11-08T13:32:24.9976333Z [INFO] 
+2026-11-08T13:32:24.9976665Z [INFO] --- spring-javaformat:0.0.47:validate (default) @ spring-petclinic ---
+2026-11-08T13:32:25.5380417Z [INFO] 
+2026-11-08T13:32:25.5381287Z [INFO] --- checkstyle:3.6.0:check (nohttp-checkstyle-validation) @ spring-petclinic ---
+2026-11-08T13:32:26.1517670Z [INFO] You have 0 Checkstyle violations.
+2026-11-08T13:32:26.1536745Z [INFO] 
+2026-11-08T13:32:26.1568302Z [INFO] --- jacoco:0.8.15:prepare-agent (default) @ spring-petclinic ---
+2026-11-08T13:32:26.2057456Z [INFO] argLine set to -javaagent:/home/runner/.m2/repository/org/jacoco/org.jacoco.agent/0.8.15/org.jacoco.agent-0.8.15-runtime.jar=destfile=/home/runner/work/petclinic-ci-failures/petclinic-ci-failures/target/jacoco.exec
+2026-11-08T13:32:26.2086341Z [INFO] 
+2026-11-08T13:32:26.2096509Z [INFO] --- git-commit-id:9.2.0:revision (default) @ spring-petclinic ---
+2026-11-08T13:32:26.3296964Z [INFO] Downloading from central: https://repo.maven.apache.org/maven2/org/bouncycastle/bcutil-jdk18on/maven-metadata.xml
+2026-11-08T13:32:26.4944084Z [INFO] Downloaded from central: https://repo.maven.apache.org/maven2/org/bouncycastle/bcutil-jdk18on/maven-metadata.xml (912 B at 5.4 kB/s)
+2026-11-08T13:32:26.4989270Z [INFO] Downloading from central: https://repo.maven.apache.org/maven2/org/bouncycastle/bcprov-jdk18on/maven-metadata.xml
+2026-11-08T13:32:26.5184475Z [INFO] Downloaded from central: https://repo.maven.apache.org/maven2/org/bouncycastle/bcprov-jdk18on/maven-metadata.xml (944 B at 47 kB/s)
+2026-11-08T13:32:26.5905061Z [INFO] dotGitDirectory '/home/runner/work/petclinic-ci-failures/petclinic-ci-failures/.git'
+2026-11-08T13:32:26.7268670Z [INFO] Collected git.build.user.name with value 
+2026-11-08T13:32:26.7276700Z [INFO] Collected git.build.user.email with value 
+2026-11-08T13:32:26.8507000Z [INFO] Using environment variable based branch name. GITHUB_HEAD_REF = case/01
+2026-11-08T13:32:26.8523518Z [INFO] Collected git.branch with value case/01
+2026-11-08T13:32:26.9177301Z [INFO] Collected git.commit.id.describe with value 0b5a2fb
+2026-11-08T13:32:26.9196847Z [INFO] Collected git.commit.id.describe-short with value 0b5a2fb
+2026-11-08T13:32:26.9206650Z [INFO] Collected git.commit.id with value 0b5a2fb64e780abc506895127e7d9dfc5756ac2c
+2026-11-08T13:32:26.9207345Z [INFO] Collected git.commit.id.abbrev with value 0b5a2fb
+2026-11-08T13:32:26.9346591Z [INFO] Collected git.dirty with value false
+2026-11-08T13:32:26.9376442Z [INFO] Collected git.commit.user.name with value Pathmanaban
+2026-11-08T13:32:26.9386326Z [INFO] Collected git.commit.user.email with value pathmanabanp.tech@gmail.com
+2026-11-08T13:32:26.9398544Z [INFO] Collected git.commit.message.full with value Merge c9d5394f2b069c2b80fc6d1fb18340accfc6f069 into afab46b773c6b540fad0e470685afff76f7363a3
+2026-11-08T13:32:26.9416848Z [INFO] Collected git.commit.message.short with value Merge c9d5394f2b069c2b80fc6d1fb18340accfc6f069 into afab46b773c6b540fad0e470685afff76f7363a3
+2026-11-08T13:32:26.9430593Z [INFO] Collected git.commit.time with value 2026-11-08T13:32:11Z
+2026-11-08T13:32:26.9431298Z [INFO] Collected git.commit.author.time with value 2026-11-08T13:32:11Z
+2026-11-08T13:32:26.9431854Z [INFO] Collected git.commit.committer.time with value 2026-11-08T13:32:11Z
+2026-11-08T13:32:26.9432539Z [INFO] Collected git.remote.origin.url with value https://github.com/pathmanabanptech/petclinic-ci-failures
+2026-11-08T13:32:26.9433037Z [INFO] Collected git.tags with value 
+2026-11-08T13:32:26.9433619Z [INFO] Collected git.tag with value 
+2026-11-08T13:32:26.9433896Z [INFO] Collected git.closest.tag.name with value 
+2026-11-08T13:32:26.9442664Z [INFO] Collected git.closest.tag.commit.count with value 
+2026-11-08T13:32:26.9452749Z [INFO] Collected git.total.commit.count with value 1
+2026-11-08T13:32:26.9467849Z [INFO] Collected git.local.branch.ahead with value NO_REMOTE
+2026-11-08T13:32:26.9469085Z [INFO] Collected git.local.branch.behind with value NO_REMOTE
+2026-11-08T13:32:26.9546172Z [INFO] Collected git.build.time with value 2024-11-28T14:37:52Z
+2026-11-08T13:32:26.9546593Z [INFO] Collected git.build.version with value 4.0.0-SNAPSHOT
+2026-11-08T13:32:26.9550656Z [INFO] Collected git.build.host with value runnervmwuk1x
+2026-11-08T13:32:26.9552744Z [INFO] Collected git.build.number with value 10.1
+2026-11-08T13:32:26.9554109Z [INFO] Collected git.build.number.unique with value 42485422975.10.1
+2026-11-08T13:32:26.9563565Z [INFO] including property 'git.tags' in results
+2026-11-08T13:32:26.9563939Z [INFO] including property 'git.build.version' in results
+2026-11-08T13:32:26.9564332Z [INFO] including property 'git.branch' in results
+2026-11-08T13:32:26.9564774Z [INFO] including property 'git.build.host' in results
+2026-11-08T13:32:26.9565099Z [INFO] including property 'git.build.number' in results
+2026-11-08T13:32:26.9565426Z [INFO] including property 'git.commit.id' in results
+2026-11-08T13:32:26.9565846Z [INFO] including property 'git.commit.user.email' in results
+2026-11-08T13:32:26.9566203Z [INFO] including property 'git.build.number.unique' in results
+2026-11-08T13:32:26.9566572Z [INFO] including property 'git.local.branch.behind' in results
+2026-11-08T13:32:26.9566951Z [INFO] including property 'git.commit.author.time' in results
+2026-11-08T13:32:26.9567311Z [INFO] including property 'git.build.user.name' in results
+2026-11-08T13:32:26.9567671Z [INFO] including property 'git.dirty' in results
+2026-11-08T13:32:26.9568038Z [INFO] including property 'git.closest.tag.commit.count' in results
+2026-11-08T13:32:26.9586307Z [INFO] including property 'git.commit.user.name' in results
+2026-11-08T13:32:26.9586720Z [INFO] including property 'git.commit.id.abbrev' in results
+2026-11-08T13:32:26.9587120Z [INFO] including property 'git.commit.id.describe-short' in results
+2026-11-08T13:32:26.9587539Z [INFO] including property 'git.total.commit.count' in results
+2026-11-08T13:32:26.9587923Z [INFO] including property 'git.commit.id.describe' in results
+2026-11-08T13:32:26.9588308Z [INFO] including property 'git.build.user.email' in results
+2026-11-08T13:32:26.9588684Z [INFO] including property 'git.commit.message.short' in results
+2026-11-08T13:32:26.9589087Z [INFO] including property 'git.commit.committer.time' in results
+2026-11-08T13:32:26.9589450Z [INFO] including property 'git.tag' in results
+2026-11-08T13:32:26.9589790Z [INFO] including property 'git.closest.tag.name' in results
+2026-11-08T13:32:26.9590169Z [INFO] including property 'git.local.branch.ahead' in results
+2026-11-08T13:32:26.9590795Z [INFO] including property 'git.commit.time' in results
+2026-11-08T13:32:26.9591146Z [INFO] including property 'git.build.time' in results
+2026-11-08T13:32:26.9591510Z [INFO] including property 'git.commit.message.full' in results
+2026-11-08T13:32:26.9591891Z [INFO] including property 'git.remote.origin.url' in results
+2026-11-08T13:32:26.9592735Z [INFO] Writing properties file [/home/runner/work/petclinic-ci-failures/petclinic-ci-failures/target/classes/git.properties] (for project petclinic)...
+2026-11-08T13:32:26.9605793Z [INFO] 
+2026-11-08T13:32:26.9606123Z [INFO] --- spring-boot:4.1.0:build-info (default) @ spring-petclinic ---
+2026-11-08T13:32:27.0447124Z [INFO] 
+2026-11-08T13:32:27.0447713Z [INFO] --- cyclonedx:2.9.1:makeAggregateBom (default) @ spring-petclinic ---
+2026-11-08T13:32:27.0833339Z [INFO] CycloneDX: Resolving Dependencies
+2026-11-08T13:32:29.1793442Z [INFO] CycloneDX: Creating BOM version 1.6 with 106 component(s)
+2026-11-08T13:32:29.2577293Z [INFO] CycloneDX: Writing and validating BOM (JSON): /home/runner/work/petclinic-ci-failures/petclinic-ci-failures/target/classes/META-INF/sbom/application.cdx.json
+2026-11-08T13:32:29.3397381Z [WARNING] Unknown keyword meta:enum - you should define your own Meta Schema. If the keyword is irrelevant for validation, just use a NonValidationKeyword or if it should generate annotations AnnotationKeyword
+2026-11-08T13:32:29.3426817Z [WARNING] Unknown keyword deprecated - you should define your own Meta Schema. If the keyword is irrelevant for validation, just use a NonValidationKeyword or if it should generate annotations AnnotationKeyword
+2026-11-08T13:32:29.4036872Z [INFO]            attaching as spring-petclinic-4.0.0-SNAPSHOT-cyclonedx.json
+2026-11-08T13:32:29.4052627Z [INFO] 
+2026-11-08T13:32:29.4053352Z [INFO] --- resources:3.5.0:resources (default-resources) @ spring-petclinic ---
+2026-11-08T13:32:29.4337192Z [INFO] Copying 3 resources from src/main/resources to target/classes
+2026-11-08T13:32:29.4428898Z [INFO] Copying 47 resources from src/main/resources to target/classes
+2026-11-08T13:32:29.4486696Z [INFO] 
+2026-11-08T13:32:29.4516519Z [INFO] --- compiler:3.15.0:compile (default-compile) @ spring-petclinic ---
+2026-11-08T13:32:29.4977377Z [INFO] Recompiling the module because of changed source code.
+2026-11-08T13:32:29.5030729Z [INFO] Compiling 30 source files with javac [debug parameters release 17] to target/classes
+2026-11-08T13:32:30.1807273Z [INFO] -------------------------------------------------------------
+2026-11-08T13:32:30.1826870Z [ERROR] COMPILATION ERROR : 
+2026-11-08T13:32:30.1850155Z [INFO] -------------------------------------------------------------
+2026-11-08T13:32:30.1857385Z [ERROR] /home/runner/work/petclinic-ci-failures/petclinic-ci-failures/src/main/java/org/springframework/samples/petclinic/owner/Owner.java:[194,24] no suitable method found for getPet(java.lang.String,boolean)
+2026-11-08T13:32:30.1858374Z     method org.springframework.samples.petclinic.owner.Owner.getPet(java.lang.String) is not applicable
+2026-11-08T13:32:30.1858902Z       (actual and formal argument lists differ in length)
+2026-11-08T13:32:30.1859437Z     method org.springframework.samples.petclinic.owner.Owner.getPet(java.lang.Integer) is not applicable
+2026-11-08T13:32:30.1859951Z       (actual and formal argument lists differ in length)
+2026-11-08T13:32:30.1860243Z [INFO] 1 error
+2026-11-08T13:32:30.1860507Z [INFO] -------------------------------------------------------------
+2026-11-08T13:32:30.1860878Z [INFO] ------------------------------------------------------------------------
+2026-11-08T13:32:30.1861192Z [INFO] BUILD FAILURE
+2026-11-08T13:32:30.1861460Z [INFO] ------------------------------------------------------------------------
+2026-11-08T13:32:30.1861786Z [INFO] Total time:  6.032 s
+2026-11-08T13:32:30.1862020Z [INFO] Finished at: 2026-11-08T13:32:30Z
+2026-11-08T13:32:30.1862345Z [INFO] ------------------------------------------------------------------------
+2026-11-08T13:32:30.1863019Z [ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.15.0:compile (default-compile) on project spring-petclinic: Compilation failure
+2026-11-08T13:32:30.1864549Z [ERROR] /home/runner/work/petclinic-ci-failures/petclinic-ci-failures/src/main/java/org/springframework/samples/petclinic/owner/Owner.java:[194,24] no suitable method found for getPet(java.lang.String,boolean)
+2026-11-08T13:32:30.1865505Z [ERROR]     method org.springframework.samples.petclinic.owner.Owner.getPet(java.lang.String) is not applicable
+2026-11-08T13:32:30.1866378Z [ERROR]       (actual and formal argument lists differ in length)
+2026-11-08T13:32:30.1866912Z [ERROR]     method org.springframework.samples.petclinic.owner.Owner.getPet(java.lang.Integer) is not applicable
+2026-11-08T13:32:30.1867480Z [ERROR]       (actual and formal argument lists differ in length)
+2026-11-08T13:32:30.1867768Z [ERROR] -> [Help 1]
+2026-11-08T13:32:30.1867903Z [ERROR] 
+2026-11-08T13:32:30.1868094Z [ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+2026-11-08T13:32:30.1868583Z [ERROR] Re-run Maven using the -X switch to enable full debug logging.
+2026-11-08T13:32:30.1868883Z [ERROR] 
+2026-11-08T13:32:30.1869224Z [ERROR] For more information about the errors and possible solutions, please read the following articles:
+2026-11-08T13:32:30.1869755Z [ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException
+2026-11-08T13:32:30.2566817Z ##[error]Process completed with exit code 1.
+2026-11-08T13:32:30.2847307Z Post job cleanup.
+2026-11-08T13:32:30.3730916Z (node:2386) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-08T13:32:30.3731350Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-08T13:32:30.4011940Z Post job cleanup.
+2026-11-08T13:32:30.4574625Z [command]/usr/bin/git version
+2026-11-08T13:32:30.4608792Z git version 2.56.0
+2026-11-08T13:32:30.4631755Z Temporarily overriding HOME='/home/runner/work/_temp/5bc55160-77ad-4438-9aaf-a451b6858582' before making global git config changes
+2026-11-08T13:32:30.4632477Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T13:32:30.4635690Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/petclinic-ci-failures/petclinic-ci-failures
+2026-11-08T13:32:30.4856495Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T13:32:30.4889062Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T13:32:30.5146967Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T13:32:30.5169370Z http.https://github.com/.extraheader
+2026-11-08T13:32:30.5177782Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-08T13:32:30.5456559Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T13:32:30.5681047Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T13:32:30.5714792Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T13:32:30.6074905Z Cleaning up orphan processes
+2026-11-08T13:32:30.6345379Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-java@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

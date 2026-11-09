@@ -1,0 +1,317 @@
+2026-11-08T13:32:15.9308998Z Current runner version: '2.338.2'
+2026-11-08T13:32:15.9327527Z ##[group]Runner Image Provisioner
+2026-11-08T13:32:15.9328304Z Hosted Compute Agent
+2026-11-08T13:32:15.9328759Z Version: 20261028.624
+2026-11-08T13:32:15.9329211Z Commit: 54898b74c23fde5556c9b3c3a2290865feef0dfe
+2026-11-08T13:32:15.9329704Z Build Date: 2026-10-28T21:51:42Z
+2026-11-08T13:32:15.9330235Z Worker ID: {4ef40165-c54e-484d-a3d7-1ce070e9bcbe}
+2026-11-08T13:32:15.9330733Z Region: centralus
+2026-11-08T13:32:15.9331129Z Cloud: Azure
+2026-11-08T13:32:15.9331745Z ##[endgroup]
+2026-11-08T13:32:15.9332793Z ##[group]Operating System
+2026-11-08T13:32:15.9333270Z Ubuntu
+2026-11-08T13:32:15.9333634Z 26.04.1
+2026-11-08T13:32:15.9333995Z LTS
+2026-11-08T13:32:15.9334373Z ##[endgroup]
+2026-11-08T13:32:15.9334752Z ##[group]Runner Image
+2026-11-08T13:32:15.9335195Z Image: ubuntu-26.04
+2026-11-08T13:32:15.9335580Z Version: 20261101.186.1
+2026-11-08T13:32:15.9336493Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261101.186/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-08T13:32:15.9337562Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261101.186
+2026-11-08T13:32:15.9338233Z ##[endgroup]
+2026-11-08T13:32:15.9339057Z ##[group]GITHUB_TOKEN Permissions
+2026-11-08T13:32:15.9340533Z Contents: read
+2026-11-08T13:32:15.9340926Z Metadata: read
+2026-11-08T13:32:15.9341362Z Packages: read
+2026-11-08T13:32:15.9341993Z ##[endgroup]
+2026-11-08T13:32:15.9343489Z Secret source: Actions
+2026-11-08T13:32:15.9344106Z Cache mode: write
+2026-11-08T13:32:15.9344590Z Prepare workflow directory
+2026-11-08T13:32:15.9596690Z Prepare all required actions
+2026-11-08T13:32:15.9630787Z Getting action download info
+2026-11-08T13:32:16.1749258Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-08T13:32:16.2877257Z Download action repository 'actions/setup-java@v4' (SHA:cf277c60eb25467037889841efdb72551f06f6c3)
+2026-11-08T13:32:16.6983613Z Download action repository 'gradle/actions@v4' (SHA:ed408507eac070d1f99cc633dbcf757c94c7933a)
+2026-11-08T13:32:17.8480570Z Complete job name: build (17)
+2026-11-08T13:32:17.8984922Z ##[group]Run actions/checkout@v4
+2026-11-08T13:32:17.8985516Z with:
+2026-11-08T13:32:17.8985920Z   repository: pathmanabanptech/petclinic-ci-failures
+2026-11-08T13:32:17.8988071Z   token: ***
+2026-11-08T13:32:17.8988406Z   ssh-strict: true
+2026-11-08T13:32:17.8988720Z   ssh-user: git
+2026-11-08T13:32:17.8989047Z   persist-credentials: true
+2026-11-08T13:32:17.8989444Z   clean: true
+2026-11-08T13:32:17.8989749Z   sparse-checkout-cone-mode: true
+2026-11-08T13:32:17.8990110Z   fetch-depth: 1
+2026-11-08T13:32:17.8990418Z   fetch-tags: false
+2026-11-08T13:32:17.8990731Z   show-progress: true
+2026-11-08T13:32:17.8991068Z   lfs: false
+2026-11-08T13:32:17.8991374Z   submodules: false
+2026-11-08T13:32:17.8991897Z   set-safe-directory: true
+2026-11-08T13:32:17.8992247Z   allow-unsafe-pr-checkout: false
+2026-11-08T13:32:17.8992770Z ##[endgroup]
+2026-11-08T13:32:18.1121133Z Syncing repository: pathmanabanptech/petclinic-ci-failures
+2026-11-08T13:32:18.1123494Z ##[group]Getting Git version info
+2026-11-08T13:32:18.1124244Z Working directory is '/home/runner/work/petclinic-ci-failures/petclinic-ci-failures'
+2026-11-08T13:32:18.1125374Z [command]/usr/bin/git version
+2026-11-08T13:32:18.1181006Z git version 2.56.0
+2026-11-08T13:32:18.1225397Z ##[endgroup]
+2026-11-08T13:32:18.1230353Z Temporarily overriding HOME='/home/runner/work/_temp/6e76c63c-2f7b-4694-9065-b15216c3bc3b' before making global git config changes
+2026-11-08T13:32:18.1231566Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T13:32:18.1232813Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/petclinic-ci-failures/petclinic-ci-failures
+2026-11-08T13:32:18.1239552Z Deleting the contents of '/home/runner/work/petclinic-ci-failures/petclinic-ci-failures'
+2026-11-08T13:32:18.1245042Z ##[group]Initializing the repository
+2026-11-08T13:32:18.1249439Z [command]/usr/bin/git init /home/runner/work/petclinic-ci-failures/petclinic-ci-failures
+2026-11-08T13:32:18.1334943Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-08T13:32:18.1335461Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-08T13:32:18.1335979Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-08T13:32:18.1336461Z hint: call:
+2026-11-08T13:32:18.1336700Z hint:
+2026-11-08T13:32:18.1337049Z hint: 	git config --global init.defaultBranch <name>
+2026-11-08T13:32:18.1337366Z hint:
+2026-11-08T13:32:18.1337684Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-08T13:32:18.1338132Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-08T13:32:18.1338593Z hint:
+2026-11-08T13:32:18.1338854Z hint: 	git branch -m <name>
+2026-11-08T13:32:18.1339122Z hint:
+2026-11-08T13:32:18.1339445Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-08T13:32:18.1346243Z Initialized empty Git repository in /home/runner/work/petclinic-ci-failures/petclinic-ci-failures/.git/
+2026-11-08T13:32:18.1355287Z [command]/usr/bin/git remote add origin https://github.com/pathmanabanptech/petclinic-ci-failures
+2026-11-08T13:32:18.1397370Z ##[endgroup]
+2026-11-08T13:32:18.1397965Z ##[group]Disabling automatic garbage collection
+2026-11-08T13:32:18.1401383Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-08T13:32:18.1428898Z ##[endgroup]
+2026-11-08T13:32:18.1429434Z ##[group]Setting up auth
+2026-11-08T13:32:18.1435443Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T13:32:18.1461933Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T13:32:18.1832366Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T13:32:18.1855669Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T13:32:18.2029071Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T13:32:18.2052041Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T13:32:18.2219258Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-08T13:32:18.2253965Z ##[endgroup]
+2026-11-08T13:32:18.2254466Z ##[group]Fetching the repository
+2026-11-08T13:32:18.2260753Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +0b5a2fb64e780abc506895127e7d9dfc5756ac2c:refs/remotes/pull/3/merge
+2026-11-08T13:32:18.7285538Z From https://github.com/pathmanabanptech/petclinic-ci-failures
+2026-11-08T13:32:18.7286725Z  * [new ref]         0b5a2fb64e780abc506895127e7d9dfc5756ac2c -> pull/3/merge
+2026-11-08T13:32:18.7289168Z ##[endgroup]
+2026-11-08T13:32:18.7289670Z ##[group]Determining the checkout info
+2026-11-08T13:32:18.7291921Z ##[endgroup]
+2026-11-08T13:32:18.7297740Z [command]/usr/bin/git sparse-checkout disable
+2026-11-08T13:32:18.7344064Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-08T13:32:18.7373831Z ##[group]Checking out the ref
+2026-11-08T13:32:18.7376703Z [command]/usr/bin/git checkout --progress --force refs/remotes/pull/3/merge
+2026-11-08T13:32:18.7472558Z Note: switching to 'refs/remotes/pull/3/merge'.
+2026-11-08T13:32:18.7472961Z 
+2026-11-08T13:32:18.7473206Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-11-08T13:32:18.7473788Z changes and commit them, and you can discard any commits you make in this
+2026-11-08T13:32:18.7474278Z state without impacting any branches by switching back to a branch.
+2026-11-08T13:32:18.7474827Z 
+2026-11-08T13:32:18.7475095Z If you want to create a new branch to retain commits you create, you may
+2026-11-08T13:32:18.7475558Z do so (now or later) by using -c with the switch command. Example:
+2026-11-08T13:32:18.7475812Z 
+2026-11-08T13:32:18.7475953Z   git switch -c <new-branch-name>
+2026-11-08T13:32:18.7476140Z 
+2026-11-08T13:32:18.7476263Z Or undo this operation with:
+2026-11-08T13:32:18.7476403Z 
+2026-11-08T13:32:18.7476494Z   git switch -
+2026-11-08T13:32:18.7476626Z 
+2026-11-08T13:32:18.7476811Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-11-08T13:32:18.7477050Z 
+2026-11-08T13:32:18.7477337Z HEAD is now at 0b5a2fb Merge c9d5394f2b069c2b80fc6d1fb18340accfc6f069 into afab46b773c6b540fad0e470685afff76f7363a3
+2026-11-08T13:32:18.7479791Z ##[endgroup]
+2026-11-08T13:32:18.7509733Z [command]/usr/bin/git log -1 --format=%H
+2026-11-08T13:32:18.7525904Z 0b5a2fb64e780abc506895127e7d9dfc5756ac2c
+2026-11-08T13:32:18.7763969Z ##[group]Run actions/setup-java@v4
+2026-11-08T13:32:18.7764232Z with:
+2026-11-08T13:32:18.7764417Z   java-version: 17
+2026-11-08T13:32:18.7764612Z   distribution: adopt
+2026-11-08T13:32:18.7764803Z   cache: maven
+2026-11-08T13:32:18.7764992Z   java-package: jdk
+2026-11-08T13:32:18.7765188Z   check-latest: false
+2026-11-08T13:32:18.7765379Z   server-id: github
+2026-11-08T13:32:18.7765626Z   server-username: GITHUB_ACTOR
+2026-11-08T13:32:18.7765849Z   server-password: GITHUB_TOKEN
+2026-11-08T13:32:18.7766066Z   overwrite-settings: true
+2026-11-08T13:32:18.7766268Z   job-status: success
+2026-11-08T13:32:18.7768072Z   token: ***
+2026-11-08T13:32:18.7768259Z ##[endgroup]
+2026-11-08T13:32:18.8987217Z ##[warning]setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
+2026-11-08T13:32:18.8993749Z ##[group]Installed distributions
+2026-11-08T13:32:18.8995065Z ##[warning]The 'adopt' legacy AdoptOpenJDK distribution is deprecated and will be removed in setup-java v6. Please migrate to the 'temurin' distribution.
+2026-11-08T13:32:18.8996063Z Trying to resolve the latest version from remote
+2026-11-08T13:32:18.9087822Z (node:2200) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-08T13:32:18.9088519Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-08T13:32:19.7724772Z Resolved latest version as 17.0.21+9
+2026-11-08T13:32:19.7725201Z Trying to download...
+2026-11-08T13:32:19.7726078Z Downloading Java 17.0.21+9 (Adopt-Hotspot) from https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.21%2B9/OpenJDK17U-jdk_x64_linux_hotspot_17.0.21_9.tar.gz ...
+2026-11-08T13:32:20.6731998Z Extracting Java archive...
+2026-11-08T13:32:20.6833315Z [command]/usr/bin/tar xz --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/505754c2-e847-4463-80ce-d7280a7f7e40 -f /home/runner/work/_temp/1358c3ec-ebb3-4bf2-9e1a-d2cb1c493061
+2026-11-08T13:32:23.6590774Z Java 17.0.21+9 was downloaded
+2026-11-08T13:32:23.6591302Z Setting Java 17.0.21+9 as the default
+2026-11-08T13:32:23.6596064Z Creating toolchains.xml for JDK version 17 from adopt
+2026-11-08T13:32:23.6646959Z Writing to /home/runner/.m2/toolchains.xml
+2026-11-08T13:32:23.6647264Z 
+2026-11-08T13:32:23.6647360Z Java configuration:
+2026-11-08T13:32:23.6647597Z   Distribution: adopt
+2026-11-08T13:32:23.6647851Z   Version: 17.0.21+9
+2026-11-08T13:32:23.6648141Z   Path: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
+2026-11-08T13:32:23.6648395Z 
+2026-11-08T13:32:23.6652795Z ##[endgroup]
+2026-11-08T13:32:23.6673767Z Creating settings.xml with server-id: github
+2026-11-08T13:32:23.6674209Z Writing to /home/runner/.m2/settings.xml
+2026-11-08T13:32:23.8067763Z Cache hit for: setup-java-Linux-x64-maven-e79accbe84fa5cac04038c7c41f28e92f24d31a453b8bd78678c2c832c29488d
+2026-11-08T13:32:23.8152077Z (node:2200) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-08T13:32:24.9275595Z Received 134217728 of 174679782 (76.8%), 127.9 MBs/sec
+2026-11-08T13:32:25.1297841Z Received 174679782 of 174679782 (100.0%), 138.5 MBs/sec
+2026-11-08T13:32:25.1298305Z Cache Size: ~167 MB (174679782 B)
+2026-11-08T13:32:25.1329416Z [command]/usr/bin/tar -xf /home/runner/work/_temp/322e9fa5-6276-423a-855a-af01246d9a7c/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
+2026-11-08T13:32:25.3529351Z Cache restored successfully
+2026-11-08T13:32:25.3587527Z Cache restored from key: setup-java-Linux-x64-maven-e79accbe84fa5cac04038c7c41f28e92f24d31a453b8bd78678c2c832c29488d
+2026-11-08T13:32:25.3881677Z ##[group]Run gradle/actions/setup-gradle@v4
+2026-11-08T13:32:25.3881939Z with:
+2026-11-08T13:32:25.3882105Z   cache-disabled: false
+2026-11-08T13:32:25.3882347Z   cache-read-only: true
+2026-11-08T13:32:25.3882595Z   cache-write-only: false
+2026-11-08T13:32:25.3882817Z   cache-overwrite-existing: false
+2026-11-08T13:32:25.3883202Z   cache-cleanup: on-success
+2026-11-08T13:32:25.3883579Z   gradle-home-cache-includes: caches
+notifications
+
+2026-11-08T13:32:25.3883899Z   add-job-summary: always
+2026-11-08T13:32:25.3884119Z   add-job-summary-as-pr-comment: never
+2026-11-08T13:32:25.3884340Z   dependency-graph: disabled
+2026-11-08T13:32:25.3884591Z   dependency-graph-report-dir: dependency-graph-reports
+2026-11-08T13:32:25.3884872Z   dependency-graph-continue-on-failure: true
+2026-11-08T13:32:25.3885112Z   build-scan-publish: false
+2026-11-08T13:32:25.3885380Z   validate-wrappers: true
+2026-11-08T13:32:25.3885771Z   allow-snapshot-wrappers: false
+2026-11-08T13:32:25.3886154Z   gradle-home-cache-strict-match: false
+2026-11-08T13:32:25.3886486Z   workflow-job-context: {
+  "java": "17"
+}
+2026-11-08T13:32:25.3888510Z   github-token: ***
+2026-11-08T13:32:25.3888787Z env:
+2026-11-08T13:32:25.3889070Z   JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
+2026-11-08T13:32:25.3889479Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
+2026-11-08T13:32:25.3889811Z ##[endgroup]
+2026-11-08T13:32:25.6255852Z Merged default JDK locations into /home/runner/.m2/toolchains.xml
+2026-11-08T13:32:25.6257777Z ##[group]Restore Gradle state from cache
+2026-11-08T13:32:25.7425012Z Cache hit for restore-key: gradle-home-v1|Linux-X64|build[08bf202abcfff8f9b3c3889f66d6bd9e]-32cb980cb8903a864f5209fbd5deea342e055d37
+2026-11-08T13:32:26.4567202Z Received 6824494 of 6824494 (100.0%), 12.1 MBs/sec
+2026-11-08T13:32:26.4568170Z Cache Size: ~7 MB (6824494 B)
+2026-11-08T13:32:26.4592748Z [command]/usr/bin/tar -xf /home/runner/work/_temp/0604fdf7-d1cc-472d-9279-7b488afcf097/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
+2026-11-08T13:32:26.5332596Z Cache restored successfully
+2026-11-08T13:32:26.5338222Z Restored cache entry with key gradle-home-v1|Linux-X64|build[08bf202abcfff8f9b3c3889f66d6bd9e]-0b5a2fb64e780abc506895127e7d9dfc5756ac2c to /home/runner/.gradle/caches,/home/runner/.gradle/notifications,/home/runner/.gradle/.setup-gradle in 907ms
+2026-11-08T13:32:26.6579452Z Cache hit for: gradle-wrapper-zips-v1-32a3a100d181ec75e824fde1164fcedd
+2026-11-08T13:32:26.6660372Z Cache hit for: gradle-dependencies-v1-5ebb1281a7cb20a4e3d496bca87cb675
+2026-11-08T13:32:26.6756865Z Cache hit for: gradle-groovy-dsl-v1-439b7db45417da9dd21bad2710c26bcb
+2026-11-08T13:32:26.6833542Z Cache hit for: gradle-instrumented-jars-v1-336fac4487a3b415fc6c728ca5ee45a5
+2026-11-08T13:32:26.6852041Z Cache hit for: gradle-transforms-v1-7a77682d0c1954de23e039e66b6413c2
+2026-11-08T13:32:26.8989470Z Received 121033 of 121033 (100.0%), 1.5 MBs/sec
+2026-11-08T13:32:26.8990088Z Cache Size: ~0 MB (121033 B)
+2026-11-08T13:32:26.9031189Z [command]/usr/bin/tar -xf /home/runner/work/_temp/cce68b5f-59df-4bb8-9878-1220fab97fb8/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
+2026-11-08T13:32:26.9263219Z Cache restored successfully
+2026-11-08T13:32:26.9299617Z Restored cache entry with key gradle-groovy-dsl-v1-439b7db45417da9dd21bad2710c26bcb to /home/runner/.gradle/caches/*/groovy-dsl/*/ in 395ms
+2026-11-08T13:32:27.0672083Z Received 75928 of 75928 (100.0%), 0.3 MBs/sec
+2026-11-08T13:32:27.0672611Z Cache Size: ~0 MB (75928 B)
+2026-11-08T13:32:27.0692276Z [command]/usr/bin/tar -xf /home/runner/work/_temp/9706d5f6-8831-4ab4-9e80-42767505d2e9/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
+2026-11-08T13:32:27.0774134Z Cache restored successfully
+2026-11-08T13:32:27.0777396Z Restored cache entry with key gradle-instrumented-jars-v1-336fac4487a3b415fc6c728ca5ee45a5 to /home/runner/.gradle/caches/jars-*/*/ in 543ms
+2026-11-08T13:32:27.4947183Z Received 34151285 of 34151285 (100.0%), 47.9 MBs/sec
+2026-11-08T13:32:27.4947862Z Cache Size: ~33 MB (34151285 B)
+2026-11-08T13:32:27.5288266Z [command]/usr/bin/tar -xf /home/runner/work/_temp/d47c47eb-163d-47c8-8202-d9d3af87f106/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
+2026-11-08T13:32:27.7436909Z Cache restored successfully
+2026-11-08T13:32:27.7493254Z Restored cache entry with key gradle-transforms-v1-7a77682d0c1954de23e039e66b6413c2 to /home/runner/.gradle/caches/transforms-4/*/,/home/runner/.gradle/caches/*/transforms/*/ in 1211ms
+2026-11-08T13:32:27.7967618Z Received 92274688 of 139556796 (66.1%), 87.5 MBs/sec
+2026-11-08T13:32:27.8077441Z Received 83886080 of 151056364 (55.5%), 80.0 MBs/sec
+2026-11-08T13:32:28.1995605Z Received 139556796 of 139556796 (100.0%), 94.5 MBs/sec
+2026-11-08T13:32:28.1997719Z Cache Size: ~133 MB (139556796 B)
+2026-11-08T13:32:28.2175935Z [command]/usr/bin/tar -xf /home/runner/work/_temp/e91b9a17-7c1c-40f2-a185-7684d5635cc0/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
+2026-11-08T13:32:28.3102637Z Received 151056364 of 151056364 (100.0%), 95.9 MBs/sec
+2026-11-08T13:32:28.3124245Z Cache Size: ~144 MB (151056364 B)
+2026-11-08T13:32:28.3258866Z [command]/usr/bin/tar -xf /home/runner/work/_temp/560006ef-4352-4e0a-8edf-147ab0927a12/cache.tzst -P -C /home/runner/work/petclinic-ci-failures/petclinic-ci-failures --use-compress-program unzstd
+2026-11-08T13:32:28.3816875Z Cache restored successfully
+2026-11-08T13:32:28.3866107Z Restored cache entry with key gradle-wrapper-zips-v1-32a3a100d181ec75e824fde1164fcedd to /home/runner/.gradle/wrapper/dists/gradle-9.5.1-bin/iq79hdu3mqx29lgffhp8bfmx in 1852ms
+2026-11-08T13:32:28.5046519Z Cache restored successfully
+2026-11-08T13:32:28.5090340Z Restored cache entry with key gradle-dependencies-v1-5ebb1281a7cb20a4e3d496bca87cb675 to /home/runner/.gradle/caches/modules-*/files-*/*/*/*/* in 1974ms
+2026-11-08T13:32:28.5142451Z ##[endgroup]
+2026-11-08T13:32:28.5198630Z ##[group]All Gradle Wrapper jars are valid
+2026-11-08T13:32:28.5199732Z ✓ Found known Gradle Wrapper JAR files:
+2026-11-08T13:32:28.5200416Z   497c8c2a7e5031f6aa847f88104aa80a93532ec32ee17bdb8d1d2f67a194a9c7 gradle/wrapper/gradle-wrapper.jar
+2026-11-08T13:32:28.5201379Z ##[endgroup]
+2026-11-08T13:32:28.5319866Z ##[group]Run ./gradlew build
+2026-11-08T13:32:28.5320239Z [36;1m./gradlew build[0m
+2026-11-08T13:32:28.5350682Z shell: /usr/bin/bash -e {0}
+2026-11-08T13:32:28.5351044Z env:
+2026-11-08T13:32:28.5351563Z   JAVA_HOME: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
+2026-11-08T13:32:28.5352062Z   JAVA_HOME_17_X64: /opt/hostedtoolcache/Java_Adopt_jdk/17.0.21-9/x64
+2026-11-08T13:32:28.5352477Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-11-08T13:32:28.5352815Z   GRADLE_USER_HOME: /home/runner/.gradle
+2026-11-08T13:32:28.5353154Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-11-08T13:32:28.5353498Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+2026-11-08T13:32:28.5353986Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-11-08T13:32:28.5354462Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-11-08T13:32:28.5355002Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-11-08T13:32:28.5355315Z ##[endgroup]
+2026-11-08T13:32:29.0613245Z Starting a Gradle Daemon (subsequent builds will be faster)
+2026-11-08T13:32:36.6581298Z 
+2026-11-08T13:32:36.6604012Z /home/runner/work/petclinic-ci-failures/petclinic-ci-failures/src/main/java/org/springframework/samples/petclinic/owner/Owner.java:194: error: no suitable method found for getPet(String,boolean)
+2026-11-08T13:32:36.6604993Z > Task :compileJava FAILED
+2026-11-08T13:32:36.6618775Z gradle/actions: Writing build results to /home/runner/work/_temp/.gradle-actions/build-results/__run-1794144750817.json
+2026-11-08T13:32:36.6619443Z 
+2026-11-08T13:32:36.6620126Z [Incubating] Problems report is available at: file:///home/runner/work/petclinic-ci-failures/petclinic-ci-failures/build/reports/problems/problems-report.html
+2026-11-08T13:32:36.6621110Z 1 actionable task: 1 executed
+2026-11-08T13:32:36.6650360Z 		return getPet(name, true) != null;
+2026-11-08T13:32:36.6662333Z 		       ^
+2026-11-08T13:32:36.6670039Z     method Owner.getPet(String) is not applicable
+2026-11-08T13:32:36.6670866Z       (actual and formal argument lists differ in length)
+2026-11-08T13:32:36.6671682Z     method Owner.getPet(Integer) is not applicable
+2026-11-08T13:32:36.6672627Z       (actual and formal argument lists differ in length)
+2026-11-08T13:32:36.6673158Z 1 error
+2026-11-08T13:32:36.6673447Z 
+2026-11-08T13:32:36.6673739Z FAILURE: Build failed with an exception.
+2026-11-08T13:32:36.6674061Z 
+2026-11-08T13:32:36.6674295Z * What went wrong:
+2026-11-08T13:32:36.6674971Z Execution failed for task ':compileJava' (registered by plugin class 'org.gradle.api.plugins.JavaBasePlugin').
+2026-11-08T13:32:36.6675724Z > Compilation failed; see the compiler output below.
+2026-11-08T13:32:36.6676764Z   /home/runner/work/petclinic-ci-failures/petclinic-ci-failures/src/main/java/org/springframework/samples/petclinic/owner/Owner.java:194: error: no suitable method found for getPet(String,boolean)
+2026-11-08T13:32:36.6677908Z   		return getPet(name, true) != null;
+2026-11-08T13:32:36.6678404Z   		       ^
+2026-11-08T13:32:36.6678907Z       method Owner.getPet(String) is not applicable
+2026-11-08T13:32:36.6679456Z         (actual and formal argument lists differ in length)
+2026-11-08T13:32:36.6680036Z       method Owner.getPet(Integer) is not applicable
+2026-11-08T13:32:36.6680567Z         (actual and formal argument lists differ in length)
+2026-11-08T13:32:36.6681064Z   1 error
+2026-11-08T13:32:36.6681307Z 
+2026-11-08T13:32:36.6681688Z * Try:
+2026-11-08T13:32:36.6682220Z > Check your code and dependencies to fix the compilation error(s)
+2026-11-08T13:32:36.6682870Z > Run with --scan to get full insights from a Build Scan (powered by Develocity).
+2026-11-08T13:32:36.6683325Z 
+2026-11-08T13:32:36.6683555Z BUILD FAILED in 8s
+2026-11-08T13:32:37.0533718Z ##[error]Process completed with exit code 1.
+2026-11-08T13:32:37.0662797Z Post job cleanup.
+2026-11-08T13:32:37.2341928Z In post-action step
+2026-11-08T13:32:37.2348558Z Cache is read-only: will not save state for use in subsequent builds.
+2026-11-08T13:32:37.2352963Z Generating Job Summary
+2026-11-08T13:32:37.2366399Z Completed post-action step
+2026-11-08T13:32:37.2484389Z Post job cleanup.
+2026-11-08T13:32:37.3493281Z (node:2502) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-08T13:32:37.3494176Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-08T13:32:37.3637288Z Post job cleanup.
+2026-11-08T13:32:37.4260072Z [command]/usr/bin/git version
+2026-11-08T13:32:37.4295645Z git version 2.56.0
+2026-11-08T13:32:37.4334371Z Temporarily overriding HOME='/home/runner/work/_temp/3c7980e2-e5b1-453a-ac05-db9d56850da5' before making global git config changes
+2026-11-08T13:32:37.4335461Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-08T13:32:37.4338716Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/petclinic-ci-failures/petclinic-ci-failures
+2026-11-08T13:32:37.4369576Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-08T13:32:37.4394496Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-08T13:32:37.4592260Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-08T13:32:37.4608771Z http.https://github.com/.extraheader
+2026-11-08T13:32:37.4617005Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-08T13:32:37.4644663Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-08T13:32:37.4838422Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-08T13:32:37.4881103Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-08T13:32:37.5177789Z Cleaning up orphan processes
+2026-11-08T13:32:37.5374166Z Terminate orphan process: pid (2335) (java)
+2026-11-08T13:32:37.5442598Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@v4, actions/setup-java@v4, gradle/actions/setup-gradle@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
