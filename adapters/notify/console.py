@@ -10,6 +10,7 @@ import sys
 from typing import TextIO
 
 from adapters.base import Report
+from guardrails.sanitize import render_code_block
 
 
 class ConsoleNotifier:
@@ -38,7 +39,7 @@ class ConsoleNotifier:
         if not d.evidence:
             lines.append("  (none)")
         if d.fix_diff:
-            lines += ["Suggested fix:", "```diff", d.fix_diff.rstrip("\n"), "```"]
+            lines += ["Suggested fix:", render_code_block(d.fix_diff)]
         if d.copilot_fixable:
             lines.append("Copilot-fixable: yes")
         print("\n".join(lines), file=self._stream)
