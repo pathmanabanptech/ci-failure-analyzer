@@ -210,7 +210,7 @@ def test_cap_never_raises_confidence(case01_log: str) -> None:
         (0.9, "undiagnosable", AlertLevel.none, ()),
     ],
 )
-def test_g9_thresholds(
+def test_alert_thresholds(
     confidence: float, status: str, level: AlertLevel, channels: tuple[Channel, ...]
 ) -> None:
     decision = decide(diag(confidence=confidence, status=status))
@@ -223,7 +223,7 @@ VERIFIED = [ev("log", REAL, 279, verified=True)]
 
 
 @pytest.mark.parametrize("category", ["compile", "format", "test_assertion"])
-def test_g11_allowlisted_categories(category: str) -> None:
+def test_auto_fix_allowlisted_categories(category: str) -> None:
     assert apply_auto_fix_gating(diag(category=category, evidence=VERIFIED)).auto_fixable
 
 
@@ -241,7 +241,7 @@ def test_g11_allowlisted_categories(category: str) -> None:
         "unknown",
     ],
 )
-def test_g11_other_categories_never(category: str) -> None:
+def test_auto_fix_other_categories_never(category: str) -> None:
     assert not apply_auto_fix_gating(diag(category=category, evidence=VERIFIED)).auto_fixable
 
 
@@ -254,12 +254,12 @@ def test_g11_other_categories_never(category: str) -> None:
         {"status": "possible_cause"},
     ],
 )
-def test_g11_requires_evidence_confidence_and_diagnosis(overrides: dict[str, Any]) -> None:
+def test_auto_fix_requires_evidence_confidence_and_diagnosis(overrides: dict[str, Any]) -> None:
     d = diag(**{"evidence": VERIFIED, **overrides})
     assert not apply_auto_fix_gating(d).auto_fixable
 
 
-def test_g11_overrides_model_claim() -> None:
+def test_auto_fix_overrides_model_claim() -> None:
     d = diag(category="memory", evidence=VERIFIED, auto_fixable=True)
     assert apply_auto_fix_gating(d).auto_fixable is False
 

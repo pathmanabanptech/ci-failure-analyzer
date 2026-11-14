@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 # Runtime dependencies are added in the increment that first needs them
 # (pydantic/pyyaml in 1.2, opentelemetry-sdk in 1.7, strands-agents in 1.9, ...).
 dependencies = [
+    "opentelemetry-sdk>=1.45.2",
     "pydantic>=2.14.3",
     "pyyaml>=6.0.3",
 ]
@@ -38,15 +39,15 @@ addopts = "-ra"
 
 [tool.mypy]
 python_version = "3.12"
-files = ["agent", "guardrails", "adapters", "evals", "tests"]
+files = ["agent", "guardrails", "adapters", "evals", "tests", "pipeline.py", "telemetry.py", "cli.py"]
 plugins = ["pydantic.mypy"]
 warn_unused_configs = true
 warn_redundant_casts = true
 
-# Strict checking for the core packages: agent/, guardrails/, adapters/.
+# Strict checking for the core packages: agent/, guardrails/, adapters/, the pipeline.
 # `strict = true` is global-only in mypy, so the strict flag set is spelled out here.
 [[tool.mypy.overrides]]
-module = ["agent.*", "guardrails.*", "adapters.*"]
+module = ["agent.*", "guardrails.*", "adapters.*", "pipeline", "telemetry"]
 disallow_any_generics = true
 disallow_subclassing_any = true
 disallow_untyped_calls = true

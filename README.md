@@ -43,6 +43,8 @@ Reading files from the test-bed repo needs a local clone with all branches fetch
 export PETCLINIC_REPO_PATH=~/path/to/petclinic-ci-failures
 ```
 
+To see what each stage does on the real failure logs, follow [docs/try-it.md](docs/try-it.md).
+
 ## Layout
 
 | Path | Contents |
