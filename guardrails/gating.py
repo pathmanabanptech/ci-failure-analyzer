@@ -1,6 +1,6 @@
-"""G9 notification gating and G11 deterministic Copilot gating.
+"""Notification gating and deterministic auto-fix gating.
 
-Runs after the evidence verifier (G5), so ``confidence`` and ``verified`` are
+Runs after the evidence verifier, so ``confidence`` and ``verified`` are
 already code-checked.
 """
 
@@ -13,7 +13,7 @@ from agent.schema import Category, Diagnosis, Status
 
 ALERT_THRESHOLD = 0.7
 POSSIBLE_CAUSE_THRESHOLD = 0.4
-COPILOT_CATEGORIES = frozenset({Category.compile, Category.format, Category.test_assertion})
+AUTO_FIX_CATEGORIES = frozenset({Category.compile, Category.format, Category.test_assertion})
 
 
 class AlertLevel(StrEnum):
@@ -41,7 +41,7 @@ class GateDecision:
 
 
 def alert_level(d: Diagnosis) -> AlertLevel:
-    """G9: >= 0.7 alert, 0.4-0.7 possible cause, < 0.4 nothing.
+    """>= 0.7 alert, 0.4-0.7 possible cause, < 0.4 nothing.
 
     Only a ``diagnosed`` status can raise a full alert; ``undiagnosable`` never alerts.
     """
@@ -57,16 +57,16 @@ def decide(d: Diagnosis) -> GateDecision:
     return GateDecision(level=level, channels=_CHANNELS[level])
 
 
-def is_copilot_fixable(d: Diagnosis) -> bool:
-    """G11: allowlisted category, >= 1 verified evidence, confidence >= 0.7, diagnosed."""
+def is_auto_fixable(d: Diagnosis) -> bool:
+    """Allowlisted category, >= 1 verified evidence, confidence >= 0.7, diagnosed."""
     return (
-        d.category in COPILOT_CATEGORIES
+        d.category in AUTO_FIX_CATEGORIES
         and any(e.verified for e in d.evidence)
         and d.confidence >= ALERT_THRESHOLD
         and d.status is Status.diagnosed
     )
 
 
-def apply_copilot_gating(d: Diagnosis) -> Diagnosis:
-    """Set ``copilot_fixable`` by code, overriding whatever the model said."""
-    return d.model_copy(update={"copilot_fixable": is_copilot_fixable(d)})
+def apply_auto_fix_gating(d: Diagnosis) -> Diagnosis:
+    """Set ``auto_fixable`` by code, overriding whatever the model said."""
+    return d.model_copy(update={"auto_fixable": is_auto_fixable(d)})

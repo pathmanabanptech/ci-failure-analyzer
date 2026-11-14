@@ -1,6 +1,6 @@
 """SqliteMemoryStore: Phase 1 stub.
 
-Memory is implemented in Phase 3 together with the confirmation flow (G12: store a
+Memory is implemented in Phase 3 together with the confirmation flow (store a
 diagnosis only after a 👍 reaction or a merged fix with a green build). Until then
 nothing can be confirmed, so ``store`` refuses loudly and ``recall`` returns no
 hints. That keeps the pipeline wired against the MemoryStore Protocol without ever
@@ -19,9 +19,7 @@ class SqliteMemoryStore:
         self.path = path
 
     def store(self, record: MemoryRecord) -> None:
-        raise NotImplementedError(
-            "memory storage arrives in Phase 3 with the G12 confirmation flow"
-        )
+        raise NotImplementedError("memory storage arrives in Phase 3 with the confirmation flow")
 
     def recall(self, query: MemoryQuery) -> list[MemoryRecord]:
         return []

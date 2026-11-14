@@ -34,7 +34,7 @@ def test_format_category_round_trips() -> None:
 
 def test_defaults_for_code_owned_fields() -> None:
     d = _diag()
-    assert d.copilot_fixable is False
+    assert d.auto_fixable is False
     assert d.evidence[0].verified is False
     assert d.reroute is None and d.build_tool is None
 

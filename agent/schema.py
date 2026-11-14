@@ -1,4 +1,4 @@
-"""Output contract (PLAN.md section 6). Every agent returns a ``Diagnosis``."""
+"""Output contract. Every agent returns a ``Diagnosis``."""
 
 from enum import Enum
 from typing import Literal
@@ -9,7 +9,7 @@ SpecialistName = Literal["build", "test", "infra"]
 BuildTool = Literal["maven", "gradle"]
 
 
-class Category(str, Enum):  # noqa: UP042  (contract in PLAN.md section 6)
+class Category(str, Enum):  # noqa: UP042  (str mixin is part of the contract)
     compile = "compile"
     dependency = "dependency"
     # Shadows str.format on members; intentional, the value "format" is the contract.
@@ -25,7 +25,7 @@ class Category(str, Enum):  # noqa: UP042  (contract in PLAN.md section 6)
     unknown = "unknown"
 
 
-class Status(str, Enum):  # noqa: UP042  (contract in PLAN.md section 6)
+class Status(str, Enum):  # noqa: UP042  (str mixin is part of the contract)
     diagnosed = "diagnosed"
     possible_cause = "possible_cause"
     undiagnosable = "undiagnosable"
@@ -35,7 +35,7 @@ class Evidence(BaseModel):
     source: str  # "log" | file path | "commit" | "run_attempts"
     line: int | None = None
     snippet: str
-    verified: bool = False  # set by G5 verifier, never by the model
+    verified: bool = False  # set by the evidence verifier, never by the model
 
 
 class Diagnosis(BaseModel):
@@ -46,7 +46,9 @@ class Diagnosis(BaseModel):
     local_vs_ci: str  # why it probably passed on the dev's machine
     evidence: list[Evidence]
     fix_diff: str | None  # minimal suggested change
-    confidence: float = Field(ge=0.0, le=1.0)  # model-reported, then capped by G5
+    confidence: float = Field(
+        ge=0.0, le=1.0
+    )  # model-reported, then capped by the evidence verifier
     reroute: SpecialistName | None = None
     build_tool: BuildTool | None = None
-    copilot_fixable: bool = False  # set by G11 gating code, never by the model
+    auto_fixable: bool = False  # set by auto-fix gating code, never by the model

@@ -1,15 +1,15 @@
-"""G5 evidence verifier: code, not the model, decides whether evidence is real.
+"""Evidence verifier: code, not the model, decides whether evidence is real.
 
 Every cited snippet is checked at its cited location:
 
 * ``source="log"``: the raw log line ``line`` (1-based, raw numbering as shown in
-  the G8 excerpt), cleaned and redacted exactly like the text the model saw. A
+  the preprocessed excerpt), cleaned and redacted exactly like the text the model saw. A
   multi-line snippet must match consecutive lines starting at ``line``.
 * ``source=<file path>``: the file at the failing commit (via the injected
   ``read_file``). With ``line``: match at that line; without: anywhere in the file.
 * ``source="commit"`` / ``"run_attempts"``: the text of that context block.
 * Anything else (incl. ``"memory"``: recalled memories are hints, never evidence,
-  G12) never verifies.
+  see adapters.base.MemoryStore) never verifies.
 
 Matching tolerates whitespace differences and ``...`` elisions; snippets shorter
 than ``MIN_SNIPPET_CHARS`` non-space characters never verify (``"error"`` alone

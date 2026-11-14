@@ -1,6 +1,6 @@
 """RepoReader over a local git clone (``PETCLINIC_REPO_PATH``).
 
-Read-only (``git cat-file`` / ``git log``; design rule 6). Requests are policed
+Read-only (``git cat-file`` / ``git log``); the agent never modifies the repo. Requests are policed
 before git runs:
 
 * ``sha`` must be 7-40 lowercase hex. Refs such as ``HEAD`` or anything starting

@@ -43,7 +43,7 @@ plugins = ["pydantic.mypy"]
 warn_unused_configs = true
 warn_redundant_casts = true
 
-# Strict checking for the core packages (design rule: agent/, guardrails/, adapters/).
+# Strict checking for the core packages: agent/, guardrails/, adapters/.
 # `strict = true` is global-only in mypy, so the strict flag set is spelled out here.
 [[tool.mypy.overrides]]
 module = ["agent.*", "guardrails.*", "adapters.*"]

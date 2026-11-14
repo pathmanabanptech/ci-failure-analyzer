@@ -42,7 +42,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="cli.py", description="CI failure analyzer")
     sub = parser.add_subparsers(dest="command", required=True)
 
-    p = sub.add_parser("preprocess", help="print the G8 excerpt of a case log")
+    p = sub.add_parser("preprocess", help="print the preprocessed excerpt of a case log")
     p.add_argument("--case", required=True, help="case id, e.g. case-01")
     p.add_argument("--log", required=True, help="log file name, e.g. maven.log")
     p.set_defaults(func=_cmd_preprocess)

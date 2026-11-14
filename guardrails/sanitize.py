@@ -1,4 +1,4 @@
-"""G2 output sanitization, applied to every diagnosis before any notification.
+"""Output sanitization, applied to every diagnosis before any notification.
 
 Prose fields (``root_cause``, ``local_vs_ci``, evidence snippets):
 
@@ -17,7 +17,7 @@ Prose fields (``root_cause``, ``local_vs_ci``, evidence snippets):
 cannot break out), so HTML and ``@`` stay as they are (Thymeleaf templates, Java
 annotations). Non-allowlisted URLs are still removed and length is capped.
 
-Secrets are redacted again (G3) as defense in depth.
+Secrets are redacted again as defense in depth.
 """
 
 from __future__ import annotations

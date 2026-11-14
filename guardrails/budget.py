@@ -1,7 +1,7 @@
-"""G7 budgets: tool calls per agent, input tokens, wall clock; cost accounting.
+"""Budgets: tool calls per agent, input tokens, wall clock; cost accounting.
 
 No I/O; the clock is injectable. Exceeding any limit raises ``BudgetExceeded``,
-which the pipeline turns into a fail-safe exit (G6), never a retry.
+which the pipeline turns into a fail-safe exit (post nothing, exit 0), never a retry.
 """
 
 from __future__ import annotations

@@ -1,4 +1,4 @@
-"""G3 secret redaction.
+"""Secret redaction.
 
 Deterministic, gitleaks-style pass applied before content reaches the model, before
 it is stored in memory and before a notification is posted.
@@ -10,7 +10,7 @@ Properties (all tested):
 * **Idempotent**: ``redact(redact(x)) == redact(x)``; placeholders never re-match.
 * **Line-preserving**: the number and order of lines never change (a multi-line
   private key becomes one placeholder per line), so original log line numbers stay
-  valid for evidence verification (G5).
+  valid for evidence verification.
 * Works on raw logs (runner timestamp prefixes) and on cleaned text alike.
 
 Already-masked values (GitHub's ``***``) and variable references (``$VAR``,

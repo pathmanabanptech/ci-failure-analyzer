@@ -1,4 +1,4 @@
-"""G3 redaction tests.
+"""Secret redaction tests.
 
 Fake secrets are assembled at runtime so no secret-shaped literal sits in the source
 (keeps GitHub secret scanning / push protection quiet).

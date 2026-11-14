@@ -1,4 +1,4 @@
-"""G8 log pre-processing.
+"""Log preprocessing.
 
 Turns a raw GitHub Actions job log into a compact excerpt for the model:
 
@@ -9,9 +9,9 @@ Turns a raw GitHub Actions job log into a compact excerpt for the model:
 3. Keep a window around that error plus the log's head and tail.
 
 Every kept line carries its **original 1-based line number in the raw file**, so
-evidence cited by the model can be verified against the raw log (G5).
+evidence cited by the model can be verified against the raw log.
 
-Pure functions, no I/O. Redaction (G3) is a separate pass.
+Pure functions, no I/O. Secret redaction is a separate pass.
 """
 
 from __future__ import annotations

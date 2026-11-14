@@ -1,6 +1,6 @@
 """Offline consistency checks: does each case's meta.yaml match its own logs?
 
-Catches the hand-curation mistakes that hit the Phase 0 cases: logs filed under the
+Catches the hand-curation mistakes that hit the first three cases: logs filed under the
 wrong case, a log copied into two cases, run/job ids copy-pasted between runs, and a
 conclusion that disagrees with the log (cancelled vs failure).
 """

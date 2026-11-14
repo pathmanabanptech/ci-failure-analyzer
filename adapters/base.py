@@ -1,11 +1,11 @@
-"""The four I/O interfaces (design rule 1). Agent logic talks only to these.
+"""The four I/O interfaces. Agent logic never touches the environment directly.
 
 Phase 1 ships local implementations; Phase 3 adds GitHub ones and Phase 4 AWS ones
 behind the same Protocols, so agent code, prompts and evals do not change.
 
 Content returned by ``LogSource`` and ``RepoReader`` (logs, file contents, commit
-messages) is untrusted (G1). Adapters return it raw; callers redact (G3) and wrap it
-in untrusted blocks before it reaches a model.
+messages) is untrusted. Adapters return it raw; callers redact secrets and wrap it
+in delimited untrusted blocks before it reaches a model.
 """
 
 from __future__ import annotations
@@ -95,7 +95,7 @@ class LogSource(Protocol):
 class Commit:
     sha: str
     authored_at: datetime
-    subject: str  # untrusted (G1); no author name/email (not needed, PII)
+    subject: str  # untrusted; no author name/email (not needed, PII)
 
 
 @runtime_checkable
@@ -115,12 +115,12 @@ class RepoReader(Protocol):
 
 @dataclass(frozen=True)
 class Report:
-    """One alert for one failure (G10: one per ``sha + category``)."""
+    """One alert for one failure: one per ``sha + category``."""
 
     repo: str
     head_sha: str
     build_tools: tuple[BuildTool, ...]  # all builds that failed for this reason
-    diagnosis: Diagnosis  # already gated (G9/G11) and sanitized (G2) by the caller
+    diagnosis: Diagnosis  # already gated and sanitized by the caller
 
     @property
     def dedupe_key(self) -> str:
@@ -142,8 +142,8 @@ class MemoryRecord:
     repo: str
     category: Category
     signature: str  # normalized first fatal error, used for recall
-    diagnosis: Diagnosis  # redacted (G3) before storing
-    confirmed_by: Literal["reaction", "green_build"]  # G12: only confirmed diagnoses
+    diagnosis: Diagnosis  # secrets redacted before storing
+    confirmed_by: Literal["reaction", "green_build"]  # only confirmed diagnoses are stored
     stored_at: datetime
 
 
@@ -158,9 +158,9 @@ class MemoryQuery:
 @runtime_checkable
 class MemoryStore(Protocol):
     def store(self, record: MemoryRecord) -> None:
-        """Persist a *confirmed* diagnosis (G12)."""
+        """Persist a *confirmed* diagnosis."""
         ...
 
     def recall(self, query: MemoryQuery) -> list[MemoryRecord]:
-        """Past diagnoses as hints only. Never evidence (G12, G5)."""
+        """Past diagnoses as hints only, never as evidence."""
         ...

@@ -18,7 +18,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 from agent.schema import BuildTool
 
-# Keys that would leak labels into agent input (G4 / section 7.3 "no label leakage").
+# Keys that would leak labels (branch names, PR titles) into agent input.
 FORBIDDEN_META_KEYS = frozenset(
     {
         "branch",

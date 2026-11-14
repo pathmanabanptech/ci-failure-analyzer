@@ -1,4 +1,4 @@
-"""Increment 1.6: G5 verifier, G9/G11 gating, G7 budgets, G2 sanitizer."""
+"""Evidence verifier, alert and auto-fix gating, budgets, output sanitizer."""
 
 from typing import Any
 
@@ -7,7 +7,7 @@ import pytest
 from agent.schema import Diagnosis, Status
 from evals.loader import CASES_DIR
 from guardrails.budget import Budget, BudgetExceeded, BudgetLimits, Price
-from guardrails.gating import AlertLevel, Channel, apply_copilot_gating, decide
+from guardrails.gating import AlertLevel, Channel, apply_auto_fix_gating, decide
 from guardrails.sanitize import (
     LINK_REMOVED,
     TRUNCATED,
@@ -61,7 +61,7 @@ def read_file(path: str) -> str | None:
     return {OWNER: OWNER_SRC}.get(path)
 
 
-# ======================================================================== G5
+# ========================================================= evidence verifier
 
 
 REAL = "Owner.java:[194,24] no suitable method found for getPet(java.lang.String,boolean)"
@@ -194,7 +194,7 @@ def test_cap_never_raises_confidence(case01_log: str) -> None:
     assert result.diagnosis.confidence == 0.1
 
 
-# ======================================================================== G9
+# ============================================================ alert gating
 
 
 @pytest.mark.parametrize(
@@ -217,14 +217,14 @@ def test_g9_thresholds(
     assert decision.level is level and decision.channels == channels
 
 
-# ======================================================================= G11
+# ========================================================= auto-fix gating
 
 VERIFIED = [ev("log", REAL, 279, verified=True)]
 
 
 @pytest.mark.parametrize("category", ["compile", "format", "test_assertion"])
 def test_g11_allowlisted_categories(category: str) -> None:
-    assert apply_copilot_gating(diag(category=category, evidence=VERIFIED)).copilot_fixable
+    assert apply_auto_fix_gating(diag(category=category, evidence=VERIFIED)).auto_fixable
 
 
 @pytest.mark.parametrize(
@@ -242,7 +242,7 @@ def test_g11_allowlisted_categories(category: str) -> None:
     ],
 )
 def test_g11_other_categories_never(category: str) -> None:
-    assert not apply_copilot_gating(diag(category=category, evidence=VERIFIED)).copilot_fixable
+    assert not apply_auto_fix_gating(diag(category=category, evidence=VERIFIED)).auto_fixable
 
 
 @pytest.mark.parametrize(
@@ -256,15 +256,15 @@ def test_g11_other_categories_never(category: str) -> None:
 )
 def test_g11_requires_evidence_confidence_and_diagnosis(overrides: dict[str, Any]) -> None:
     d = diag(**{"evidence": VERIFIED, **overrides})
-    assert not apply_copilot_gating(d).copilot_fixable
+    assert not apply_auto_fix_gating(d).auto_fixable
 
 
 def test_g11_overrides_model_claim() -> None:
-    d = diag(category="memory", evidence=VERIFIED, copilot_fixable=True)
-    assert apply_copilot_gating(d).copilot_fixable is False
+    d = diag(category="memory", evidence=VERIFIED, auto_fixable=True)
+    assert apply_auto_fix_gating(d).auto_fixable is False
 
 
-# ======================================================================== G7
+# ================================================================= budgets
 
 
 class FakeClock:
@@ -315,7 +315,7 @@ def test_cost() -> None:
     assert budget.cost(Price(input_per_mtok=3.0, output_per_mtok=15.0)) == pytest.approx(0.18)
 
 
-# ======================================================================== G2
+# ======================================================= output sanitizer
 
 
 def s(text: str, limit: int = 10_000) -> str:

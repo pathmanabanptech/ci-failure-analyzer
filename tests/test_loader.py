@@ -51,7 +51,7 @@ def _all_keys_and_strings(node: Any) -> tuple[set[str], list[str]]:
     return keys, strings
 
 
-# ------------------------------------------------------------ real Phase 0 cases
+# ------------------------------------------------------------------ real cases
 
 
 def test_all_three_cases_load() -> None:

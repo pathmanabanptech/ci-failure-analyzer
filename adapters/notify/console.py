@@ -1,6 +1,6 @@
 """Notifier that prints the report (local runs and dry runs).
 
-Mirrors the PR notifier's dedupe semantics (G10): a second report with the same
+Mirrors the PR notifier's dedupe semantics: a second report with the same
 ``sha:category`` key in one process is printed as an update, not a new alert.
 """
 
@@ -40,6 +40,6 @@ class ConsoleNotifier:
             lines.append("  (none)")
         if d.fix_diff:
             lines += ["Suggested fix:", render_code_block(d.fix_diff)]
-        if d.copilot_fixable:
-            lines.append("Copilot-fixable: yes")
+        if d.auto_fixable:
+            lines.append("Auto-fixable: yes")
         print("\n".join(lines), file=self._stream)
