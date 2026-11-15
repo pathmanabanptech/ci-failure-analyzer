@@ -36,7 +36,7 @@ def _fmt_value(value: object) -> str:
         return f"{value:g}"
     if isinstance(value, list | tuple):
         return ",".join(str(v) for v in value)
-    return str(value)
+    return " ".join(str(value).split())  # one line per span, even for multi-line values
 
 
 def _fmt_attrs(attrs: Mapping[str, AttributeValue] | None) -> str:

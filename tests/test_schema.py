@@ -11,7 +11,7 @@ def _diag(**overrides: object) -> Diagnosis:
         "specialist": "build",
         "root_cause": "x",
         "local_vs_ci": "y",
-        "evidence": [{"source": "log", "line": 3, "snippet": "error: cannot find symbol"}],
+        "evidence": [{"kind": "log", "line": 3, "snippet": "error: cannot find symbol"}],
         "fix_diff": None,
         "confidence": 0.9,
     }
@@ -55,6 +55,34 @@ def test_rejects_values_outside_contract(overrides: dict[str, object]) -> None:
         _diag(**overrides)
 
 
-def test_evidence_requires_snippet() -> None:
+def test_evidence_requires_kind_and_snippet() -> None:
     with pytest.raises(ValidationError):
-        Evidence.model_validate({"source": "log"})
+        Evidence.model_validate({"kind": "log"})
+    with pytest.raises(ValidationError):
+        Evidence.model_validate({"snippet": "error: cannot find symbol"})
+    with pytest.raises(ValidationError):
+        Evidence.model_validate({"kind": "memory", "snippet": "seen this before"})
+
+
+def test_evidence_locators_and_code_owned_fields() -> None:
+    e = Evidence.model_validate(
+        {"kind": "file", "path": "pom.xml", "ref": "merge", "line": 40, "snippet": "<x/>x"}
+    )
+    assert (e.kind, e.path, e.ref, e.line) == ("file", "pom.xml", "merge", 40)
+    assert e.located_line is None and e.verified is False
+    with pytest.raises(ValidationError):
+        Evidence.model_validate({"kind": "file", "ref": "tip", "snippet": "x"})
+
+
+@pytest.mark.parametrize(
+    ("data", "where"),
+    [
+        ({"kind": "log", "log": "maven.log", "line": 279}, "maven.log:279"),
+        ({"kind": "log", "line": 279, "located_line": 280}, "log:280"),
+        ({"kind": "file", "path": "pom.xml", "ref": "merge", "line": 4}, "pom.xml@merge:4"),
+        ({"kind": "commit", "sha": "a" * 40}, "commit aaaaaaaaaaaa"),
+        ({"kind": "run_attempts"}, "run_attempts"),
+    ],
+)
+def test_evidence_where(data: dict[str, object], where: str) -> None:
+    assert Evidence.model_validate({**data, "snippet": "something"}).where() == where

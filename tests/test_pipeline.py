@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import difflib
 import json
 import re
 import subprocess
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from pathlib import Path
+from typing import Any
 
 import pytest
 from opentelemetry.sdk.trace import ReadableSpan
@@ -15,7 +17,7 @@ from opentelemetry.sdk.trace.export.in_memory_span_exporter import InMemorySpanE
 
 import cli
 import telemetry
-from adapters.base import Report, RunDetails, RunRef
+from adapters.base import NotFoundError, PatchCheck, Report, RunDetails, RunRef
 from adapters.logs.local import LocalLogSource
 from agent.base import AgentRequest, AgentResult
 from agent.schema import Category, Diagnosis, Evidence, Status
@@ -94,7 +96,7 @@ def test_every_case_log_runs_end_to_end(case: str, log: str) -> None:
     result, _spans, notifier = run(case, log)
     Diagnosis.model_validate_json(result.diagnosis.model_dump_json())
     # The stub cites the first fatal error; the real verifier must accept it.
-    assert result.dropped_evidence == 0
+    assert result.dropped_evidence == ()
     assert [e.verified for e in result.diagnosis.evidence] == [True]
     assert result.usage.llm_calls == 0 and result.usage.model_id is None
     assert result.decision.level is AlertLevel.possible_cause
@@ -161,7 +163,7 @@ class FabricatingAgent:
                 specialist="build",
                 root_cause="made up",
                 local_vs_ci="made up",
-                evidence=[Evidence(source="log", line=10, snippet="error: this is not there")],
+                evidence=[Evidence(kind="log", line=10, snippet="error: this is not there")],
                 fix_diff=None,
                 confidence=0.95,
                 auto_fixable=True,
@@ -171,12 +173,100 @@ class FabricatingAgent:
 
 def test_unverified_evidence_is_capped_and_nothing_is_posted() -> None:
     result, _spans, notifier = run("case-01", "maven.log", agent=FabricatingAgent())
-    assert result.dropped_evidence == 1
+    assert len(result.dropped_evidence) == 1
     assert result.diagnosis.status is Status.possible_cause
     assert result.diagnosis.confidence == 0.3
     assert result.diagnosis.auto_fixable is False
     assert result.decision.level is AlertLevel.none and not result.notified
     assert notifier.reports == []
+
+
+OWNER = "src/main/java/org/springframework/samples/petclinic/owner/Owner.java"
+OWNER_SRC = (
+    "class Owner {\n"
+    "    boolean hasPet(String n) {\n"
+    "        return getPet(n, true) != null;\n"
+    "    }\n"
+    "}\n"
+)
+
+
+@dataclass
+class OwnerRepo:
+    def read_file(self, sha: str, path: str) -> str:
+        if path != OWNER:
+            raise NotFoundError(path)
+        return OWNER_SRC
+
+    def recent_commits(self, sha: str, limit: int = 10, path: str | None = None) -> list[Any]:
+        return []
+
+    def read_file_at_merge(self, base_sha: str, head_sha: str, path: str) -> str:
+        return self.read_file(head_sha, path)
+
+    def symbol_history(
+        self, base_sha: str | None, head_sha: str, identifier: str, path: str | None = None
+    ) -> list[Any]:
+        return []
+
+    def check_patch(self, patch: str, head_sha: str, base_sha: str | None = None) -> PatchCheck:
+        # Stand-in for git apply: the patch applies if every removed line is in the file.
+        removed = [
+            ln[1:] for ln in patch.splitlines() if ln.startswith("-") and not ln.startswith("---")
+        ]
+        ok = all(r in OWNER_SRC for r in removed) and f"--- a/{OWNER}" in patch
+        return PatchCheck(ok, "applies to merge" if ok else "does not apply to merge")
+
+
+@dataclass
+class FixingAgent:
+    fix: str
+    name: str = "fixing"
+
+    def diagnose(self, request: AgentRequest, budget: Budget) -> AgentResult:
+        result = StubAgent().diagnose(request, budget)
+        return replace(result, diagnosis=result.diagnosis.model_copy(update={"fix_diff": self.fix}))
+
+
+def _diff(after: str) -> str:
+    return "".join(
+        difflib.unified_diff(
+            OWNER_SRC.splitlines(True), after.splitlines(True), f"a/{OWNER}", f"b/{OWNER}"
+        )
+    )
+
+
+# Plausible-looking but invented context: no such line in Owner.java.
+FABRICATED_FIX = (
+    f"--- a/{OWNER}\n+++ b/{OWNER}\n@@ -2,3 +2,3 @@\n"
+    "     boolean hasPet(String n) {\n"
+    "-        return pets.get(n, false) != null;\n"
+    "+        return pets.get(n) != null;\n"
+    "     }\n"
+)
+
+
+@pytest.mark.parametrize(
+    ("fix", "kept"),
+    [
+        (_diff(OWNER_SRC.replace("getPet(n, true)", "findPetByName(n, true)")), True),
+        (FABRICATED_FIX, False),
+    ],
+)
+def test_fix_diff_kept_only_if_it_applies_at_head(fix: str, kept: bool) -> None:
+    source = LocalLogSource(CASES_DIR)
+    tracer = telemetry.get_tracer(telemetry.make_provider(InMemorySpanExporter()))
+    result = analyze(
+        source.ref_for("case-01", "maven.log"),
+        logs=source,
+        repo=OwnerRepo(),
+        notifier=RecordingNotifier(),
+        agent=FixingAgent(fix),
+        tracer=tracer,
+    )
+    assert result.fix_check is not None and result.fix_check.ok is kept
+    assert (result.diagnosis.fix_diff is not None) is kept
+    assert result.agent_output.diagnosis.fix_diff == fix  # raw output kept for --debug
 
 
 @dataclass
@@ -218,25 +308,53 @@ def test_run_attempts_context_verifies() -> None:
 # --------------------------------------------------------------------- CLI
 
 
-def test_cli_analyze_dry_run(capsys: pytest.CaptureFixture[str]) -> None:
+def test_cli_analyze_runs_every_failed_log(capsys: pytest.CaptureFixture[str]) -> None:
     assert cli.main(["analyze", "--case", "case-01", "--dry-run"]) == 0
     out, err = capsys.readouterr()
-    d = Diagnosis.model_validate(json.loads(out))  # stdout is exactly one Diagnosis JSON
-    assert d.build_tool == "maven"
+    by_log = json.loads(out)  # stdout: one Diagnosis per log, keyed by log name
+    assert list(by_log) == ["maven.log", "gradle.log"]
+    assert {log: Diagnosis.model_validate(d).build_tool for log, d in by_log.items()} == {
+        "maven.log": "maven",
+        "gradle.log": "gradle",
+    }
+    assert "# case-01/maven.log" in err and "# case-01/gradle.log" in err
     for stage in [*STAGES, "analyze"]:
-        assert re.search(rf"^\[span\] {stage} ", err, re.M), stage
+        assert len(re.findall(rf"^\[span\] {stage} ", err, re.M)) == 2, stage
     assert "llm_calls=0" in err
 
 
-def test_cli_analyze_picks_log(capsys: pytest.CaptureFixture[str]) -> None:
+def test_cli_analyze_skips_successful_runs(capsys: pytest.CaptureFixture[str]) -> None:
+    assert cli.main(["analyze", "--case", "case-02", "--dry-run"]) == 0  # maven passed
+    assert list(json.loads(capsys.readouterr().out)) == ["gradle.log"]
+
+
+def test_cli_analyze_single_log(capsys: pytest.CaptureFixture[str]) -> None:
     assert cli.main(["analyze", "--case", "case-03", "--log", "gradle.log", "--dry-run"]) == 0
-    assert Diagnosis.model_validate_json(capsys.readouterr().out).build_tool == "gradle"
+    by_log = json.loads(capsys.readouterr().out)
+    assert list(by_log) == ["gradle.log"]
+    assert Diagnosis.model_validate(by_log["gradle.log"]).build_tool == "gradle"
+
+
+def test_cli_analyze_debug(capsys: pytest.CaptureFixture[str]) -> None:
+    argv = ["analyze", "--case", "case-01", "--log", "maven.log", "--dry-run", "--debug"]
+    assert cli.main(argv) == 0
+    out, err = capsys.readouterr()
+    assert list(json.loads(out)) == ["maven.log"]  # debug output never goes to stdout
+    assert "--- debug: maven.log ---" in err
+    assert "raw model output (before guardrails):" in err and '"confidence": 0.5' in err
+    assert (
+        "[accepted] 'maven.log:277' (line hint 277, located_line 277): matches log line 277" in err
+    )
+    assert "snippet: '[ERROR] COMPILATION ERROR :'" in err
+    assert "fix_diff: none proposed" in err
+    assert "tool calls (0):\n  (none)" in err
+    assert "category evidence requirements: NOT met, missing a known category" in err
+    assert "after guardrails: possible_cause / unknown" in err
 
 
 @pytest.mark.parametrize(
     "argv",
     [
-        ["analyze", "--case", "case-01"],  # no LLM agent yet
         ["analyze", "--case", "case-01", "--log", "nope.log", "--dry-run"],
         ["analyze", "--case", "case-99", "--dry-run"],
     ],
@@ -245,6 +363,16 @@ def test_cli_analyze_errors(argv: list[str], capsys: pytest.CaptureFixture[str])
     assert cli.main(argv) == 2
     out, err = capsys.readouterr()
     assert out == "" and err.startswith("error:")
+
+
+def test_cli_analyze_without_model_config_exits_cleanly(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    monkeypatch.delenv("MODEL_PROVIDER", raising=False)
+    assert cli.main(["analyze", "--case", "case-01"]) == 1
+    out, err = capsys.readouterr()
+    assert out == ""
+    assert "error: MODEL_PROVIDER is not set" in err and "Traceback" not in err
 
 
 def test_dry_run_never_loads_a_model_sdk() -> None:
@@ -261,3 +389,13 @@ def test_dry_run_never_loads_a_model_sdk() -> None:
     )
     assert proc.returncode == 0, proc.stderr
     assert "LOADED []" in proc.stderr
+
+
+def test_compact_spans_stay_on_one_line() -> None:
+    exporter = InMemorySpanExporter()
+    tracer = telemetry.get_tracer(telemetry.make_provider(exporter))
+    with tracer.start_as_current_span("tool") as span:
+        span.set_attribute("description", "Read a file.\n\n    Args:\n        path: x")
+    (s,) = exporter.get_finished_spans()
+    line = telemetry.compact_line(s)
+    assert line.count("\n") == 1 and "description=Read a file. Args: path: x" in line

@@ -98,10 +98,52 @@ class Commit:
     subject: str  # untrusted; no author name/email (not needed, PII)
 
 
+@dataclass(frozen=True)
+class SymbolLine:
+    path: str
+    text: str  # untrusted
+
+
+@dataclass(frozen=True)
+class SymbolChange:
+    """A commit whose diff adds or removes a line mentioning an identifier."""
+
+    sha: str
+    subject: str  # untrusted
+    side: Literal["head", "base"]  # head: in the PR, not in base; base: on base since the fork
+    added: tuple[SymbolLine, ...]  # "+" lines containing the identifier
+    removed: tuple[SymbolLine, ...]  # "-" lines containing the identifier
+
+
+@dataclass(frozen=True)
+class PatchCheck:
+    ok: bool
+    message: str  # "applies" or why not (git's message)
+
+
 @runtime_checkable
 class RepoReader(Protocol):
     def read_file(self, sha: str, path: str) -> str:
         """File content at a commit. Raises AccessDeniedError / NotFoundError."""
+        ...
+
+    def read_file_at_merge(self, base_sha: str, head_sha: str, path: str) -> str:
+        """File content in the merge of ``head_sha`` into ``base_sha``: what a
+        pull_request build compiles. Raises AccessDeniedError / NotFoundError, or
+        AdapterError if the two do not merge cleanly."""
+        ...
+
+    def symbol_history(
+        self, base_sha: str | None, head_sha: str, identifier: str, path: str | None = None
+    ) -> list[SymbolChange]:
+        """Commits whose diff touches a call/declaration of ``identifier`` (``name(``):
+        those reachable from head and those reachable from base since their merge base,
+        newest first. Without ``base_sha``, the recent history of head."""
+        ...
+
+    def check_patch(self, patch: str, head_sha: str, base_sha: str | None = None) -> PatchCheck:
+        """Whether ``patch`` applies to the head tree, or with ``base_sha`` to the merge
+        of head into base. Never modifies the repository."""
         ...
 
     def recent_commits(self, sha: str, limit: int = 10, path: str | None = None) -> list[Commit]:

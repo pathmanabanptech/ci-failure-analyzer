@@ -57,7 +57,20 @@ class LocalLogSource:
             conclusion=info.conclusion,
             runner_os=meta.runner_os,
             attempts=attempts,
+            # Other runs of the same head SHA: the case's other build tools (same
+            # event and base), then the meta's related_runs.
             related_runs=tuple(
+                RelatedRun(
+                    build_tool=other_tool,
+                    run_id=other.run_id,
+                    event=meta.event,
+                    conclusion=other.conclusion,
+                    base_sha=meta.base_sha,
+                )
+                for other_tool, other in meta.runs.items()
+                if other_tool != tool
+            )
+            + tuple(
                 RelatedRun(
                     build_tool=r.tool,
                     run_id=r.run_id,

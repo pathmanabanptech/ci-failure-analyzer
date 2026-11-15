@@ -15,6 +15,7 @@ from adapters.base import (
     MemoryStore,
     NotFoundError,
     Notifier,
+    PatchCheck,
     RepoReader,
     Report,
     RunRef,
@@ -55,7 +56,10 @@ def test_get_run_pr_case(logs: LocalLogSource) -> None:
     assert run.head_sha.startswith("c9d5394f") and run.base_sha is not None
     assert run.base_sha.startswith("afab46b7")
     assert [(a.attempt, a.conclusion) for a in run.attempts] == [(1, "failure")]
-    passed_on_old_base = [r for r in run.related_runs if r.event == "pull_request"]
+    passed_on_old_base = [
+        r for r in run.related_runs if r.event == "pull_request" and r.base_sha != run.base_sha
+    ]
+    assert len(passed_on_old_base) == 2
     assert {r.conclusion for r in passed_on_old_base} == {"success"}
     assert all(r.base_sha and r.base_sha.startswith("32cb980c") for r in passed_on_old_base)
 
@@ -272,9 +276,7 @@ def _diag(**kw: object) -> Diagnosis:
         "specialist": None,
         "root_cause": "Test heap capped at 32m.",
         "local_vs_ci": "IDE uses a larger default heap.",
-        "evidence": [
-            {"source": "log", "line": 543, "snippet": "OutOfMemoryError", "verified": True}
-        ],
+        "evidence": [{"kind": "log", "line": 543, "snippet": "OutOfMemoryError", "verified": True}],
         "fix_diff": "-  maxHeapSize = '32m'\n+  maxHeapSize = '512m'\n",
         "confidence": 0.85,
     }
@@ -324,3 +326,201 @@ def test_memory_stub_never_stores() -> None:
     )
     with pytest.raises(NotImplementedError, match="Phase 3"):
         store.store(record)
+
+
+def test_sibling_build_runs_are_related_runs() -> None:
+    """case-02: the Maven run of the same push passed; the Gradle run must see that."""
+    from adapters.logs.local import LocalLogSource
+    from evals.loader import CASES_DIR
+
+    source = LocalLogSource(CASES_DIR)
+    run = source.get_run(source.ref_for("case-02", "gradle.log"))
+    assert [(r.build_tool, r.event, r.conclusion) for r in run.related_runs] == [
+        ("maven", "push", "success")
+    ]
+    run = source.get_run(source.ref_for("case-01", "maven.log"))
+    assert run.related_runs[0].build_tool == "gradle"
+    assert run.related_runs[0].conclusion == "failure"
+    assert run.related_runs[0].base_sha == run.base_sha
+
+
+# ------------------------------------------------- merge ref and symbol history
+
+OWNER_V1 = "class Owner {\n    Pet getPet(String name, boolean ignoreNew) { return null; }\n}\n"
+OWNER_RENAMED = OWNER_V1.replace("getPet(", "findPetByName(")
+CALLER = 'class Caller {\n    boolean has(Owner o) { return o.getPet("x", true) != null; }\n}\n'
+
+
+@pytest.fixture
+def pr_repo(tmp_path: Path) -> tuple[Path, dict[str, str]]:
+    """A semantic merge: base renames getPet, head adds a new caller of getPet.
+
+    fork --- rename (base)
+        \\--- caller (head)
+    Returns (path, {"fork", "base", "head", "conflict"}).
+    """
+    repo = tmp_path / "pr"
+    repo.mkdir()
+    _git(repo, "init", "-q", "-b", "main")
+    _write(repo, "src/main/java/Owner.java", OWNER_V1)
+    _git(repo, "add", ".")
+    _git(repo, "commit", "-q", "-m", "Add getPet to Owner")
+    fork = _git(repo, "rev-parse", "HEAD")
+
+    _write(repo, "src/main/java/Owner.java", OWNER_RENAMED)
+    _git(
+        repo,
+        "commit",
+        "-q",
+        "-am",
+        "Rename getPet to findPetByName",
+        date="2026-11-02T10:00:00+00:00",
+    )
+    base = _git(repo, "rev-parse", "HEAD")
+
+    _git(repo, "checkout", "-q", "-b", "feature", fork)
+    _write(repo, "src/main/java/Caller.java", CALLER)
+    _git(repo, "add", ".")
+    _git(repo, "commit", "-q", "-m", "Add Caller using getPet", date="2026-11-03T10:00:00+00:00")
+    head = _git(repo, "rev-parse", "HEAD")
+
+    _git(repo, "checkout", "-q", "-b", "clash", fork)
+    _write(repo, "src/main/java/Owner.java", OWNER_V1.replace("getPet(", "lookupPet("))
+    _git(repo, "commit", "-q", "-am", "Rename getPet differently", date="2026-11-04T10:00:00+00:00")
+    conflict = _git(repo, "rev-parse", "HEAD")
+    return repo, {"fork": fork, "base": base, "head": head, "conflict": conflict}
+
+
+def _object_files(repo: Path) -> set[Path]:
+    return {p for p in (repo / ".git" / "objects").rglob("*") if p.is_file()}
+
+
+def test_read_file_at_merge_sees_both_sides(pr_repo: tuple[Path, dict[str, str]]) -> None:
+    repo, sha = pr_repo
+    reader = LocalRepoReader(repo)
+    owner, caller = "src/main/java/Owner.java", "src/main/java/Caller.java"
+    assert "getPet(" in reader.read_file(sha["head"], owner)  # head alone: still getPet
+    merged = reader.read_file_at_merge(sha["base"], sha["head"], owner)
+    assert "findPetByName(" in merged and "getPet(" not in merged  # base's rename
+    assert reader.read_file_at_merge(sha["base"], sha["head"], caller) == CALLER  # head's caller
+    with pytest.raises(NotFoundError):
+        reader.read_file(sha["base"], caller)
+
+
+def test_merge_never_writes_to_the_clone(pr_repo: tuple[Path, dict[str, str]]) -> None:
+    repo, sha = pr_repo
+    before = _object_files(repo)
+    reader = LocalRepoReader(repo)
+    reader.read_file_at_merge(sha["base"], sha["head"], "src/main/java/Owner.java")
+    assert _object_files(repo) == before
+
+
+def test_merge_conflict_and_policy(pr_repo: tuple[Path, dict[str, str]]) -> None:
+    repo, sha = pr_repo
+    reader = LocalRepoReader(repo)
+    with pytest.raises(AdapterError, match="does not merge cleanly"):
+        reader.read_file_at_merge(sha["base"], sha["conflict"], "src/main/java/Owner.java")
+    with pytest.raises(AccessDeniedError):
+        reader.read_file_at_merge(sha["base"], sha["head"], "../etc/passwd")
+    with pytest.raises(AccessDeniedError):
+        reader.read_file_at_merge("HEAD", sha["head"], "src/main/java/Owner.java")
+
+
+def test_symbol_history_rename_on_one_side(pr_repo: tuple[Path, dict[str, str]]) -> None:
+    """getPet is renamed on base while head adds a new caller (plus a decoy)."""
+    repo, sha = pr_repo
+    _git(repo, "checkout", "-q", "feature")
+    _write(
+        repo, "src/main/java/Counter.java", "class Counter { int getPetCount() { return 0; } }\n"
+    )
+    _git(repo, "add", ".")
+    _git(repo, "commit", "-q", "-m", "Add getPetCount (decoy)", date="2026-11-05T10:00:00+00:00")
+    head = _git(repo, "rev-parse", "HEAD")
+
+    changes = LocalRepoReader(repo).symbol_history(sha["base"], head, "getPet")
+    by_sha = {c.sha: c for c in changes}
+    assert set(by_sha) == {sha["head"], sha["base"]}  # no fork commit, no decoy
+    caller, rename = by_sha[sha["head"]], by_sha[sha["base"]]
+    assert (caller.side, caller.subject) == ("head", "Add Caller using getPet")
+    assert [(x.path, x.text) for x in caller.added] == [
+        (
+            "src/main/java/Caller.java",
+            'boolean has(Owner o) { return o.getPet("x", true) != null; }',
+        )
+    ]
+    assert caller.removed == ()
+    assert (rename.side, rename.subject) == ("base", "Rename getPet to findPetByName")
+    assert [x.text for x in rename.removed] == [
+        "Pet getPet(String name, boolean ignoreNew) { return null; }"
+    ]
+    assert rename.added == ()  # the new line says findPetByName, not getPet
+
+    renamed = LocalRepoReader(repo).symbol_history(
+        sha["base"], head, "findPetByName", "src/main/java/Owner.java"
+    )
+    assert [(c.side, len(c.added), len(c.removed)) for c in renamed] == [("base", 1, 0)]
+
+
+def test_symbol_history_push_and_input_policy(pr_repo: tuple[Path, dict[str, str]]) -> None:
+    repo, sha = pr_repo
+    reader = LocalRepoReader(repo)
+    push = reader.symbol_history(None, sha["head"], "getPet")
+    assert [c.sha for c in push] == [sha["head"], sha["fork"]]
+    assert all(c.side == "head" for c in push)
+    for bad in ("", "getPet(", "getPet(String,boolean)", "a b", "--output=/tmp/x", "x" * 201):
+        with pytest.raises(AccessDeniedError, match="plain identifier"):
+            reader.symbol_history(sha["base"], sha["head"], bad)
+    with pytest.raises(AccessDeniedError):
+        reader.symbol_history(sha["base"], sha["head"], "getPet", ".env")
+
+
+# --------------------------------------------------------------- check_patch
+
+OWNER_PATH = "src/main/java/Owner.java"
+
+
+def _diff(path: str, before: str, after: str) -> str:
+    import difflib
+
+    return "".join(
+        difflib.unified_diff(
+            before.splitlines(True), after.splitlines(True), f"a/{path}", f"b/{path}"
+        )
+    )
+
+
+def test_check_patch_head_vs_merge(pr_repo: tuple[Path, dict[str, str]]) -> None:
+    repo, sha = pr_repo
+    reader = LocalRepoReader(repo)
+    base, head = sha["base"], sha["head"]
+    against_head = _diff(OWNER_PATH, OWNER_V1, OWNER_V1.replace("ignoreNew", "includeNew"))
+    against_merge = _diff(OWNER_PATH, OWNER_RENAMED, OWNER_RENAMED.replace("ignoreNew", "x"))
+    caller_fix = _diff(
+        "src/main/java/Caller.java", CALLER, CALLER.replace("getPet(", "findPetByName(")
+    )
+
+    assert reader.check_patch(against_head, head).ok
+    merged = reader.check_patch(against_head, head, base)
+    assert not merged.ok and merged.message.startswith("does not apply to merge")
+    assert reader.check_patch(against_merge, head, base) == PatchCheck(True, "applies to merge")
+    assert not reader.check_patch(against_merge, head).ok
+    assert reader.check_patch(caller_fix, head).ok and reader.check_patch(caller_fix, head, base).ok
+
+
+def test_check_patch_policy_and_no_writes(pr_repo: tuple[Path, dict[str, str]]) -> None:
+    repo, sha = pr_repo
+    reader = LocalRepoReader(repo)
+    status = _git(repo, "status", "--porcelain")
+    index = (repo / ".git" / "index").read_bytes()
+    objects = _object_files(repo)
+
+    secret_probe = _diff(".env", "DB_PASSWORD=secret\n", "DB_PASSWORD=x\n")
+    probe = reader.check_patch(secret_probe, sha["head"], sha["base"])
+    assert not probe.ok and "allowlist" in probe.message
+    assert not reader.check_patch("change getPet to findPetByName", sha["head"]).ok
+    fix = _diff(OWNER_PATH, OWNER_RENAMED, OWNER_RENAMED.replace("ignoreNew", "x"))
+    assert reader.check_patch(fix, sha["head"], sha["base"]).ok
+
+    assert _git(repo, "status", "--porcelain") == status  # worktree untouched
+    assert (repo / ".git" / "index").read_bytes() == index  # real index untouched
+    assert _object_files(repo) == objects  # no objects written

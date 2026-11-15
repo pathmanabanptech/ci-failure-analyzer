@@ -1,11 +1,12 @@
 """Command-line entry point.
 
 uv run python cli.py preprocess --case case-01 --log maven.log
-uv run python cli.py analyze --case case-01 [--log maven.log] --dry-run
+uv run python cli.py analyze --case case-01 [--log maven.log] [--dry-run] [--debug]
 uv run python cli.py ping-model [--role triage|specialist]
 
-Results go to stdout as JSON; spans, notes and the notification go to stderr, so
-stdout can be piped to ``jq``. Exit codes: 0 ok, 1 model unavailable or
+Results go to stdout as JSON (``analyze``: one Diagnosis per log, keyed by log
+name); spans, notes, debug output and the notification go to stderr, so stdout can
+be piped to ``jq``. Exit codes: 0 ok, 1 model unavailable or
 misconfigured, 2 bad arguments.
 """
 
@@ -21,10 +22,13 @@ from adapters.base import AdapterError, NotFoundError, RepoReader
 from adapters.logs.local import LocalLogSource
 from adapters.notify.console import ConsoleNotifier
 from adapters.repo.local import ENV_VAR, LocalRepoReader
+from agent.base import DiagnosisAgent
+from agent.errors import ModelError
 from agent.stub import StubAgent
-from evals.loader import CASES_DIR, CaseError, case_logs, load_agent_input
+from evals.loader import CASES_DIR, CaseError, load_agent_input, load_meta
+from guardrails.budget import BudgetExceeded, BudgetLimits
 from guardrails.preprocess import preprocess
-from pipeline import analyze
+from pipeline import PipelineResult, analyze
 
 
 def _cmd_preprocess(args: argparse.Namespace) -> int:
@@ -64,42 +68,121 @@ def _repo_reader() -> RepoReader | None:
         return None
 
 
+def _make_agent(args: argparse.Namespace, repo: RepoReader | None) -> DiagnosisAgent:
+    if args.dry_run:
+        return StubAgent()
+    # Imported here so dry runs never load a model SDK.
+    from agent.generalist import GeneralistAgent
+    from agent.models import ModelSettings, build_model
+
+    return GeneralistAgent(build_model(ModelSettings.from_env(), "specialist"), repo)
+
+
+ANALYZE_CONCLUSIONS = frozenset({"failure", "cancelled"})
+
+
+def _logs_to_analyze(case: str, log: str | None) -> list[str]:
+    """``--log``, or every log of a run whose conclusion is failure/cancelled."""
+    meta = load_meta(case)
+    if log is not None:
+        load_agent_input(case, log)  # validates the log name; agent-side view only
+        return [log]
+    logs = [r.log for r in meta.runs.values() if r.conclusion in ANALYZE_CONCLUSIONS and r.log]
+    if not logs:
+        raise CaseError(f"{case} has no failed or cancelled runs with a log")
+    return logs
+
+
+def _print_debug(log: str, result: PipelineResult) -> None:
+    """Raw model output and every guardrail verdict, on stderr. Model text is shown
+    unsanitized (JSON/repr-escaped, so no control characters reach the terminal)."""
+    out = [f"--- debug: {log} ---", "raw model output (before guardrails):"]
+    out.append(result.agent_output.raw_output or "(none)")
+    if result.agent_output.structured_output_fallback:
+        out.append("(the answer came from the constrained structured-output fallback)")
+    calls = result.agent_output.tool_log
+    out.append(f"tool calls ({len(calls)}):")
+    for i, call in enumerate(calls, 1):
+        args = json.dumps(dict(call.args), ensure_ascii=True)
+        args = args if len(args) <= 200 else args[:200] + "…"
+        out.append(f"  {i}. {call.name} {args} -> {call.result_chars} chars ({call.status})")
+    if not calls:
+        out.append("  (none)")
+    out.append("evidence:")
+    for c in result.evidence_checks:
+        ev = c.evidence
+        verdict = "accepted" if c.ok else "rejected"
+        hint = f"line hint {ev.line}" if ev.line is not None else "no line hint"
+        located = f", located_line {ev.located_line}" if ev.located_line is not None else ""
+        offset = f", offset {c.offset:+d}" if c.offset else ""
+        out.append(f"  [{verdict}] {ev.where()!r} ({hint}{located}{offset}): {c.reason}")
+        out.append(f"      snippet: {ev.snippet!r}")
+    if not result.evidence_checks:
+        out.append("  (none cited)")
+    fix = result.fix_check
+    if fix is None:
+        out.append("fix_diff: none proposed")
+    else:
+        out.append(f"fix_diff: {'accepted' if fix.ok else 'rejected (set to null)'}: {fix.reason}")
+    req = result.requirements
+    out.append(
+        "category evidence requirements: "
+        + ("met" if req.met else f"NOT met, missing {'; '.join(req.missing)}")
+    )
+    d = result.diagnosis
+    out.append(
+        f"after guardrails: {d.status.value} / {d.category.value} / confidence "
+        f"{d.confidence:g}; alert: {result.decision.level.value}"
+    )
+    print("\n".join(out), file=sys.stderr)
+
+
 def _cmd_analyze(args: argparse.Namespace) -> int:
-    if not args.dry_run:
-        print("error: the LLM agent is not built yet; use --dry-run", file=sys.stderr)
-        return 2
     try:
-        logs = case_logs(args.case)
-        log = args.log or (logs[0] if logs else None)
-        if log is None:
-            raise CaseError(f"{args.case} has no failure logs")
-        load_agent_input(args.case, log)  # validates case + log, agent-side view only
+        logs = _logs_to_analyze(args.case, args.log)
         source = LocalLogSource(CASES_DIR)
-        ref = source.ref_for(args.case, log)
+        refs = {log: source.ref_for(args.case, log) for log in logs}
     except (CaseError, NotFoundError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
 
-    others = [name for name in logs if name != log]
-    print(
-        f"# {args.case}/{log} (dry run: stub agent, no model call)"
-        + (f"; other logs: {', '.join(others)}" if others else ""),
-        file=sys.stderr,
-    )
-    provider = telemetry.configure(telemetry.console_exporter(fmt=args.spans))
+    repo = _repo_reader()
     try:
-        result = analyze(
-            ref,
-            logs=source,
-            repo=_repo_reader(),
-            notifier=ConsoleNotifier(stream=sys.stderr),
-            agent=StubAgent(),
-            tracer=telemetry.get_tracer(provider),
-        )
+        agent = _make_agent(args, repo)
+        limits = BudgetLimits.from_env()
+    except (ModelError, ValueError) as e:
+        print(f"error: {e}", file=sys.stderr)
+        return 1
+    mode = "dry run: stub agent, no model call" if args.dry_run else f"agent: {agent.name}"
+    provider = telemetry.configure(telemetry.console_exporter(fmt=args.spans))
+    tracer = telemetry.get_tracer(provider)
+    diagnoses: dict[str, object] = {}
+    failed = False
+    try:
+        for log, ref in refs.items():
+            print(f"# {args.case}/{log} ({mode})", file=sys.stderr)
+            try:
+                result = analyze(
+                    ref,
+                    logs=source,
+                    repo=repo,
+                    notifier=ConsoleNotifier(stream=sys.stderr),
+                    agent=agent,
+                    tracer=tracer,
+                    limits=limits,
+                    log_name=log,
+                )
+            except (BudgetExceeded, ModelError) as e:
+                print(f"error: {log}: {e}", file=sys.stderr)
+                failed = True
+                continue
+            if args.debug:
+                _print_debug(log, result)
+            diagnoses[log] = result.diagnosis.model_dump(mode="json")
     finally:
         provider.shutdown()
-    print(result.diagnosis.model_dump_json(indent=2))
-    return 0
+    print(json.dumps(diagnoses, indent=2))
+    return 1 if failed else 0
 
 
 def _cmd_ping_model(args: argparse.Namespace) -> int:
@@ -167,8 +250,16 @@ def main(argv: list[str] | None = None) -> int:
 
     a = sub.add_parser("analyze", help="run the full pipeline on a case log")
     a.add_argument("--case", required=True, help="case id, e.g. case-01")
-    a.add_argument("--log", help="log file name (default: the case's first failure log)")
+    a.add_argument(
+        "--log", help="analyze only this log (default: every failed or cancelled run's log)"
+    )
     a.add_argument("--dry-run", action="store_true", help="use the stub agent; no model is called")
+    a.add_argument(
+        "--debug",
+        action="store_true",
+        help="print raw model output, tool calls, and each evidence/fix/requirement verdict "
+        "with its reason (stderr)",
+    )
     a.add_argument(
         "--spans", choices=["compact", "json"], default="compact", help="span output format"
     )

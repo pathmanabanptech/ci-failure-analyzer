@@ -150,6 +150,9 @@ def test_ollama_records_digest(monkeypatch: pytest.MonkeyPatch) -> None:
     assert cfg["model_id"] == QWEN  # the digest suffix is ours, not Ollama's
     assert cfg["options"] == {"num_ctx": 16384}
     assert cfg["temperature"] == 0.0
+    assert cfg["max_tokens"] == 4096  # bounds every call, incl. the constrained fallback
+    capped = build_ollama(monkeypatch, FakeOllamaClient(), MODEL_MAX_OUTPUT_TOKENS="1024")
+    assert capped.model.get_config()["max_tokens"] == 1024
 
 
 @pytest.mark.parametrize(

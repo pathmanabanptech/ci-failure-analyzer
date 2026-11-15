@@ -21,8 +21,10 @@ from __future__ import annotations
 
 import re
 from collections import Counter
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
+
+from guardrails.preprocess import LogLine
 
 PLACEHOLDER = "[REDACTED:{kind}]"
 _PLACEHOLDER_RE = re.compile(r"\[REDACTED:[a-z_]+\]")
@@ -161,3 +163,17 @@ def redact_with_report(text: str) -> RedactionResult:
 
 def redact(text: str) -> str:
     return redact_with_report(text).text
+
+
+def redact_log_lines(lines: Sequence[LogLine]) -> tuple[tuple[LogLine, ...], dict[str, int]]:
+    """Redact cleaned log lines as one text (so multi-line keys are caught), keeping each
+    line's raw-log number. The single definition of the log text a model sees; the
+    pipeline and the evidence verifier both use it."""
+    result = redact_with_report("\n".join(line.text for line in lines))
+    texts = result.text.split("\n") if lines else []
+    if len(texts) != len(lines):  # redaction is line-preserving; never trust blindly
+        raise RuntimeError("redaction changed the number of lines")
+    redacted = tuple(
+        LogLine(number=line.number, text=t) for line, t in zip(lines, texts, strict=True)
+    )
+    return redacted, result.counts

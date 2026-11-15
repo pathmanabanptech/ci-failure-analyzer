@@ -6,9 +6,10 @@ which the pipeline turns into a fail-safe exit (post nothing, exit 0), never a r
 
 from __future__ import annotations
 
+import os
 import time
 from collections import Counter
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass
 from typing import Literal
 
@@ -27,6 +28,28 @@ class BudgetLimits:
     max_tool_calls_per_agent: int = 8
     max_input_tokens: int = 60_000
     timeout_s: float = 120.0
+
+    @classmethod
+    def from_env(cls, env: Mapping[str, str] | None = None) -> BudgetLimits:
+        """Defaults, overridable with BUDGET_MAX_TOOL_CALLS, BUDGET_MAX_INPUT_TOKENS and
+        BUDGET_TIMEOUT_S (e.g. a slower local model). Invalid values raise ValueError."""
+        env = os.environ if env is None else env
+        d = cls()
+
+        def num(name: str, default: float) -> float:
+            raw = env.get(name)
+            if not raw:
+                return default
+            value = float(raw)
+            if value <= 0:
+                raise ValueError(f"{name} must be positive, got {raw!r}")
+            return value
+
+        return cls(
+            max_tool_calls_per_agent=int(num("BUDGET_MAX_TOOL_CALLS", d.max_tool_calls_per_agent)),
+            max_input_tokens=int(num("BUDGET_MAX_INPUT_TOKENS", d.max_input_tokens)),
+            timeout_s=num("BUDGET_TIMEOUT_S", d.timeout_s),
+        )
 
 
 @dataclass(frozen=True)

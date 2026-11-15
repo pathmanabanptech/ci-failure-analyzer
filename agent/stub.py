@@ -43,9 +43,20 @@ class StubAgent:
                     f"{first.line.number}; no model was called."
                 ),
                 local_vs_ci="[dry run] Not analyzed.",
-                evidence=[Evidence(source="log", line=first.line.number, snippet=first.line.text)],
+                evidence=[
+                    Evidence(
+                        kind="log",
+                        log=request.log_name,
+                        line=first.line.number,
+                        snippet=first.line.text,
+                    )
+                ],
                 fix_diff=None,
                 confidence=STUB_CONFIDENCE,
                 build_tool=request.run.build_tool,
             )
-        return AgentResult(diagnosis=diagnosis, usage=AgentUsage(model_id=None))
+        return AgentResult(
+            diagnosis=diagnosis,
+            usage=AgentUsage(model_id=None),
+            raw_output=diagnosis.model_dump_json(indent=2),
+        )

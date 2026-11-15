@@ -33,7 +33,7 @@ class ConsoleNotifier:
             "Evidence:",
         ]
         for ev in d.evidence or ():
-            where = f"{ev.source}:{ev.line}" if ev.line is not None else ev.source
+            where = ev.where()
             mark = "verified" if ev.verified else "unverified"
             lines.append(f"  - {where} ({mark}): {ev.snippet}")
         if not d.evidence:

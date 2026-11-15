@@ -31,11 +31,46 @@ class Status(str, Enum):  # noqa: UP042  (str mixin is part of the contract)
     undiagnosable = "undiagnosable"
 
 
+EvidenceKind = Literal["log", "file", "commit", "run_attempts"]
+Ref = Literal["head", "base", "merge"]  # merge: head merged into base (what a PR build compiles)
+
+
 class Evidence(BaseModel):
-    source: str  # "log" | file path | "commit" | "run_attempts"
-    line: int | None = None
+    """One cited fact. The ``snippet`` is the evidence; ``line`` is only a hint.
+
+    Which fields apply depends on ``kind``:
+
+    * ``log``: ``log`` names the job log (default: the log being analyzed).
+    * ``file``: ``path`` (repo-relative) and ``ref`` (default: ``merge`` for
+      pull_request builds, ``head`` otherwise).
+    * ``commit``: ``sha`` (full or prefix) of a commit the agent was shown.
+    * ``run_attempts``: no locator.
+
+    Missing or inconsistent locators are not a schema error: the evidence verifier
+    rejects such evidence with a reason.
+    """
+
+    kind: EvidenceKind
+    log: str | None = None
+    path: str | None = None
+    ref: Ref | None = None
+    sha: str | None = None
+    line: int | None = None  # the model's hint (1-based line in the log or file)
     snippet: str
+    located_line: int | None = None  # where the verifier found the snippet; verifier only
     verified: bool = False  # set by the evidence verifier, never by the model
+
+    def where(self) -> str:
+        """Short human-readable location, e.g. ``maven.log:279`` or ``pom.xml@merge:40``."""
+        line = self.located_line if self.located_line is not None else self.line
+        at = f":{line}" if line is not None else ""
+        if self.kind == "log":
+            return f"{self.log or 'log'}{at}"
+        if self.kind == "file":
+            return f"{self.path or '?'}@{self.ref or 'default'}{at}"
+        if self.kind == "commit":
+            return f"commit {(self.sha or '?')[:12]}"
+        return "run_attempts"
 
 
 class Diagnosis(BaseModel):

@@ -4,10 +4,16 @@ from typing import Any
 
 import pytest
 
-from agent.schema import Diagnosis, Status
-from evals.loader import CASES_DIR
+from agent.schema import Category, Diagnosis, Status
 from guardrails.budget import Budget, BudgetExceeded, BudgetLimits, Price
-from guardrails.gating import AlertLevel, Channel, apply_auto_fix_gating, decide
+from guardrails.gating import (
+    REQUIREMENTS,
+    AlertLevel,
+    Channel,
+    apply_auto_fix_gating,
+    apply_evidence_requirements,
+    decide,
+)
 from guardrails.sanitize import (
     LINK_REMOVED,
     TRUNCATED,
@@ -15,20 +21,9 @@ from guardrails.sanitize import (
     sanitize_diagnosis,
     sanitize_text,
 )
-from guardrails.verify_evidence import verify_evidence
 
 REPO = "pathmanabanptech/petclinic-ci-failures"
 OWNER = "src/main/java/org/springframework/samples/petclinic/owner/Owner.java"
-OWNER_SRC = "\n".join(
-    [
-        "package org.springframework.samples.petclinic.owner;",
-        "public class Owner {",
-        "    public boolean hasPet(String name) {",
-        "        return getPet(name, true) != null;",
-        "    }",
-        "}",
-    ]
-)
 
 
 def diag(**kw: Any) -> Diagnosis:
@@ -49,149 +44,14 @@ def diag(**kw: Any) -> Diagnosis:
 def ev(
     source: str, snippet: str, line: int | None = None, verified: bool = False
 ) -> dict[str, Any]:
-    return {"source": source, "line": line, "snippet": snippet, "verified": verified}
-
-
-@pytest.fixture(scope="module")
-def case01_log() -> str:
-    return (CASES_DIR / "case-01" / "maven.log").read_text(encoding="utf-8")
-
-
-def read_file(path: str) -> str | None:
-    return {OWNER: OWNER_SRC}.get(path)
-
-
-# ========================================================= evidence verifier
+    """Shorthand: "log" / "commit" / "run_attempts", or a file path (kind "file")."""
+    base = {"line": line, "snippet": snippet, "verified": verified}
+    if source in ("log", "commit", "run_attempts"):
+        return {"kind": source, **base}
+    return {"kind": "file", "path": source, **base}
 
 
 REAL = "Owner.java:[194,24] no suitable method found for getPet(java.lang.String,boolean)"
-
-
-def test_real_error_line_from_case01_verifies(case01_log: str) -> None:
-    result = verify_evidence(
-        diag(evidence=[ev("log", REAL, 279)]), log=case01_log, read_file=read_file
-    )
-    assert [e.verified for e in result.diagnosis.evidence] == [True]
-    assert result.dropped == ()
-    assert result.diagnosis.status is Status.diagnosed and result.diagnosis.confidence == 0.9
-
-
-@pytest.mark.parametrize(
-    "snippet",
-    [
-        "Owner.java:[194,24]   no suitable\tmethod found  for getPet(java.lang.String,boolean)",
-        "[ERROR] /home/runner/work/petclinic-ci-failures/petclinic-ci-failures/src/main/java/"
-        "org/springframework/samples/petclinic/owner/Owner.java:[194,24] no suitable method",
-        "Owner.java:[194,24] ... getPet(java.lang.String,boolean)",  # elision
-    ],
-)
-def test_whitespace_and_elision_tolerance(case01_log: str, snippet: str) -> None:
-    result = verify_evidence(
-        diag(evidence=[ev("log", snippet, 279)]), log=case01_log, read_file=read_file
-    )
-    assert result.diagnosis.evidence and result.diagnosis.evidence[0].verified
-
-
-def test_multi_line_log_snippet(case01_log: str) -> None:
-    snippet = (
-        "method org.springframework.samples.petclinic.owner.Owner.getPet(java.lang.String) "
-        "is not applicable\n(actual and formal argument lists differ in length)"
-    )
-    result = verify_evidence(
-        diag(evidence=[ev("log", snippet, 280)]), log=case01_log, read_file=read_file
-    )
-    assert result.diagnosis.evidence[0].verified
-
-
-@pytest.mark.parametrize(
-    ("snippet", "line"),
-    [
-        ("Owner.java:[194,24] cannot find symbol: method getPetByName", 279),  # fabricated
-        (REAL, 280),  # real text, wrong line
-        (REAL, None),  # log evidence needs a line
-        (REAL, 99_999),  # out of range
-        ("ERROR", 279),  # too short to prove anything
-        ("Owner.java ... getPetByName", 279),  # elision parts must all exist
-    ],
-)
-def test_fabricated_or_misplaced_log_evidence_fails(
-    case01_log: str, snippet: str, line: int | None
-) -> None:
-    result = verify_evidence(
-        diag(evidence=[ev("log", snippet, line)]), log=case01_log, read_file=read_file
-    )
-    assert result.diagnosis.evidence == []
-    assert len(result.dropped) == 1 and result.dropped[0].verified is False
-
-
-def test_model_cannot_self_verify(case01_log: str) -> None:
-    fake = ev("log", "BUILD SUCCESS with no errors at all", 279, verified=True)
-    result = verify_evidence(diag(evidence=[fake]), log=case01_log, read_file=read_file)
-    assert result.diagnosis.evidence == []
-
-
-def test_file_evidence(case01_log: str) -> None:
-    good_at_line = ev(OWNER, "return getPet(name, true) != null;", 4)
-    good_anywhere = ev(OWNER, "public boolean hasPet(String name)")
-    wrong_line = ev(OWNER, "return getPet(name, true) != null;", 3)
-    missing_file = ev("src/main/java/Nope.java", "return getPet(name, true) != null;")
-    result = verify_evidence(
-        diag(evidence=[good_at_line, good_anywhere, wrong_line, missing_file]),
-        log=case01_log,
-        read_file=read_file,
-    )
-    assert [e.line for e in result.diagnosis.evidence] == [4, None]
-    assert {e.source for e in result.dropped} == {OWNER, "src/main/java/Nope.java"}
-    assert result.cited == 4
-
-
-def test_context_sources_and_memory(case01_log: str) -> None:
-    context = {
-        "commit": "37fb01f6 Rename name-based pet lookup to findPetByName",
-        "run_attempts": "attempt 1: failure",
-    }
-    evidence = [
-        ev("commit", "Rename name-based pet lookup to findPetByName"),
-        ev("run_attempts", "attempt 1: failure"),
-        ev("memory", "Seen this exact failure last week"),  # hints are never evidence
-        ev("commit", "Revert the pet lookup rename completely"),
-    ]
-    result = verify_evidence(
-        diag(evidence=evidence), log=case01_log, read_file=read_file, context=context
-    )
-    assert [e.source for e in result.diagnosis.evidence] == ["commit", "run_attempts"]
-    assert [e.source for e in result.dropped] == ["memory", "commit"]
-
-
-def test_redacted_snippet_verifies_against_redacted_log() -> None:
-    raw = "2026-11-08T00:00:00.0000000Z [ERROR] connect to postgres://app:hunter2@db:5432 failed\n"
-    snippet = "connect to postgres://[REDACTED:connection_string]@db:5432 failed"
-    result = verify_evidence(diag(evidence=[ev("log", snippet, 1)]), log=raw, read_file=read_file)
-    assert result.diagnosis.evidence[0].verified
-
-
-@pytest.mark.parametrize(
-    ("status", "expected"),
-    [
-        (Status.diagnosed, Status.possible_cause),
-        (Status.possible_cause, Status.possible_cause),
-        (Status.undiagnosable, Status.undiagnosable),
-    ],
-)
-def test_no_verified_evidence_caps_confidence(
-    case01_log: str, status: Status, expected: Status
-) -> None:
-    d = diag(
-        status=status, confidence=0.95, evidence=[ev("log", "made up error message here", 279)]
-    )
-    result = verify_evidence(d, log=case01_log, read_file=read_file)
-    assert result.diagnosis.confidence == 0.3
-    assert result.diagnosis.status is expected
-
-
-def test_cap_never_raises_confidence(case01_log: str) -> None:
-    result = verify_evidence(diag(confidence=0.1), log=case01_log, read_file=read_file)
-    assert result.diagnosis.confidence == 0.1
 
 
 # ============================================================ alert gating
@@ -220,11 +80,16 @@ def test_alert_thresholds(
 # ========================================================= auto-fix gating
 
 VERIFIED = [ev("log", REAL, 279, verified=True)]
+FIX = "--- a/Owner.java\n+++ b/Owner.java\n@@ -1 +1 @@\n-getPet(n, true)\n+findPetByName(n, true)\n"
+
+
+def fixable(**kw: Any) -> Diagnosis:
+    return diag(**{"evidence": VERIFIED, "fix_diff": FIX, **kw})
 
 
 @pytest.mark.parametrize("category", ["compile", "format", "test_assertion"])
 def test_auto_fix_allowlisted_categories(category: str) -> None:
-    assert apply_auto_fix_gating(diag(category=category, evidence=VERIFIED)).auto_fixable
+    assert apply_auto_fix_gating(fixable(category=category), fix_verified=True).auto_fixable
 
 
 @pytest.mark.parametrize(
@@ -242,7 +107,8 @@ def test_auto_fix_allowlisted_categories(category: str) -> None:
     ],
 )
 def test_auto_fix_other_categories_never(category: str) -> None:
-    assert not apply_auto_fix_gating(diag(category=category, evidence=VERIFIED)).auto_fixable
+    d = fixable(category=category)
+    assert not apply_auto_fix_gating(d, fix_verified=True).auto_fixable
 
 
 @pytest.mark.parametrize(
@@ -255,13 +121,120 @@ def test_auto_fix_other_categories_never(category: str) -> None:
     ],
 )
 def test_auto_fix_requires_evidence_confidence_and_diagnosis(overrides: dict[str, Any]) -> None:
-    d = diag(**{"evidence": VERIFIED, **overrides})
-    assert not apply_auto_fix_gating(d).auto_fixable
+    assert not apply_auto_fix_gating(fixable(**overrides), fix_verified=True).auto_fixable
+
+
+def test_auto_fix_requires_a_fix_diff() -> None:
+    """A correct-looking diagnosis with nothing to hand off is not auto-fixable."""
+    d = fixable(fix_diff=None)
+    assert not apply_auto_fix_gating(d, fix_verified=True).auto_fixable
+
+
+def test_auto_fix_requires_the_fix_to_be_verified() -> None:
+    assert not apply_auto_fix_gating(fixable(), fix_verified=False).auto_fixable
+    assert apply_auto_fix_gating(fixable(), fix_verified=True).auto_fixable
 
 
 def test_auto_fix_overrides_model_claim() -> None:
-    d = diag(category="memory", evidence=VERIFIED, auto_fixable=True)
-    assert apply_auto_fix_gating(d).auto_fixable is False
+    d = fixable(category="memory", auto_fixable=True)
+    assert apply_auto_fix_gating(d, fix_verified=True).auto_fixable is False
+    d = fixable(fix_diff=None, auto_fixable=True)
+    assert apply_auto_fix_gating(d, fix_verified=False).auto_fixable is False
+
+
+# ============================================ category evidence requirements
+
+LOG = ev("log", REAL, 279, verified=True)
+SOURCE = ev(OWNER, "return getPet(name, true) != null;", 194, verified=True)
+POM = ev("pom.xml", "<artifactId>guava</artifactId>", 40, verified=True)
+GRADLE_SUB = ev("app/build.gradle", "maxHeapSize = '32m'", 66, verified=True)
+ATTEMPTS = ev("run_attempts", "attempt 2: success", verified=True)
+
+LOG_ONLY_CATEGORIES = [
+    "compile",
+    "format",
+    "test_assertion",
+    "memory",
+    "config",
+    "dependency_service",
+    "timeout",
+    "runner",
+    "cancelled",
+]
+
+
+@pytest.mark.parametrize("category", LOG_ONLY_CATEGORIES)
+def test_log_line_satisfies_log_only_categories(category: str) -> None:
+    d, check = apply_evidence_requirements(diag(category=category, evidence=[LOG]))
+    assert check.met and check.missing == ()
+    assert d.status is Status.diagnosed and d.confidence == 0.9
+
+
+@pytest.mark.parametrize("category", LOG_ONLY_CATEGORIES)
+def test_log_only_categories_without_log_line_are_capped(category: str) -> None:
+    d, check = apply_evidence_requirements(diag(category=category, evidence=[SOURCE, POM]))
+    assert not check.met and check.missing == ("a verified log line",)
+    assert d.status is Status.possible_cause and d.confidence == 0.6
+
+
+def test_compile_with_only_a_source_snippet_is_capped() -> None:
+    d, check = apply_evidence_requirements(diag(category="compile", evidence=[SOURCE]))
+    assert not check.met
+    assert d.status is Status.possible_cause and d.confidence == 0.6
+    assert decide(d).level is AlertLevel.possible_cause  # PR comment only, no Teams
+
+
+@pytest.mark.parametrize(
+    ("evidence", "missing"),
+    [
+        ([LOG, POM], ()),
+        ([LOG, GRADLE_SUB], ()),  # build file in a subdirectory counts
+        ([LOG, SOURCE], ("a verified build file (pom.xml, build.gradle, ...)",)),
+        ([POM], ("a verified log line",)),
+    ],
+)
+def test_dependency_needs_log_line_and_build_file(
+    evidence: list[dict[str, Any]], missing: tuple[str, ...]
+) -> None:
+    d, check = apply_evidence_requirements(diag(category="dependency", evidence=evidence))
+    assert check.missing == missing
+    assert d.status is (Status.diagnosed if not missing else Status.possible_cause)
+
+
+@pytest.mark.parametrize(
+    ("evidence", "met"),
+    [([LOG, ATTEMPTS], True), ([LOG], False), ([ATTEMPTS], False)],
+)
+def test_flaky_needs_log_line_and_run_attempts(evidence: list[dict[str, Any]], met: bool) -> None:
+    _, check = apply_evidence_requirements(diag(category="flaky", evidence=evidence))
+    assert check.met is met
+
+
+def test_unknown_is_never_diagnosed() -> None:
+    d, check = apply_evidence_requirements(diag(category="unknown", evidence=[LOG, POM]))
+    assert not check.met and d.status is Status.possible_cause and d.confidence == 0.6
+
+
+def test_unverified_evidence_does_not_count() -> None:
+    unverified = ev("log", REAL, 279, verified=False)
+    _, check = apply_evidence_requirements(diag(category="compile", evidence=[unverified]))
+    assert not check.met
+
+
+def test_requirements_never_raise_or_upgrade() -> None:
+    low = diag(category="compile", evidence=[SOURCE], confidence=0.3)
+    d, _ = apply_evidence_requirements(low)
+    assert d.confidence == 0.3  # cap only lowers
+    undiag = diag(category="compile", evidence=[], status="undiagnosable", confidence=0.1)
+    d, _ = apply_evidence_requirements(undiag)
+    assert d.status is Status.undiagnosable  # never upgraded to possible_cause
+    possible = diag(category="compile", evidence=[SOURCE], status="possible_cause")
+    d, _ = apply_evidence_requirements(possible)
+    assert d.status is Status.possible_cause and d.confidence == 0.6
+
+
+def test_every_category_has_a_requirement_entry() -> None:
+    assert set(REQUIREMENTS) == set(Category)
 
 
 # ================================================================= budgets
@@ -443,3 +416,13 @@ def test_code_block_fence_cannot_be_broken() -> None:
     assert block.endswith("\n" + fence)
     inner = block[len(fence) + len("diff\n") : -len(fence)]
     assert fence not in inner
+
+
+def test_budget_limits_from_env() -> None:
+    assert BudgetLimits.from_env({}) == BudgetLimits()
+    limits = BudgetLimits.from_env({"BUDGET_TIMEOUT_S": "300", "BUDGET_MAX_TOOL_CALLS": "10"})
+    assert limits.timeout_s == 300 and limits.max_tool_calls_per_agent == 10
+    assert limits.max_input_tokens == 60_000
+    for bad in ({"BUDGET_TIMEOUT_S": "0"}, {"BUDGET_MAX_INPUT_TOKENS": "lots"}):
+        with pytest.raises(ValueError):
+            BudgetLimits.from_env(bad)

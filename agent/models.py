@@ -6,6 +6,8 @@ Environment:
     TRIAGE_MODEL_ID       exact model version for triage
     SPECIALIST_MODEL_ID   exact model version for the diagnosing agent(s)
     MODEL_TIMEOUT_S       per-request timeout (default 120)
+    MODEL_MAX_OUTPUT_TOKENS  cap on tokens generated per model call (default 4096); also
+                          bounds a constrained-decoding call that would otherwise loop
     MODEL_PRICE_INPUT_PER_MTOK / MODEL_PRICE_OUTPUT_PER_MTOK
                           USD per million tokens, for cost accounting (cloud providers;
                           a local Ollama model costs 0)
@@ -42,7 +44,20 @@ from typing import Any, Literal, get_args
 from strands import Agent
 from strands.models import Model
 
+from agent.errors import ModelConfigError, ModelError, ModelUnavailableError
 from guardrails.budget import Price
+
+__all__ = [
+    "ModelConfigError",
+    "ModelError",
+    "ModelHandle",
+    "ModelSettings",
+    "ModelUnavailableError",
+    "PingResult",
+    "build_model",
+    "check_pinned",
+    "ping",
+]
 
 Provider = Literal["ollama", "bedrock", "anthropic"]
 Role = Literal["triage", "specialist"]
@@ -58,18 +73,6 @@ _BEDROCK_ID = re.compile(r"^[A-Za-z0-9._-]+:\d+$")
 _ANTHROPIC_ID = re.compile(r"^claude-[a-z0-9.-]+$")
 
 
-class ModelError(Exception):
-    """Base class; the message is meant for the user as-is."""
-
-
-class ModelConfigError(ModelError):
-    """Missing or invalid configuration."""
-
-
-class ModelUnavailableError(ModelError):
-    """Provider unreachable, model not found, credentials rejected, or the call failed."""
-
-
 # ------------------------------------------------------------------- settings
 
 
@@ -78,6 +81,7 @@ class ModelSettings:
     provider: Provider
     model_ids: Mapping[Role, str | None]
     timeout_s: float = 120.0
+    max_output_tokens: int = 4096
     price: Price | None = None  # None: unknown (cloud provider without a configured price)
     ollama_host: str = "http://localhost:11434"
     ollama_num_ctx: int = 16_384
@@ -99,6 +103,7 @@ class ModelSettings:
             provider=prov,
             model_ids={r: (env.get(var) or "").strip() or None for r, var in ROLE_ENV.items()},
             timeout_s=_positive_float(env, "MODEL_TIMEOUT_S", 120.0),
+            max_output_tokens=int(_positive_float(env, "MODEL_MAX_OUTPUT_TOKENS", 4096)),
             price=LOCAL_PRICE if prov == "ollama" else _price(env),
             ollama_host=env.get("OLLAMA_HOST") or "http://localhost:11434",
             ollama_num_ctx=int(_positive_float(env, "OLLAMA_NUM_CTX", 16_384)),
@@ -223,6 +228,7 @@ def _ollama(settings: ModelSettings, role: Role, model_id: str) -> ModelHandle:
         ollama_client_args={"timeout": settings.timeout_s},
         model_id=name_tag,
         temperature=0.0,
+        max_tokens=settings.max_output_tokens,  # sent as num_predict, on every call
         options={"num_ctx": settings.ollama_num_ctx},
         keep_alive="10m",
     )
@@ -256,6 +262,7 @@ def _bedrock(settings: ModelSettings, role: Role, model_id: str) -> ModelHandle:
         ),
         model_id=model_id,
         temperature=0.0,
+        max_tokens=settings.max_output_tokens,
     )
     return ModelHandle("bedrock", role, model_id, model_id, settings.price, model)
 
@@ -278,7 +285,7 @@ def _anthropic(settings: ModelSettings, role: Role, model_id: str) -> ModelHandl
             "max_retries": 0,
         },
         model_id=model_id,
-        max_tokens=4096,
+        max_tokens=settings.max_output_tokens,
         params={"temperature": 0.0},
     )
     return ModelHandle("anthropic", role, model_id, model_id, settings.price, model)

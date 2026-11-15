@@ -150,7 +150,11 @@ def sanitize_diagnosis(
                 ev.model_copy(
                     update={
                         "snippet": sanitize_text(ev.snippet, repo=repo, limit=lim.snippet),
-                        "source": sanitize_text(ev.source, repo=repo, limit=200),
+                        **{
+                            name: sanitize_text(value, repo=repo, limit=200)
+                            for name in ("log", "path", "sha")
+                            if (value := getattr(ev, name)) is not None
+                        },
                     }
                 )
                 for ev in d.evidence
