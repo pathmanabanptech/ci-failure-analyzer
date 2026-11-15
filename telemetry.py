@@ -3,22 +3,24 @@
 Only the exporter changes between environments: console locally (this module),
 Jaeger/CloudWatch later. Span attributes carry counts, line numbers, kinds and
 SHAs, never log text, file contents or diagnosis prose (those may hold secrets
-or injected content).
+or injected content). Agent frameworks put prompts and replies in span events;
+the exporter strips event attributes before anything is written.
 """
 
 from __future__ import annotations
 
 import sys
-from collections.abc import Callable, Mapping
+from collections.abc import Callable, Mapping, Sequence
 from typing import Literal, TextIO
 
 from opentelemetry import trace
 from opentelemetry.sdk.resources import Resource
-from opentelemetry.sdk.trace import ReadableSpan, TracerProvider
+from opentelemetry.sdk.trace import Event, ReadableSpan, TracerProvider
 from opentelemetry.sdk.trace.export import (
     ConsoleSpanExporter,
     SimpleSpanProcessor,
     SpanExporter,
+    SpanExportResult,
 )
 from opentelemetry.trace import StatusCode
 from opentelemetry.util.types import AttributeValue
@@ -50,7 +52,8 @@ def compact_line(span: ReadableSpan) -> str:
     if attrs := _fmt_attrs(span.attributes):
         parts.append(attrs)
     for event in span.events:  # e.g. recorded exceptions
-        parts.append(f"event={event.name}({_fmt_attrs(event.attributes)})")
+        attrs = _fmt_attrs(event.attributes)
+        parts.append(f"event={event.name}({attrs})" if attrs else f"event={event.name}")
     return " ".join(parts) + "\n"
 
 
@@ -62,11 +65,52 @@ def console_exporter(stream: TextIO | None = None, fmt: SpanFormat = "compact") 
     return ConsoleSpanExporter(out=stream or sys.stderr, formatter=formatter)
 
 
+class WithoutContent(SpanExporter):
+    """Drops event attributes (agent frameworks record prompts, tool results and replies
+    there) before export; event names stay. Exceptions recorded on spans are kept."""
+
+    def __init__(self, inner: SpanExporter) -> None:
+        self._inner = inner
+
+    @staticmethod
+    def _strip(span: ReadableSpan) -> ReadableSpan:
+        events = tuple(
+            e if e.name == "exception" else Event(e.name, timestamp=e.timestamp)
+            for e in span.events
+        )
+        return ReadableSpan(
+            name=span.name,
+            context=span.context,
+            parent=span.parent,
+            resource=span.resource,
+            attributes=span.attributes,
+            events=events,
+            links=span.links,
+            kind=span.kind,
+            status=span.status,
+            start_time=span.start_time,
+            end_time=span.end_time,
+            instrumentation_scope=span.instrumentation_scope,
+        )
+
+    def export(self, spans: Sequence[ReadableSpan]) -> SpanExportResult:
+        return self._inner.export([self._strip(s) for s in spans])
+
+    def shutdown(self) -> None:
+        self._inner.shutdown()
+
+    def force_flush(self, timeout_millis: int = 30_000) -> bool:
+        return self._inner.force_flush(timeout_millis)
+
+
 def make_provider(exporter: SpanExporter | None) -> TracerProvider:
-    """A tracer provider exporting synchronously to ``exporter`` (None: spans are dropped)."""
+    """A tracer provider exporting synchronously to ``exporter`` (None: spans are dropped).
+
+    Event content is always stripped (see ``WithoutContent``).
+    """
     provider = TracerProvider(resource=Resource.create({"service.name": SERVICE_NAME}))
     if exporter is not None:
-        provider.add_span_processor(SimpleSpanProcessor(exporter))
+        provider.add_span_processor(SimpleSpanProcessor(WithoutContent(exporter)))
     return provider
 
 

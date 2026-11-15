@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import json
 import re
+import subprocess
 import sys
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import pytest
 from opentelemetry.sdk.trace import ReadableSpan
@@ -25,6 +27,7 @@ from pipeline import PipelineResult, analyze
 
 STAGES = ["load", "preprocess", "redact", "agent", "verify", "gate", "sanitize", "notify"]
 FAKE_AWS_KEY = "AKIAQWERTYUIOPASDFGH"
+ROOT = Path(__file__).resolve().parent.parent
 
 
 @dataclass
@@ -244,6 +247,17 @@ def test_cli_analyze_errors(argv: list[str], capsys: pytest.CaptureFixture[str])
     assert out == "" and err.startswith("error:")
 
 
-def test_no_model_sdk_imported() -> None:
-    for mod in ("strands", "anthropic", "boto3", "ollama"):
-        assert mod not in sys.modules
+def test_dry_run_never_loads_a_model_sdk() -> None:
+    """Fresh interpreter: other tests in this process may have imported model SDKs."""
+    code = (
+        "import sys, cli\n"
+        "rc = cli.main(['analyze', '--case', 'case-01', '--dry-run'])\n"
+        "loaded = [m for m in ('strands', 'anthropic', 'boto3', 'ollama') if m in sys.modules]\n"
+        "print('LOADED', loaded, file=sys.stderr)\n"
+        "sys.exit(rc)\n"
+    )
+    proc = subprocess.run(
+        [sys.executable, "-c", code], capture_output=True, text=True, cwd=ROOT, check=False
+    )
+    assert proc.returncode == 0, proc.stderr
+    assert "LOADED []" in proc.stderr

@@ -5,12 +5,17 @@ description = "AI agent that diagnoses failed CI builds and posts one deduplicat
 readme = "README.md"
 requires-python = ">=3.12"
 # Runtime dependencies are added in the increment that first needs them
-# (pydantic/pyyaml in 1.2, opentelemetry-sdk in 1.7, strands-agents in 1.9, ...).
+# (pydantic/pyyaml in 1.2, opentelemetry-sdk in 1.7, strands-agents in 1.8, ...).
+# Bedrock support (boto3) ships with strands-agents; Ollama via its extra.
 dependencies = [
     "opentelemetry-sdk>=1.45.2",
     "pydantic>=2.14.3",
     "pyyaml>=6.0.3",
+    "strands-agents[ollama]>=1.65.0",
 ]
+
+[project.optional-dependencies]
+anthropic = ["strands-agents[anthropic]>=1.65.0"]  # uv sync --extra anthropic
 
 [dependency-groups]
 dev = [
@@ -60,3 +65,8 @@ warn_return_any = true
 no_implicit_reexport = true
 strict_equality = true
 extra_checks = true
+
+# boto3/botocore ship no type information.
+[[tool.mypy.overrides]]
+module = ["boto3", "boto3.*", "botocore", "botocore.*"]
+ignore_missing_imports = true
