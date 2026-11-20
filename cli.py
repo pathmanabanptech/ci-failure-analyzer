@@ -4,6 +4,9 @@ uv run python cli.py preprocess --case case-01 --log maven.log
 uv run python cli.py analyze --case case-01 [--log maven.log] [--dry-run] [--debug]
 uv run python cli.py ping-model [--role triage|specialist]
 
+Settings come from the environment; a ``.env`` file next to this script is loaded
+first (variables already set in the shell take precedence).
+
 Results go to stdout as JSON (``analyze``: one Diagnosis per log, keyed by log
 name); spans, notes, debug output and the notification go to stderr, so stdout can
 be piped to ``jq``. Exit codes: 0 ok, 1 model unavailable or
@@ -15,7 +18,10 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import sys
+from collections.abc import MutableMapping
+from pathlib import Path
 
 import telemetry
 from adapters.base import AdapterError, NotFoundError, RepoReader
@@ -239,6 +245,35 @@ def _cmd_ping_model(args: argparse.Namespace) -> int:
     return 0
 
 
+ENV_FILE = Path(__file__).resolve().parent / ".env"
+_ENV_LINE = re.compile(r"^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$")
+
+
+def load_env_file(path: Path, environ: MutableMapping[str, str]) -> list[str]:
+    """Load ``KEY=VALUE`` lines into ``environ`` without overriding variables that are
+    already set (the shell wins). Blank lines and ``#`` comments are ignored; values
+    may be quoted. Nothing is executed. Returns the names that were set."""
+    if not path.is_file():
+        return []
+    loaded = []
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        m = _ENV_LINE.match(line)
+        if not m:
+            continue
+        key, value = m.group(1), m.group(2).strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in "'\"":
+            value = value[1:-1]
+        else:
+            value = re.split(r"\s+#", value, maxsplit=1)[0].strip()
+        if key not in environ:
+            environ[key] = value
+            loaded.append(key)
+    return loaded
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="cli.py", description="CI failure analyzer")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -280,4 +315,5 @@ def main(argv: list[str] | None = None) -> int:
 
 
 if __name__ == "__main__":
+    load_env_file(ENV_FILE, os.environ)  # script runs only: tests never read a local .env
     sys.exit(main())

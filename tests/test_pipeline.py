@@ -399,3 +399,36 @@ def test_compact_spans_stay_on_one_line() -> None:
     (s,) = exporter.get_finished_spans()
     line = telemetry.compact_line(s)
     assert line.count("\n") == 1 and "description=Read a file. Args: path: x" in line
+
+
+def test_load_env_file(tmp_path: Path) -> None:
+    env_file = tmp_path / ".env"
+    env_file.write_text(
+        "# comment\n"
+        "MODEL_PROVIDER=ollama\n"
+        "export TRIAGE_MODEL_ID='qwen2.5:7b-instruct@845dbda0ea48'\n"
+        'OLLAMA_HOST="http://localhost:11434"  \n'
+        "MODEL_TIMEOUT_S=120  # seconds\n"
+        "BUDGET_TIMEOUT_S=300\n"
+        "not a setting\n"
+        "\n"
+    )
+    environ = {"BUDGET_TIMEOUT_S": "600"}  # already set in the shell: wins
+    loaded = cli.load_env_file(env_file, environ)
+    assert environ == {
+        "BUDGET_TIMEOUT_S": "600",
+        "MODEL_PROVIDER": "ollama",
+        "TRIAGE_MODEL_ID": "qwen2.5:7b-instruct@845dbda0ea48",
+        "OLLAMA_HOST": "http://localhost:11434",
+        "MODEL_TIMEOUT_S": "120",
+    }
+    assert "BUDGET_TIMEOUT_S" not in loaded
+    assert cli.load_env_file(tmp_path / "missing.env", environ) == []
+
+
+def test_cli_script_loads_dotenv_but_main_does_not(tmp_path: Path) -> None:
+    """Only `python cli.py` reads .env; tests calling cli.main() never do."""
+    src = (ROOT / "cli.py").read_text(encoding="utf-8")
+    main_body = src[src.index("def main(") : src.index('if __name__ == "__main__":')]
+    assert "load_env_file" not in main_body
+    assert "load_env_file(ENV_FILE, os.environ)" in src[src.index('if __name__ == "__main__":') :]

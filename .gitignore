@@ -7,3 +7,4 @@ __pycache__/
 *.egg-info/
 .env
 Plan.md
+evals/results/dry-run.json
