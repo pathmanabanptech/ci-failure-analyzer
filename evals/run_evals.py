@@ -15,6 +15,8 @@ case's answer key:
 * whether a proposed fix applies to what the build compiled
 * structured-output fallback, tool calls, model calls, tokens, cost, latency
 * budget or model errors, recorded per run instead of stopping the eval
+* with ``--judge``: an LLM judge's root cause (0-3) and local_vs_ci (0-2) scores
+  against the answer key's key facts (see ``evals/judge``)
 
 The table goes to stdout; the full results (every run, per-log aggregates, the
 summary, and what produced them: git SHA, prompt hashes, model IDs, budget
@@ -33,7 +35,7 @@ import subprocess
 import sys
 import time
 from collections.abc import Iterable, Sequence
-from dataclasses import asdict, dataclass, field
+from dataclasses import asdict, dataclass, field, replace
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -46,6 +48,7 @@ from agent.base import DiagnosisAgent
 from agent.errors import ModelError
 from agent.schema import Evidence
 from agent.stub import StubAgent
+from evals.judge.judge import Judge, judge_from_env, rubric_hash
 from evals.loader import CASES_DIR, AnswerKey, case_logs, list_cases, load_answer_key
 from guardrails.budget import BudgetExceeded, BudgetLimits
 from pipeline import PipelineResult, analyze
@@ -89,6 +92,15 @@ class RunScore:
     cost_usd: float | None = None  # None: price not configured
     latency_s: float = 0.0
     model_id: str | None = None
+    # Final (sanitized) prose, kept so the judge can be re-checked against hand labels.
+    root_cause: str | None = None
+    local_vs_ci: str | None = None
+    judge_root_cause: int | None = None  # 0-3
+    judge_local_vs_ci: int | None = None  # 0-2
+    judge_root_cause_reason: str | None = None
+    judge_local_vs_ci_reason: str | None = None
+    judge_error: str | None = None
+    judge_cost_usd: float | None = None
 
     @property
     def evidence_hallucinated(self) -> int:
@@ -152,6 +164,8 @@ def score_run(key: AnswerKey, run: int, result: PipelineResult, latency_s: float
         cost_usd=usage.cost_usd,
         latency_s=round(latency_s, 3),
         model_id=usage.model_id,
+        root_cause=d.root_cause,
+        local_vs_ci=d.local_vs_ci,
     )
 
 
@@ -203,6 +217,9 @@ class Aggregate:
     output_tokens: Stat | None
     latency_s: Stat | None
     cost_usd_total: float | None  # None: some run had no known price
+    judge_root_cause: Stat | None = None  # 0-3, over judged runs
+    judge_local_vs_ci: Stat | None = None  # 0-2
+    judge_errors: int = 0
     group: dict[str, str] = field(default_factory=dict)
 
 
@@ -236,6 +253,11 @@ def aggregate(scores: Sequence[RunScore], group: dict[str, str] | None = None) -
         cost_usd_total=None
         if any(c is None for c in costs)
         else round(sum(c or 0.0 for c in costs), 6),
+        judge_root_cause=_stat([s.judge_root_cause for s in ok if s.judge_root_cause is not None]),
+        judge_local_vs_ci=_stat(
+            [s.judge_local_vs_ci for s in ok if s.judge_local_vs_ci is not None]
+        ),
+        judge_errors=sum(1 for s in ok if s.judge_error),
         group=group or {},
     )
 
@@ -273,6 +295,8 @@ COLUMNS = (
     ("sources", lambda a: _pct(a.sources_coverage)),
     ("conf", lambda a: _num(a.confidence, 2)),
     ("conf range", lambda a: _pct(a.confidence_in_range)),
+    ("root cause /3", lambda a: _num(a.judge_root_cause, 1)),
+    ("local vs CI /2", lambda a: _num(a.judge_local_vs_ci, 1)),
     ("fix applies", lambda a: _pct(a.fix_applies_rate)),
     ("fallback", lambda a: _pct(a.structured_output_fallback_rate)),
     ("in tok", lambda a: _num(a.input_tokens, 0)),
@@ -314,7 +338,13 @@ def prompt_hashes(prompts_dir: Path = PROMPTS_DIR) -> dict[str, str]:
 
 
 def provenance(
-    *, agent: str, n: int, limits: BudgetLimits, repo_reader: bool, scores: Sequence[RunScore]
+    *,
+    agent: str,
+    n: int,
+    limits: BudgetLimits,
+    repo_reader: bool,
+    scores: Sequence[RunScore],
+    judge: str | None = None,
 ) -> dict[str, Any]:
     status = _git("status", "--porcelain", "--", ".", ":(exclude)evals/results")
     return {
@@ -327,6 +357,8 @@ def provenance(
         "n": n,
         "budget_limits": asdict(limits),
         "repo_reader": repo_reader,
+        "judge": judge,
+        "judge_rubric_hash": rubric_hash() if judge else None,
         "holdout": "no holdout yet",
     }
 
@@ -358,6 +390,7 @@ def run_eval(
     limits: BudgetLimits,
     cases_dir: Path = CASES_DIR,
     progress: Any = None,
+    judge: Judge | None = None,
 ) -> list[RunScore]:
     source = LocalLogSource(cases_dir)
     tracer = telemetry.get_tracer(telemetry.make_provider(None))  # spans dropped
@@ -388,6 +421,8 @@ def run_eval(
                 )
             else:
                 score = score_run(key, i, result, time.perf_counter() - start)
+                if judge is not None:
+                    score = _judged(score, judge, key, result)
             scores.append(score)
             if progress is not None:
                 verdict = score.error or (
@@ -400,6 +435,21 @@ def run_eval(
                     flush=True,
                 )
     return scores
+
+
+def _judged(score: RunScore, judge: Judge, key: AnswerKey, result: PipelineResult) -> RunScore:
+    try:
+        j = judge.score(key, result.diagnosis)
+    except ModelError as e:
+        return replace(score, judge_error=f"{type(e).__name__}: {e}")
+    return replace(
+        score,
+        judge_root_cause=j.root_cause,
+        judge_local_vs_ci=j.local_vs_ci,
+        judge_root_cause_reason=j.root_cause_reason,
+        judge_local_vs_ci_reason=j.local_vs_ci_reason,
+        judge_cost_usd=j.cost_usd,
+    )
 
 
 def results_json(
@@ -448,6 +498,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     p.add_argument("--dry-run", action="store_true", help="stub agent, no model call")
     p.add_argument("--out", type=Path, help="results JSON path")
+    p.add_argument(
+        "--judge",
+        action="store_true",
+        help="score root cause and local_vs_ci with the LLM judge (JUDGE_MODEL_* settings)",
+    )
     args = p.parse_args(argv)
     if args.n < 1:
         p.error("--n must be at least 1")
@@ -464,16 +519,30 @@ def main(argv: list[str] | None = None) -> int:
         pairs = targets(args.case)
         agent = _make_agent(args.dry_run, repo)
         limits = BudgetLimits.from_env()
+        judge = judge_from_env(os.environ) if args.judge else None
     except (ModelError, ValueError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 2
 
-    scores = run_eval(pairs, agent=agent, repo=repo, n=args.n, limits=limits, progress=sys.stderr)
+    scores = run_eval(
+        pairs, agent=agent, repo=repo, n=args.n, limits=limits, progress=sys.stderr, judge=judge
+    )
     rows = per_log(scores)
     total = aggregate(scores)
     meta = provenance(
-        agent=agent.name, n=args.n, limits=limits, repo_reader=repo is not None, scores=scores
+        agent=agent.name,
+        n=args.n,
+        limits=limits,
+        repo_reader=repo is not None,
+        scores=scores,
+        judge=judge.name if judge else None,
     )
+    if judge is not None and judge.name in meta["model_ids"]:
+        print(
+            f"warning: the judge ({judge.name}) is the model being evaluated; "
+            "use a different JUDGE_MODEL_ID where possible",
+            file=sys.stderr,
+        )
 
     print(render_table(rows, total))
     out.parent.mkdir(parents=True, exist_ok=True)
