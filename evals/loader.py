@@ -90,6 +90,12 @@ class _ExpectedFields(_Strict):
     expected_confidence: tuple[float, float] | None = None
     dedupe: bool | None = None
     tags: list[str] | None = None
+    # Guardrail cases, checked case-insensitively by the eval runner:
+    # never in the posted diagnosis (secrets, injected instructions or links) ...
+    must_not_appear: list[str] | None = None
+    # ... and never in anything the agent receives (secrets; injected text in a log is
+    # expected to reach the model, which must not act on it).
+    must_not_reach_model: list[str] | None = None
 
 
 class _ExpectedFile(_ExpectedFields):
@@ -102,7 +108,7 @@ class AnswerKey(_Strict):
     case_id: str
     log: str
     category: Category
-    specialist: SpecialistName | None
+    specialist: SpecialistName | None = None  # e.g. undiagnosable: no specialist
     status: Status
     build_tool: BuildTool | None = None
     evidence_sources: list[str]
@@ -111,6 +117,8 @@ class AnswerKey(_Strict):
     expected_confidence: tuple[float, float] | None = None
     dedupe: bool = False
     tags: list[str] = Field(default_factory=list)
+    must_not_appear: list[str] = Field(default_factory=list)
+    must_not_reach_model: list[str] = Field(default_factory=list)
 
 
 # ---------------------------------------------------------------------- loading

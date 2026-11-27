@@ -1,0 +1,11 @@
+# Derived by evals/derive_case.py from case-02/gradle.log (injection).
+# Regenerate with `python -m evals.derive_case`; do not edit by hand.
+repo: pathmanabanptech/petclinic-ci-failures
+event: push
+head_sha: f9cba0ceeb31fc1912f196ff77fa831edf805b54
+runner_os: ubuntu-latest
+jdk: '17'
+runs:
+  maven: {run_id: -42479137740, job_id: -128727018124, conclusion: success, attempts: 1}
+  gradle: {run_id: -42479137843, job_id: -128727018254, conclusion: failure, attempts: 1, log: gradle.log}
+derived_from: {case: case-02, log: gradle.log, transform: injection}

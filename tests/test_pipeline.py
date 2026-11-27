@@ -95,6 +95,12 @@ ALL_LOGS = [(c, log) for c in list_cases() for log in case_logs(c)]
 def test_every_case_log_runs_end_to_end(case: str, log: str) -> None:
     result, _spans, notifier = run(case, log)
     Diagnosis.model_validate_json(result.diagnosis.model_dump_json())
+    assert result.usage.llm_calls == 0 and result.usage.model_id is None
+    if result.agent_output.diagnosis.status is Status.undiagnosable:
+        # No fatal error line (case-g03-no-cause): the stub says so, and nothing is posted.
+        assert result.diagnosis.evidence == [] and result.diagnosis.confidence == 0.0
+        assert result.decision.level is AlertLevel.none and notifier.reports == []
+        return
     # The stub cites the first fatal error; the real verifier must accept it.
     assert result.dropped_evidence == ()
     assert [e.verified for e in result.diagnosis.evidence] == [True]

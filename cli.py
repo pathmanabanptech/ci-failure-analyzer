@@ -9,8 +9,15 @@ first (variables already set in the shell take precedence).
 
 Results go to stdout as JSON (``analyze``: one Diagnosis per log, keyed by log
 name); spans, notes, debug output and the notification go to stderr, so stdout can
-be piped to ``jq``. Exit codes: 0 ok, 1 model unavailable or
-misconfigured, 2 bad arguments.
+be piped to ``jq``.
+
+``analyze`` is fail-safe: if the model is down or times out, a budget runs out, or
+analysis crashes, that log gets ``{"analysis_unavailable": "<reason>"}`` instead of
+a diagnosis, nothing is posted for it, nothing is retried, and the exit code stays
+0, so the analyzer never turns a CI run red.
+
+Exit codes: 0 ok (including "analysis unavailable"), 1 misconfigured (e.g. no
+model settings), 2 bad arguments.
 """
 
 from __future__ import annotations
@@ -20,6 +27,7 @@ import json
 import os
 import re
 import sys
+import traceback
 from collections.abc import MutableMapping
 from pathlib import Path
 
@@ -29,7 +37,7 @@ from adapters.logs.local import LocalLogSource
 from adapters.notify.console import ConsoleNotifier
 from adapters.repo.local import ENV_VAR, LocalRepoReader
 from agent.base import DiagnosisAgent
-from agent.errors import ModelError
+from agent.errors import ModelError, ModelUnavailableError
 from agent.stub import StubAgent
 from evals.loader import CASES_DIR, CaseError, load_agent_input, load_meta
 from guardrails.budget import BudgetExceeded, BudgetLimits
@@ -156,14 +164,17 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
     try:
         agent = _make_agent(args, repo)
         limits = BudgetLimits.from_env()
-    except (ModelError, ValueError) as e:
+    except ModelUnavailableError as e:  # model server down at startup: fail safe
+        print(f"analysis unavailable: {e}", file=sys.stderr)
+        print(json.dumps({log: {"analysis_unavailable": str(e)} for log in refs}, indent=2))
+        return 0
+    except (ModelError, ValueError) as e:  # misconfiguration: the operator must fix it
         print(f"error: {e}", file=sys.stderr)
         return 1
     mode = "dry run: stub agent, no model call" if args.dry_run else f"agent: {agent.name}"
     provider = telemetry.configure(telemetry.console_exporter(fmt=args.spans))
     tracer = telemetry.get_tracer(provider)
     diagnoses: dict[str, object] = {}
-    failed = False
     try:
         for log, ref in refs.items():
             print(f"# {args.case}/{log} ({mode})", file=sys.stderr)
@@ -179,8 +190,15 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
                     log_name=log,
                 )
             except (BudgetExceeded, ModelError) as e:
-                print(f"error: {log}: {e}", file=sys.stderr)
-                failed = True
+                reason = f"{type(e).__name__}: {e}"
+                print(f"analysis unavailable for {log}: {reason}", file=sys.stderr)
+                diagnoses[log] = {"analysis_unavailable": reason}
+                continue
+            except Exception as e:  # a crash must not fail CI either; report it loudly
+                reason = f"internal error: {type(e).__name__}: {e}"
+                print(f"analysis unavailable for {log}: {reason}", file=sys.stderr)
+                traceback.print_exc(file=sys.stderr)
+                diagnoses[log] = {"analysis_unavailable": reason}
                 continue
             if args.debug:
                 _print_debug(log, result)
@@ -188,7 +206,7 @@ def _cmd_analyze(args: argparse.Namespace) -> int:
     finally:
         provider.shutdown()
     print(json.dumps(diagnoses, indent=2))
-    return 1 if failed else 0
+    return 0
 
 
 def _cmd_ping_model(args: argparse.Namespace) -> int:

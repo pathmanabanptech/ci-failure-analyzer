@@ -1,0 +1,16 @@
+# Derived by evals/derive_case.py from case-01/maven.log (strip_cause).
+# Regenerate with `python -m evals.derive_case`; do not edit by hand.
+repo: pathmanabanptech/petclinic-ci-failures
+event: pull_request
+head_sha: c9d5394f2b069c2b80fc6d1fb18340accfc6f069
+base_sha: afab46b773c6b540fad0e470685afff76f7363a3
+runner_os: ubuntu-latest
+jdk: '17'
+related_runs:
+- {tool: gradle, run_id: 42481641293, event: push, conclusion: success}
+- {tool: maven, run_id: 42481641416, event: push, conclusion: success}
+- {tool: maven, run_id: 42485331266, event: pull_request, conclusion: success, base_sha: 32cb980cb8903a864f5209fbd5deea342e055d37}
+- {tool: gradle, run_id: 42485331397, event: pull_request, conclusion: success, base_sha: 32cb980cb8903a864f5209fbd5deea342e055d37}
+runs:
+  maven: {run_id: -42485422975, job_id: -128746111502, conclusion: failure, attempts: 1, log: maven.log}
+derived_from: {case: case-01, log: maven.log, transform: strip_cause}

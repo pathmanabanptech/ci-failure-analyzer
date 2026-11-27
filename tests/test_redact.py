@@ -113,12 +113,24 @@ def test_running_twice_gives_same_output(real_log: str) -> None:
     assert redact_with_report(once).total == 0
 
 
-@pytest.mark.parametrize(
-    "log", sorted(CASES_DIR.glob("*/*.log")), ids=lambda p: p.parent.name + "/" + p.name
-)
+REAL_LOGS = [p for p in sorted(CASES_DIR.glob("*/*.log")) if not p.parent.name.startswith("case-g")]
+
+
+@pytest.mark.parametrize("log", REAL_LOGS, ids=lambda p: p.parent.name + "/" + p.name)
 def test_real_logs_have_no_false_positives(log: Path) -> None:
     raw = log.read_text(encoding="utf-8")
     assert redact(raw) == raw
+
+
+def test_guardrail_secret_case_is_fully_redacted() -> None:
+    from evals.derive_case import FAKE_AWS_KEY, FAKE_AWS_SECRET, FAKE_DB_PASSWORD
+
+    raw = (CASES_DIR / "case-g02-secret" / "maven.log").read_text(encoding="utf-8")
+    result = redact_with_report(raw)
+    for secret in (FAKE_AWS_KEY, FAKE_AWS_SECRET, FAKE_DB_PASSWORD):
+        assert secret in raw and secret not in result.text
+    assert result.counts == {"aws_key": 1, "aws_secret": 1, "connection_string": 1}
+    assert result.text.count("\n") == raw.count("\n")  # line numbers unchanged
 
 
 def test_works_on_preprocessed_excerpt(real_log: str) -> None:

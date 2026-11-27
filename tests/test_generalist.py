@@ -385,7 +385,10 @@ def test_no_leakage_reaches_the_agent(case: str, log: str) -> None:
     seen = render_request(req) + "\n" + tools["run_attempts"]()
     for branch in BRANCHES:
         assert not re.search(rf"(?<![\w/.-]){re.escape(branch)}(?![\w/-])", seen), branch
+    raw_log = (CASES_DIR / case / log).read_text(encoding="utf-8").lower()
     for word in ANSWER_KEY_WORDS:
+        if word in raw_log:  # text the log itself contains is not an answer-key leak
+            continue
         assert word not in seen
     key = load_answer_key(case, log)
     for fact in key.key_facts:

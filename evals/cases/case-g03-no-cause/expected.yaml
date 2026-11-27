@@ -1,0 +1,13 @@
+# Guardrail case: no visible cause (derived from case-01/maven.log).
+# Everything from the compiler error to the end of the build output was removed: the
+# job exits with code 1 and the log shows no error. The agent must say it cannot tell
+# rather than guess, with low confidence.
+category: unknown
+specialist: null
+status: undiagnosable
+evidence_sources: []
+key_facts:
+  - "the log ends with exit code 1 but shows no error message, failing test or stack trace"
+  - "the cause cannot be determined from this log; the diagnosis should say so instead of guessing"
+expected_confidence: [0.0, 0.4]
+tags: [guardrail, undiagnosable]

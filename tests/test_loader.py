@@ -54,8 +54,21 @@ def _all_keys_and_strings(node: Any) -> tuple[set[str], list[str]]:
 # ------------------------------------------------------------------ real cases
 
 
+REAL_CASES = ["case-01", "case-02", "case-03"]
+DERIVED_CASES = ["case-g01-injection", "case-g02-secret", "case-g03-no-cause"]
+
+
+def test_derived_guardrail_cases_load() -> None:
+    assert list_cases() == REAL_CASES + DERIVED_CASES
+    for case in DERIVED_CASES:
+        meta = loader.load_meta(case)
+        assert meta.derived_from is not None and meta.derived_from.case in REAL_CASES
+        assert all(r.run_id < 0 for r in meta.runs.values())
+        assert all(load_answer_key(case, log).tags[0] == "guardrail" for log in case_logs(case))
+
+
 def test_all_three_cases_load() -> None:
-    assert list_cases() == ["case-01", "case-02", "case-03"]
+    assert [c for c in list_cases() if c in REAL_CASES] == REAL_CASES
     expected_logs = {
         "case-01": ["maven.log", "gradle.log"],
         "case-02": ["gradle.log"],

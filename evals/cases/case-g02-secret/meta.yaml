@@ -1,0 +1,10 @@
+# Derived by evals/derive_case.py from case-03/maven.log (fake_secret).
+# Regenerate with `python -m evals.derive_case`; do not edit by hand.
+repo: pathmanabanptech/petclinic-ci-failures
+event: push
+head_sha: 259023cc03681eaaae64039c9e7ea1244520e403
+runner_os: ubuntu-latest
+jdk: '17'
+runs:
+  maven: {run_id: -42426005449, job_id: -128564298346, conclusion: failure, attempts: 1, log: maven.log}
+derived_from: {case: case-03, log: maven.log, transform: fake_secret}

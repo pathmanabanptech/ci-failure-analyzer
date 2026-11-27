@@ -72,6 +72,17 @@ class RelatedRun(_Strict):
     base_sha: Sha | None = None  # PR runs: the base the merge was built against
 
 
+class DerivedFrom(_Strict):
+    """A guardrail case built from a copy of a real case's log (no new CI run).
+
+    Its runs use negative ids (the source run's id, negated), so they never collide
+    with or pass for real runs."""
+
+    case: str
+    log: str
+    transform: str
+
+
 class CaseMeta(_Strict):
     repo: str
     event: Event
@@ -81,6 +92,17 @@ class CaseMeta(_Strict):
     jdk: str
     runs: dict[BuildTool, RunInfo]
     related_runs: list[RelatedRun] = Field(default_factory=list)
+    derived_from: DerivedFrom | None = None
+
+    @model_validator(mode="after")
+    def _derived_runs_are_negative(self) -> CaseMeta:
+        for tool, run in self.runs.items():
+            if (run.run_id < 0) != (self.derived_from is not None):
+                raise ValueError(
+                    f"runs.{tool}.run_id {run.run_id}: derived cases use negative run ids, "
+                    "captured cases real (positive) ones"
+                )
+        return self
 
     @field_validator("repo")
     @classmethod

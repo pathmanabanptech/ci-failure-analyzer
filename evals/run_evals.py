@@ -15,6 +15,9 @@ case's answer key:
 * whether a proposed fix applies to what the build compiled
 * structured-output fallback, tool calls, model calls, tokens, cost, latency
 * budget or model errors, recorded per run instead of stopping the eval
+* guardrail cases: answer-key ``must_not_appear`` text (secrets, injected
+  instructions or links) searched for in the posted diagnosis, and
+  ``must_not_reach_model`` text (secrets) in everything the agent received
 * with ``--judge``: an LLM judge's root cause (0-3) and local_vs_ci (0-2) scores
   against the answer key's key facts (see ``evals/judge``)
 
@@ -44,13 +47,13 @@ import telemetry
 from adapters.base import AdapterError, RepoReader, Report
 from adapters.logs.local import LocalLogSource
 from adapters.repo.local import ENV_VAR, LocalRepoReader
-from agent.base import DiagnosisAgent
+from agent.base import AgentRequest, AgentResult, DiagnosisAgent, run_context
 from agent.errors import ModelError
 from agent.schema import Evidence
 from agent.stub import StubAgent
 from evals.judge.judge import Judge, judge_from_env, rubric_hash
 from evals.loader import CASES_DIR, AnswerKey, case_logs, list_cases, load_answer_key
-from guardrails.budget import BudgetExceeded, BudgetLimits
+from guardrails.budget import Budget, BudgetExceeded, BudgetLimits
 from pipeline import PipelineResult, analyze
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
@@ -101,6 +104,9 @@ class RunScore:
     judge_local_vs_ci_reason: str | None = None
     judge_error: str | None = None
     judge_cost_usd: float | None = None
+    # Guardrail cases; None: the answer key has nothing to check on that side.
+    leaked_to_model: tuple[str, ...] | None = None  # must_not_reach_model found in input
+    leaked_to_output: tuple[str, ...] | None = None  # must_not_appear found in output
 
     @property
     def evidence_hallucinated(self) -> int:
@@ -109,6 +115,40 @@ class RunScore:
     @property
     def has_verified_evidence(self) -> bool:
         return self.evidence_verified > 0
+
+    @property
+    def guardrail_ok(self) -> bool | None:
+        checked = [x for x in (self.leaked_to_model, self.leaked_to_output) if x is not None]
+        return None if not checked else not any(checked)
+
+
+class InputRecorder:
+    """Wraps the agent and keeps the last request, so the eval can check what the
+    model could see. Everything an agent's tools return is drawn from the same
+    redacted log lines and redacted file reads."""
+
+    def __init__(self, agent: DiagnosisAgent) -> None:
+        self.inner = agent
+        self.name = agent.name
+        self.last: AgentRequest | None = None
+
+    def diagnose(self, request: AgentRequest, budget: Budget) -> AgentResult:
+        self.last = request
+        return self.inner.diagnose(request, budget)
+
+
+def model_input_text(request: AgentRequest) -> str:
+    parts = [
+        request.excerpt.render(),
+        *(line.text for line in request.log_lines),
+        json.dumps(run_context(request.run)),
+    ]
+    return "\n".join(parts)
+
+
+def leaks(needles: Sequence[str], text: str) -> tuple[str, ...]:
+    low = text.lower()
+    return tuple(n for n in needles if n.lower() in low)
 
 
 def _source_label(ev: Evidence) -> str:
@@ -127,7 +167,13 @@ def _covers(expected: str, labels: Iterable[str]) -> bool:
     return False
 
 
-def score_run(key: AnswerKey, run: int, result: PipelineResult, latency_s: float) -> RunScore:
+def score_run(
+    key: AnswerKey,
+    run: int,
+    result: PipelineResult,
+    latency_s: float,
+    request: AgentRequest | None = None,
+) -> RunScore:
     d = result.diagnosis
     agent = result.agent_output.diagnosis
     verified = [c.evidence for c in result.evidence_checks if c.ok]
@@ -137,6 +183,13 @@ def score_run(key: AnswerKey, run: int, result: PipelineResult, latency_s: float
         lo, hi = key.expected_confidence
         in_range = lo <= d.confidence <= hi
     usage = result.usage
+    leaked_model = leaked_output = None
+    if key.must_not_reach_model:
+        if request is None:
+            raise ValueError("must_not_reach_model needs the agent's request")
+        leaked_model = leaks(key.must_not_reach_model, model_input_text(request))
+    if key.must_not_appear:
+        leaked_output = leaks(key.must_not_appear, d.model_dump_json())
     return RunScore(
         case=key.case_id,
         log=key.log,
@@ -166,6 +219,8 @@ def score_run(key: AnswerKey, run: int, result: PipelineResult, latency_s: float
         model_id=usage.model_id,
         root_cause=d.root_cause,
         local_vs_ci=d.local_vs_ci,
+        leaked_to_model=leaked_model,
+        leaked_to_output=leaked_output,
     )
 
 
@@ -220,6 +275,7 @@ class Aggregate:
     judge_root_cause: Stat | None = None  # 0-3, over judged runs
     judge_local_vs_ci: Stat | None = None  # 0-2
     judge_errors: int = 0
+    guardrail_pass: float | None = None  # None: no guardrail case in the group
     group: dict[str, str] = field(default_factory=dict)
 
 
@@ -258,6 +314,7 @@ def aggregate(scores: Sequence[RunScore], group: dict[str, str] | None = None) -
             [s.judge_local_vs_ci for s in ok if s.judge_local_vs_ci is not None]
         ),
         judge_errors=sum(1 for s in ok if s.judge_error),
+        guardrail_pass=_rate(s.guardrail_ok for s in ok),
         group=group or {},
     )
 
@@ -295,6 +352,7 @@ COLUMNS = (
     ("sources", lambda a: _pct(a.sources_coverage)),
     ("conf", lambda a: _num(a.confidence, 2)),
     ("conf range", lambda a: _pct(a.confidence_in_range)),
+    ("guardrail", lambda a: _pct(a.guardrail_pass)),
     ("root cause /3", lambda a: _num(a.judge_root_cause, 1)),
     ("local vs CI /2", lambda a: _num(a.judge_local_vs_ci, 1)),
     ("fix applies", lambda a: _pct(a.fix_applies_rate)),
@@ -394,6 +452,7 @@ def run_eval(
 ) -> list[RunScore]:
     source = LocalLogSource(cases_dir)
     tracer = telemetry.get_tracer(telemetry.make_provider(None))  # spans dropped
+    recorder = InputRecorder(agent)
     scores: list[RunScore] = []
     for case, log in pairs:
         key = load_answer_key(case, log, cases_dir)
@@ -406,7 +465,7 @@ def run_eval(
                     logs=source,
                     repo=repo,
                     notifier=CollectingNotifier(),
-                    agent=agent,
+                    agent=recorder,
                     tracer=tracer,
                     limits=limits,
                     log_name=log,
@@ -420,7 +479,7 @@ def run_eval(
                     latency_s=round(time.perf_counter() - start, 3),
                 )
             else:
-                score = score_run(key, i, result, time.perf_counter() - start)
+                score = score_run(key, i, result, time.perf_counter() - start, recorder.last)
                 if judge is not None:
                     score = _judged(score, judge, key, result)
             scores.append(score)
