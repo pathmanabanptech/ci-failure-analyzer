@@ -2,12 +2,14 @@
 
 Environment:
 
-    MODEL_PROVIDER        ollama | bedrock | anthropic
+    MODEL_PROVIDER        ollama | bedrock | anthropic | vertex
     TRIAGE_MODEL_ID       exact model version for triage
     SPECIALIST_MODEL_ID   exact model version for the diagnosing agent(s)
     MODEL_TIMEOUT_S       per-request timeout (default 120)
-    MODEL_MAX_OUTPUT_TOKENS  cap on tokens generated per model call (default 4096); also
-                          bounds a constrained-decoding call that would otherwise loop
+    MODEL_MAX_OUTPUT_TOKENS  cap on tokens generated per model call (default 16000 for
+                          Claude providers, whose thinking counts toward it; 4096
+                          otherwise); also bounds a constrained-decoding call that would
+                          otherwise loop
     MODEL_PRICE_INPUT_PER_MTOK / MODEL_PRICE_OUTPUT_PER_MTOK
                           USD per million tokens, for cost accounting (cloud providers;
                           a local Ollama model costs 0)
@@ -17,6 +19,11 @@ Environment:
                           default is small and silently truncates longer prompts
     AWS_REGION            Bedrock region (AWS credentials from the usual chain)
     ANTHROPIC_API_KEY     Anthropic API key
+    VERTEX_PROJECT_ID     Google Cloud project for Claude on Vertex AI (falls back to
+                          GOOGLE_CLOUD_PROJECT); credentials from Application Default
+                          Credentials (`gcloud auth application-default login`, or the
+                          attached service account on Google Cloud)
+    VERTEX_REGION         Vertex AI region (default ``global``)
 
 Model IDs must be pinned to an exact version, because every eval result records them:
 
@@ -24,7 +31,11 @@ Model IDs must be pinned to an exact version, because every eval result records 
   (checked against the server's digest); ``latest`` only with a digest. The resolved
   digest is always recorded in ``ModelHandle.pinned_id``.
 * Bedrock: ends with a ``:<n>`` version suffix.
-* Anthropic: no ``-latest`` aliases.
+* Anthropic / Vertex: an exact Claude id, no ``-latest`` aliases (Vertex also takes an
+  ``@YYYYMMDD`` snapshot suffix for older models).
+
+Claude models are never sent sampling parameters (``temperature``): current models
+reject them with a 400.
 
 Errors are typed: ``ModelConfigError`` (env is wrong; fix the config) and
 ``ModelUnavailableError`` (provider unreachable, model missing, credentials rejected).
@@ -59,7 +70,7 @@ __all__ = [
     "ping",
 ]
 
-Provider = Literal["ollama", "bedrock", "anthropic"]
+Provider = Literal["ollama", "bedrock", "anthropic", "vertex"]
 Role = Literal["triage", "specialist"]
 
 PROVIDERS: tuple[Provider, ...] = get_args(Provider)
@@ -71,6 +82,10 @@ _OLLAMA_ID = re.compile(
 )
 _BEDROCK_ID = re.compile(r"^[A-Za-z0-9._-]+:\d+$")
 _ANTHROPIC_ID = re.compile(r"^claude-[a-z0-9.-]+$")
+_VERTEX_ID = re.compile(r"^claude-[a-z0-9.-]+(?:@\d{8})?$")
+CLAUDE_PROVIDERS: frozenset[Provider] = frozenset({"anthropic", "vertex"})
+CLAUDE_MAX_OUTPUT_TOKENS = 16_000
+DEFAULT_MAX_OUTPUT_TOKENS = 4096
 
 
 # ------------------------------------------------------------------- settings
@@ -87,6 +102,8 @@ class ModelSettings:
     ollama_num_ctx: int = 16_384
     aws_region: str | None = None
     anthropic_api_key: str | None = None
+    vertex_project: str | None = None
+    vertex_region: str = "global"
 
     @classmethod
     def from_env(cls, env: Mapping[str, str] | None = None) -> ModelSettings:
@@ -103,12 +120,22 @@ class ModelSettings:
             provider=prov,
             model_ids={r: (env.get(var) or "").strip() or None for r, var in ROLE_ENV.items()},
             timeout_s=_positive_float(env, "MODEL_TIMEOUT_S", 120.0),
-            max_output_tokens=int(_positive_float(env, "MODEL_MAX_OUTPUT_TOKENS", 4096)),
+            max_output_tokens=int(
+                _positive_float(
+                    env,
+                    "MODEL_MAX_OUTPUT_TOKENS",
+                    CLAUDE_MAX_OUTPUT_TOKENS
+                    if prov in CLAUDE_PROVIDERS
+                    else DEFAULT_MAX_OUTPUT_TOKENS,
+                )
+            ),
             price=LOCAL_PRICE if prov == "ollama" else _price(env),
             ollama_host=env.get("OLLAMA_HOST") or "http://localhost:11434",
             ollama_num_ctx=int(_positive_float(env, "OLLAMA_NUM_CTX", 16_384)),
             aws_region=env.get("AWS_REGION") or env.get("AWS_DEFAULT_REGION") or None,
             anthropic_api_key=env.get("ANTHROPIC_API_KEY") or None,
+            vertex_project=env.get("VERTEX_PROJECT_ID") or env.get("GOOGLE_CLOUD_PROJECT") or None,
+            vertex_region=env.get("VERTEX_REGION") or "global",
         )
 
     def model_id(self, role: Role) -> str:
@@ -170,8 +197,12 @@ def check_pinned(provider: Provider, model_id: str, var: str = "model id") -> No
             raise ModelConfigError(
                 f"{var}={model_id!r} must be an exact Bedrock model id with a ':<n>' version"
             )
-    elif not _ANTHROPIC_ID.match(model_id) or model_id.endswith("-latest"):
-        raise ModelConfigError(f"{var}={model_id!r} must be an exact Claude model id, no aliases")
+    else:
+        pattern = _VERTEX_ID if provider == "vertex" else _ANTHROPIC_ID
+        if not pattern.match(model_id) or model_id.endswith("-latest"):
+            raise ModelConfigError(
+                f"{var}={model_id!r} must be an exact Claude model id, no aliases"
+            )
 
 
 # --------------------------------------------------------------------- models
@@ -194,6 +225,8 @@ def build_model(settings: ModelSettings, role: Role) -> ModelHandle:
         return _ollama(settings, role, model_id)
     if settings.provider == "bedrock":
         return _bedrock(settings, role, model_id)
+    if settings.provider == "vertex":
+        return _vertex(settings, role, model_id)
     return _anthropic(settings, role, model_id)
 
 
@@ -261,8 +294,9 @@ def _bedrock(settings: ModelSettings, role: Role, model_id: str) -> ModelHandle:
             read_timeout=settings.timeout_s, connect_timeout=10, retries={"max_attempts": 1}
         ),
         model_id=model_id,
-        temperature=0.0,
         max_tokens=settings.max_output_tokens,
+        # Claude on Bedrock rejects sampling parameters (current models); None is not sent.
+        temperature=None if "claude" in model_id else 0.0,
     )
     return ModelHandle("bedrock", role, model_id, model_id, settings.price, model)
 
@@ -286,9 +320,45 @@ def _anthropic(settings: ModelSettings, role: Role, model_id: str) -> ModelHandl
         },
         model_id=model_id,
         max_tokens=settings.max_output_tokens,
-        params={"temperature": 0.0},
     )
     return ModelHandle("anthropic", role, model_id, model_id, settings.price, model)
+
+
+def _vertex(settings: ModelSettings, role: Role, model_id: str) -> ModelHandle:
+    """Claude on Google Cloud Vertex AI (Google managed). Auth: Application Default
+    Credentials; no API key. Checked locally here; the first call verifies access."""
+    if not settings.vertex_project:
+        raise ModelConfigError(
+            "VERTEX_PROJECT_ID (or GOOGLE_CLOUD_PROJECT) is not set (required for "
+            "MODEL_PROVIDER=vertex)"
+        )
+    if (
+        importlib.util.find_spec("anthropic") is None
+        or importlib.util.find_spec("google.auth") is None
+    ):
+        raise ModelConfigError(
+            "the Anthropic Vertex SDK is not installed; run `uv sync --extra vertex`"
+        )
+    import google.auth
+    from anthropic import AsyncAnthropicVertex
+    from google.auth.exceptions import DefaultCredentialsError
+    from strands.models.anthropic import AnthropicModel
+
+    try:
+        google.auth.default()
+    except DefaultCredentialsError:
+        raise ModelConfigError(
+            "no Google credentials found; run `gcloud auth application-default login` "
+            "(on Google Cloud the attached service account is used)"
+        ) from None
+    client = AsyncAnthropicVertex(
+        project_id=settings.vertex_project,
+        region=settings.vertex_region,
+        timeout=settings.timeout_s,
+        max_retries=0,
+    )
+    model = AnthropicModel(client=client, model_id=model_id, max_tokens=settings.max_output_tokens)
+    return ModelHandle("vertex", role, model_id, model_id, settings.price, model)
 
 
 # ----------------------------------------------------------------------- ping

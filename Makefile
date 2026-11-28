@@ -1,7 +1,7 @@
 .PHONY: install lint test eval eval-dry
 
 install:
-	uv sync
+	uv sync --all-extras
 
 lint:
 	uv run ruff check .

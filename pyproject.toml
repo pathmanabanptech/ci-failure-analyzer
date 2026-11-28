@@ -16,6 +16,8 @@ dependencies = [
 
 [project.optional-dependencies]
 anthropic = ["strands-agents[anthropic]>=1.65.0"]  # uv sync --extra anthropic
+# Claude on Google Cloud Vertex AI: uv sync --extra vertex
+vertex = ["strands-agents[anthropic]>=1.65.0", "anthropic[vertex]"]
 
 [dependency-groups]
 dev = [
